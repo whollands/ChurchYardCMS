@@ -1,0 +1,2 @@
+Dashboard Theme
+This theme is a root theme used on the administrative back-end of the website.

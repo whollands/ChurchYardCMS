@@ -1,0 +1,11 @@
+# Apache Configuration File for ChurchYardCMS
+# Released Under GNU Public License
+# By Will Hollands
+# <http://hollands123.com/projects/churchyardcms/>
+
+<IfModule mod_rewrite.c>
+  RewriteEngine on
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule ^ index.php [L]
+</IfModule>

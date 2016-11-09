@@ -1,0 +1,2 @@
+Default Bootstrap Theme
+This theme is the default theme which comes with ChurchYardCMS. You can customise any of these files, or add a new theme by creating a directory and following the guidance on <http://hollands123.com/projects/churchyardcms/support/>
