@@ -1,4 +1,8 @@
-config.php
+media/
+cache/
 sitemap.xml
 robots.txt
-media/
+
+
+config/database.php
+config/general.php

@@ -32,6 +32,8 @@
 
 define("Version", "1.0 Alpha");
 
+session_start();
+
 $GLOBALS["Config"] = include("config/general.php");
 // Assign config file to variable
 
@@ -91,7 +93,8 @@ switch(GetPathPart(0))
 
 	case "logout":
 		$Session = new User();
-		$Session.Logout();
+		$Session->Logout();
+		header("Location: " . GetPageURL());
 	break;
 }
 

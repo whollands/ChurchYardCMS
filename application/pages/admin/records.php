@@ -1,29 +1,64 @@
 <?php if(!defined("ChurchYard_Execute")) die("Access Denied.");
 
-include("application/templates/dashboard/header.php");
+include("templates/dashboard/header.php");
+
 
 ?><h1 class="page-header">Records</h1>
 
 <div class="row">
     <div class="col-md-12">
+
+  <p><a href="<?php echo GetPageURL("admin/records/new"); ?>" class="btn btn-success align-right"><i class="fa fa-plus"></i> Create Record</a></p>
+
       <div class="panel panel-default">
     
-            <table class="table">
+
+
+
+            <?php
+
+            $db = new DatabaseConnection();
+            $Data = $db->Select("DeathRecords", "RecordID, FirstName, LastName, DateOfDeath", " DateOfDeath < 2017-12-12");
+
+            if($Data == 0)
+            {
+              echo AlertWarning("No records could be found.");
+            }
+            else
+            {
+              ?>
+
+<table class="table">
           
             <tr>
-              <th>Name</th>
-              <th>Action</th>
+              <th>Date Of Death</th>
+              <th>First / Last Name(s)</th>
+              <th>Actions</th>
             </tr>
 
-            <tr>
-              <td>Some record</td>
-              <td>Some action</td>
-            </tr>
+
+              <?php
+
+              echo "<tr>";
+              echo "<td>" . $Data["DateOfDeath"] . "</td>";
+              echo "<td>" . $Data["FirstName"] . " " . $Data["LastName"] . "</td>";
+              echo "<td>";
+              echo Button("Edit", "#", "btn btn-primary btn-xs");
+              echo " ";
+              echo Button("Delete", "#", "btn btn-danger btn-xs");
+              echo "</td>";
+              echo "</tr>";
+
+              echo "</table>";
+
+            }
+
+            ?>
               
 
-            </table>
+            
       </div><!-- /.panel-->
     </div><!-- /.col -->
 </div><!-- /.row -->
 
-<?php include("application/templates/dashboard/footer.php");
+<?php include("templates/dashboard/footer.php");

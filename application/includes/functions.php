@@ -86,3 +86,17 @@ function GetRandomToken()
     return md5(uniqid(rand(), true));
     // return random md5, or based off of a unique string
 }
+
+function ErrorMessage($Message)
+{
+    if($GLOBALS["Config"]->Dev->EnableDebug)
+    {
+
+    }
+    else
+    {
+        echo "<h1>An Error Occurred</h1>";
+    }
+
+    exit;
+}

@@ -1,6 +1,7 @@
 <?php if(!defined("ChurchYard_Execute")) die("Access Denied.");
 
-include("application/templates/dashboard/header.php");
+include("templates/dashboard/header.php");
+
 
 ?><h1 class="page-header">Settings</h1>
 
@@ -11,6 +12,8 @@ include("application/templates/dashboard/header.php");
           <h2 class="panel-title">General</h2>
         </div>
         <div class="panel-body">
+
+        <?php echo AlertInfo("Settings currently cannot be changed"); ?>
         
           <div class="col-md-4">
 
@@ -18,6 +21,12 @@ include("application/templates/dashboard/header.php");
                 <label class="control-label" for="">Site Name</label>
                 <input type="text" class="form-control" name="" value="St. Peter's Church Rendcomb">
                 <span class="help-block">Appears in HTML title tag and at top of admin interface.</span>
+              </div>
+
+              <div class="form-group">
+                <label class="control-label" for="">Database Salt</label>
+                <input type="text" class="form-control" name="" value="<?php echo $GLOBALS["Config"]->MasterSalt; ?>" disabled>
+                <span class="help-block">Used to protect user's passwords</span>
               </div>
 
               <div class="form-group">
@@ -47,4 +56,4 @@ include("application/templates/dashboard/header.php");
     </div><!-- /.col -->
 </div><!-- /.row -->
 
-<?php include("application/templates/dashboard/footer.php");
+<?php include("templates/dashboard/footer.php");

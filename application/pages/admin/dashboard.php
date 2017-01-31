@@ -1,6 +1,14 @@
 <?php if(!defined("ChurchYard_Execute")) die("Access Denied.");
 
-include("application/templates/dashboard/header.php");
+$db = new DatabaseConnection();
+
+// $db->Select("SELECT * FROM Users WHERE Username='will.hollands'")
+
+
+
+
+
+include("templates/dashboard/header.php");
 
 ?><h1 class="page-header">Dashboard</h1>
 
@@ -16,22 +24,26 @@ include("application/templates/dashboard/header.php");
               <div class="col-md-3">
                 <a href="#" title="Records">
                   <i class="fa fa-book fa-5x"></i>
+                  <p>Records</p>
                 </a>
                 <br>
               </div>
               <div class="col-md-3">
                 <a href="#" title="Media">
                   <i class="fa fa-folder fa-5x"></i>
+                  <p>Media</p>
                 </a>
               </div>
               <div class="col-md-3">
                 <a href="#" title="Pages">
                   <i class="fa fa-pencil fa-5x"></i>
+                  <p>Editor</p>
                 </a>
               </div>
               <div class="col-md-3">
                 <a href="#" title="Users">
                   <i class="fa fa-users fa-5x"></i>
+                  <p>Users</p>
                 </a>
               </div>
 
@@ -56,4 +68,4 @@ include("application/templates/dashboard/header.php");
 
 </div>
 
-<?php include("application/templates/dashboard/footer.php");
+<?php include("templates/dashboard/footer.php");

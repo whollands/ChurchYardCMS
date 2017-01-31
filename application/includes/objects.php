@@ -59,24 +59,37 @@ Class DatabaseConnection
 
 	function __destruct()
 	{
-		@ $this->Disconnect();
+		//$this->Disconnect();
+		// @ Ignores all errors
 	}
 
 	private function Connect()
 	{
-		$Connection = @ new mysqli($this->Host, $this->Username, $this->Password, $this->DatabaseName, $this->Port, $this->Socket);
+		$this->Connection = @ new mysqli($this->Host, $this->Username, $this->Password, $this->DatabaseName, $this->Port, $this->Socket);
 		// @ Ignores all errors
 
-		if($Connection->connect_errno)
+		if(mysqli_connect_errno($this->Connection))
 		{
 			include("application/pages/errors/DBConnectError.php");
 			exit;
 		}
 	}
 
-	private function Disconnect()
+	public function Disconnect()
 	{
-		$this->Connection->close();
+		mysqli_close($this->Connection);
+	}
+
+	private function FilterQuery()
+	{
+
+	}
+
+	function Query($SQL)
+	{
+		mysqli_query($this->Connection, $SQL)or die(mysqli_connect_errno($this->Connection));
+
+		//$this->$Connection->query($SQL);
 	}
 
 	function Insert($SQL)
@@ -84,20 +97,49 @@ Class DatabaseConnection
 
 	}
 
-	function Update($SQL)
+	function Update($Table, $Data, $Conditions)
 	{
-
-	}
-
-	function Select($SQL)
-	{
+		// $SQL = "DELETE FROM $Table WHERE $Conditions";
 		
-		return $Result;
+		// mysqli_query($this->Connection, $SQL);
 	}
 
-	function Delete($SQL)
-	{
+	function Select($Table, $Fields, $Conditions = "")
+	{	
+	
+		$SQL = "SELECT $Fields FROM $Table WHERE $Conditions";
 
+		$Result = mysqli_query($this->Connection, $SQL);
+
+		if($Result->num_rows == 0)
+		{
+			$Data = 0;
+		}
+		else
+		{
+			$Data = mysqli_fetch_array($Result);
+		}
+
+		return $Data;
+	}
+
+	function Delete($Table, $Conditions)
+	{
+		$SQL = "DELETE FROM $Table WHERE $Conditions";
+
+		mysqli_query($this->Connection, $SQL);
+
+	}
+
+	function CountRows($Table, $Conditions)
+	{
+		$SQL = "SELECT * FROM $Table WHERE $Conditions";
+
+		$Database = new DatabaseConnection();
+		$Data = $Database->Select("Users", "", "$Conditions");
+		$Database->Disconnect();
+
+		return $Data->num_rows;
 	}
 }
 
@@ -107,33 +149,32 @@ Class User
 	private $CookieName = "UserToken";
 	// id of cookie that stores user's session
 
-	private function GetUserSalt($Username)
+	function GetUserSalt($Username)
 	{
-		$Database = new Database();
-		$Result = $Database->Select("SELECT Salt FROM Users WHERE Username = $Username");
+		$Database = new DatabaseConnection();
+		$Data = $Database->Select("Users", "Salt", "Username='$Username'");
+		
+		$Database->Disconnect();
 
-		return $Result;
-		// extract salt attribute for username given
+		return $Data["Salt"];
 	}
 
 	function CheckCredentials($Username, $Password)
 	{
+
 		$UserSalt = $this->GetUserSalt($Username);
+
 		$MasterSalt = $GLOBALS["Config"]->MasterSalt;
 
-		$Password =  $MasterSalt . md5($Password) . $UserSalt;
+		$Password =  md5($MasterSalt . $Password . $UserSalt);
 
-		$Database = new DatabaseConnection();
-		$Result = $Database->Select("SELECT Name, Username FROM Users WHERE (Username = ? OR Email = ?) AND Password = ?");
+		// $Database = new DatabaseConnection();
+		// $Data = $Database->CountRows("Users", "Username = '$Username' AND Password = '$Password'");
+		// $Database->Disconnect();
 		
-		if($Result->num_rows == 1)
-		{
-			setcookie($CookieName, $SessionID, time() + (86400 * 30));
-		}
-		else
-		{
-			// die
-		}
+		die($UserSalt);
+		
+		exit;
 	}
 
 	function ChangePassword($Username, $NewPassword)
@@ -151,7 +192,10 @@ Class User
 
 	function IsLoggedin()
 	{
+		$UserToken = $_COOKIE[$CookieName];
 
+		$Database = new DatabaseConnection();
+		$Database->CountRows("Sessions", "SessionID=''");
 	}
 
 	function Logout()
@@ -173,25 +217,20 @@ Class WebAddress
 
 	function GetPageURL()
 	{
+		$URL = $Base . $File;
+
 		if($CleanURLs)
 		{
-			return $Base . "/index.php" . $File;
+			$URL = $Base . "/index.php" . $File;
 		}
-		else
-		{
-			return $Base . $File;
-		}
+
+		return $URL;
 	}
 
 	function GetResourceURL($File = "")
 	{
 		return $Base . $File;
 	}
-}
-
-Class RecordSearch
-{
-
 }
 
 Class Jobs
@@ -202,16 +241,71 @@ Class Jobs
 	}
 
 	function GenerateRobots()
+	// creates a robots.txt file
 	{
-
+		$Data = "Disallow: application/";
+		$Data .= "\nDisallow: config/";
+		$Data .= "\nDisallow: templates/";
 	}
 
 	function ClearCache()
 	{
-
+		foreach (new DirectoryIterator('cache/') as $fileInfo) 
+		{
+		    if(!$fileInfo->isDot())
+		    {
+		        unlink($fileInfo->getPathname());
+		    }
+		}
 	}
 
 	function IndexSearch()
+	{
+
+	}
+}
+
+Class Media
+{
+	function GetURLByID()
+	{
+
+	}
+
+	function Upload()
+	{
+
+	}	
+
+	function Delete()
+	{
+
+	}
+
+	function Modify()
+	{
+
+	}
+}
+
+Class RecordSearch
+{
+
+}
+
+Class Cache
+{
+	function CachePage()
+	{
+
+	}
+
+	function CacheFamilyData()
+	{
+
+	}
+
+	function CacheMap()
 	{
 
 	}

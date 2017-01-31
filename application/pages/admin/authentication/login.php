@@ -3,11 +3,16 @@
 
 if(isset($_POST["username"]) || isset($_POST["password"]))
 {
+
   $User = new User();
 
   if($User->CheckCredentials($_POST["username"], $_POST["password"]))
   {
-    
+    die("Success.");
+  }
+  else
+  {
+    die("Fail");
   }
 
 }
@@ -43,10 +48,10 @@ if(isset($_POST["username"]) || isset($_POST["password"]))
                 margin: 0 auto;
             }
     </style>
-
   </head>
  
 <body>
+
     <div class="container">
         
     <div class="panel panel-default">
@@ -55,7 +60,7 @@ if(isset($_POST["username"]) || isset($_POST["password"]))
         </div>
         <div class="panel-body">
         
-            <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>"> 
+            <form method="post" action="<?php echo GetPageURL("login"); ?>"> 
                 
                 <div class="input-group input-group-md" style="margin-bottom: 10px;">
                   <span class="input-group-addon" id="basic-addon3"><i class="fa fa-envelope"></i></span>
@@ -77,7 +82,7 @@ if(isset($_POST["username"]) || isset($_POST["password"]))
 
           </form>
         </div>
-
     </div>
+
 </body>
 </html>

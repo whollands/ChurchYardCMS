@@ -1,6 +1,7 @@
 <?php if(!defined("ChurchYard_Execute")) die("Access Denied.");
 
-include("application/templates/dashboard/header.php");
+include("templates/dashboard/header.php");
+
 
 ?>
 
@@ -22,6 +23,4 @@ include("application/templates/dashboard/header.php");
 
 </div>
 
-<?php
-
-include("application/templates/dashboard/footer.php");
+<?php include("templates/dashboard/footer.php");

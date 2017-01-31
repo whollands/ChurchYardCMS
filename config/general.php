@@ -36,8 +36,10 @@ return (object) array(
 
     'SiteName' => 'St. Peters Church Rendcomb',
 
+    'SupportEmail' => 'will.hollands@icloud.com',
+
     'URL' => (object) array(
-    	'CleanURLs' => false,
+    	'CleanURLs' => true,
     	'Base' => "/",
     	'Domain' => "ChurchYard.local",
         'SSL' => false

@@ -50,7 +50,7 @@ function AlertWarning($message)
 {
 	$html = "<div class=\"alert alert-warning alert-dismissible\" role=\"alert\">";
 	$html .= "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>";
-	$html .= "<i class=\"fa fa-check\"></i>&nbsp;&nbsp;&nbsp;" . $message . "</div>";
+	$html .= "<i class=\"fa fa-warning\"></i>&nbsp;&nbsp;&nbsp;" . $message . "</div>";
 	return $html;
 }
 function AlertDanger($message)
@@ -66,4 +66,10 @@ function AlertInfo($message)
 	$html .= "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>";
 	$html .= "<i class=\"fa fa-info\"></i>&nbsp;&nbsp;&nbsp;" . $message . "</div>";
 	return $html;
+}
+
+function Button ($Title, $URL, $CSS)
+{
+    $html = "<a class=\"$CSS\" href=\"$URL\" role=\"button\">$Title</a>";
+    return $html;
 }
