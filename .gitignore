@@ -3,6 +3,4 @@ cache/
 sitemap.xml
 robots.txt
 
-
-config/database.php
-config/general.php
+config/*
