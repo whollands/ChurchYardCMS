@@ -8,11 +8,12 @@ if(isset($_POST["username"]) || isset($_POST["password"]))
 
   if($User->CheckCredentials($_POST["username"], $_POST["password"]))
   {
-    die("Success.");
+    header("Location: /admin");
+    exit;
   }
   else
   {
-    die("Fail");
+    $InfoMessage = AlertDanger("Invalid username or password.");
   }
 
 }
@@ -81,6 +82,9 @@ if(isset($_POST["username"]) || isset($_POST["password"]))
             <button class="btn btn-md btn-primary btn-block" type="submit">Sign In</button>
 
           </form>
+          <br>
+          <?php echo $InfoMessage; ?>
+
         </div>
     </div>
 

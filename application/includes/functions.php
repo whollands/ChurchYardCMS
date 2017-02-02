@@ -87,15 +87,26 @@ function GetRandomToken()
     // return random md5, or based off of a unique string
 }
 
+function Check_Loggedin()
+{
+    $UserToken = $_SESSION["SessionToken"];
+
+
+    $SQL =  "SELECT FROM Sessions WHERE SessionToken='$UserToken' AND DATE_SUB(CURDATE(),INTERVAL 30 DAY) <= DateCreated";
+
+
+
+}
+
 function ErrorMessage($Message)
 {
     if($GLOBALS["Config"]->Dev->EnableDebug)
     {
-
+        echo AlertDanger("An Error Occurred: $Message");
     }
     else
     {
-        echo "<h1>An Error Occurred</h1>";
+        echo AlertDanger("An Error Occurred While Proccessing Your Request.");
     }
 
     exit;

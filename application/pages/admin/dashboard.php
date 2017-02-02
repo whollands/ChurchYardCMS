@@ -1,10 +1,5 @@
 <?php if(!defined("ChurchYard_Execute")) die("Access Denied.");
 
-$db = new DatabaseConnection();
-
-// $db->Select("SELECT * FROM Users WHERE Username='will.hollands'")
-
-
 
 
 

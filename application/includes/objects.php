@@ -30,151 +30,130 @@
 
 /* ------------------------------------------------------------------------ */
 
-Class DatabaseConnection
-{
-	private $Username;
-	private $Password;
-	private $DatabaseName;
-	private $Host;
-	private $Port;
-	private $Socket;
-	private $Connection;
+class Database {
+    // The database conn
+    protected static $conn;
 
-	function __construct()
-	{
-		$Config = include("config/database.php");
-		// Encapsulate sensitive db info inside object.
+   
+    public function Connect() 
+    {    
+        // Try and connect to the database
+        if(!isset(self::$conn))
+        {   
+        	$Config = include("config/database.php");
+        	// Load config from database file
 
-		$this->Username = $Config->Username;
-		$this->Password = $Config->Password;
-		$this->DatabaseName = $Config->DatabaseName;
-		$this->Host = $Config->Host;
-		$this->Port = $Config->Port;
-		$this->Socket = $Config->Socket;
-		// Setup values in config file to $this object
+            self::$conn = new mysqli($Config->Host, $Config->Username, $Config->Password, $Config->DatabaseName);
+        }
 
-		$this->Connect();
-		// Create new database connection
-	}
+        // If conn was not successful, handle the error
+        if(self::$conn === false) {
+            // Handle error - notify administrator, log to a file, show an error screen, etc.
+            return false;
+        }
+        return self::$conn;
+    }
 
-	function __destruct()
-	{
-		//$this->Disconnect();
-		// @ Ignores all errors
-	}
+    public function Query($query)
+    {
+        // Connect to the database
+        $conn = $this -> connect();
 
-	private function Connect()
-	{
-		$this->Connection = @ new mysqli($this->Host, $this->Username, $this->Password, $this->DatabaseName, $this->Port, $this->Socket);
-		// @ Ignores all errors
+        // Query the database
+        $result = $conn -> query($query);
 
-		if(mysqli_connect_errno($this->Connection))
-		{
-			include("application/pages/errors/DBConnectError.php");
-			exit;
-		}
-	}
+        return $result;
+    }
 
-	public function Disconnect()
-	{
-		mysqli_close($this->Connection);
-	}
+    public function Select($query)
+    {
+        $rows = array();
+        $result = $this -> query($query);
+        if($result === false) {
+            return false;
+        }
+        while ($row = $result -> fetch_assoc()) {
+            $rows[] = $row;
+        }
+        return $rows;
+    }
 
-	private function FilterQuery()
-	{
+    public function Error() 
+    {
+        $conn = $this -> connect();
+        return $conn -> error;
+    }
 
-	}
-
-	function Query($SQL)
-	{
-		mysqli_query($this->Connection, $SQL)or die(mysqli_connect_errno($this->Connection));
-
-		//$this->$Connection->query($SQL);
-	}
-
-	function Insert($SQL)
-	{
-
-	}
-
-	function Update($Table, $Data, $Conditions)
-	{
-		// $SQL = "DELETE FROM $Table WHERE $Conditions";
-		
-		// mysqli_query($this->Connection, $SQL);
-	}
-
-	function Select($Table, $Fields, $Conditions = "")
-	{	
-	
-		$SQL = "SELECT $Fields FROM $Table WHERE $Conditions";
-
-		$Result = mysqli_query($this->Connection, $SQL);
-
-		if($Result->num_rows == 0)
-		{
-			$Data = 0;
-		}
-		else
-		{
-			$Data = mysqli_fetch_array($Result);
-		}
-
-		return $Data;
-	}
-
-	function Delete($Table, $Conditions)
-	{
-		$SQL = "DELETE FROM $Table WHERE $Conditions";
-
-		mysqli_query($this->Connection, $SQL);
-
-	}
-
-	function CountRows($Table, $Conditions)
-	{
-		$SQL = "SELECT * FROM $Table WHERE $Conditions";
-
-		$Database = new DatabaseConnection();
-		$Data = $Database->Select("Users", "", "$Conditions");
-		$Database->Disconnect();
-
-		return $Data->num_rows;
-	}
+    public function Filter($value)
+    {
+        $conn = $this -> connect();
+        return "'" . $conn -> real_escape_string($value) . "'";
+    }
 }
-
 
 Class User
 {
-	private $CookieName = "UserToken";
+	private $UserTokenCookie = "UserToken";
 	// id of cookie that stores user's session
 
 	function GetUserSalt($Username)
 	{
-		$Database = new DatabaseConnection();
-		$Data = $Database->Select("Users", "Salt", "Username='$Username'");
-		
-		$Database->Disconnect();
+		$db = new Database();
+		// Create connection
 
-		return $Data["Salt"];
+		$Username = $db -> Filter($Username);
+		// Prevent injection
+
+		$Data = $db -> Select("SELECT Salt FROM Users WHERE Username=$Username");
+		// Execute
+
+		return $Data[0]['Salt'];
 	}
 
 	function CheckCredentials($Username, $Password)
 	{
 
-		$UserSalt = $this->GetUserSalt($Username);
+		$UserSalt = $this -> GetUserSalt($Username);
 
 		$MasterSalt = $GLOBALS["Config"]->MasterSalt;
 
 		$Password =  md5($MasterSalt . $Password . $UserSalt);
 
-		// $Database = new DatabaseConnection();
-		// $Data = $Database->CountRows("Users", "Username = '$Username' AND Password = '$Password'");
-		// $Database->Disconnect();
+
+		$db = new Database();
+		// Create connection
+
+		$Username = $db -> Filter($Username);
+		$Password = $db -> Filter($Password);
+		// Prevent injection
+
+		$Data = $db -> Select("SELECT UserID, Name, Username FROM Users WHERE Username=$Username AND Password=$Password");
+		// Execute
 		
-		die($UserSalt);
-		
-		exit;
+		if(Count($Data) == 1)
+		{
+
+			$RandomToken = GetRandomToken();
+
+			$UserID = $db -> Filter($Data[0]['UserID']);
+			$SessionToken = $db -> Filter($RandomToken);
+			// Prevent injection
+
+			$db = new Database();
+			// Create connection
+
+			$db -> Query("INSERT INTO Sessions (UserID, SessionToken) VALUES ($UserID, $SessionToken)");
+			// insert session into database
+
+			setcookie("SessionToken", $RandomToken, time() + (3600 * 24 * 30), "/");
+			// save session token to user's computer
+
+			return true;
+		}
+		else
+		{
+			return false;
+		}
 	}
 
 	function ChangePassword($Username, $NewPassword)
@@ -192,15 +171,33 @@ Class User
 
 	function IsLoggedin()
 	{
-		$UserToken = $_COOKIE[$CookieName];
+		$db = new Database();
+		// Create connection
 
-		$Database = new DatabaseConnection();
-		$Database->CountRows("Sessions", "SessionID=''");
+		$SessionToken = $db -> Filter($_COOKIE["SessionToken"]);
+
+		$Data = $db -> Select("SELECT UserID FROM Sessions WHERE SessionToken=$SessionToken");
+		// Execute
+
+		if(count($Data) != 1)
+		{
+			header("Location: " . GetPageURL("login"));
+			exit;
+		}
 	}
 
 	function Logout()
 	{
-		setcookie($CookieName, "", time() -3600);
+
+		$db = new Database();
+		// Create connection
+
+		$SessionToken = $db -> Filter($_COOKIE["SessionToken"]);
+
+		$Data = $db -> Query("DELETE FROM Sessions WHERE SessionToken=$SessionToken");
+		// Execute
+
+		setcookie("SessionToken", "", time() -3600);
 		session_destroy();
 	}
 }

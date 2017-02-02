@@ -66,6 +66,10 @@ switch(GetPathPart(0))
 
 	case "admin":
 
+		$user = new User();
+		$user -> IsLoggedIn();
+
+
 		switch(GetPathPart(1))
 		{
 			default: include("application/pages/errors/404Error.php"); break;
