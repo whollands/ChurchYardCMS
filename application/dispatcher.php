@@ -60,7 +60,7 @@ function GetPathPart($Part = 0)
 
 switch(GetPathPart(0))
 {
-	default: include("application/pages/errors/404Error.php"); break;
+	default: include("application/pages/website/view.php"); break;
 	// return 404 error by default
 
 	case "": include("application/pages/website/view.php"); break;
@@ -108,7 +108,18 @@ switch(GetPathPart(0))
 
 			break;
 
-			case "records": include("application/pages/admin/records.php"); break;
+			case "records":
+				switch(GetPathPart(2))
+				{
+					default: include("application/pages/errors/404Error.php"); break;
+					// return 404 error by default
+
+					case "": include("application/pages/admin/records/view.php"); break;
+					case "new": include("application/pages/admin/records/new.php"); break;
+					case "edit": include("application/pages/admin/records/edit.php"); break;
+				}
+
+			break;
 			case "relationships": include("application/pages/admin/relationships.php"); break;
 
 			case "users":
@@ -144,7 +155,7 @@ switch(GetPathPart(0))
 	// end of admin section
 	break;
 
-	case "login": include("application/pages/admin/authentication/login.php"); break;
+	case "login": include("application/pages/auth/login.php"); break;
 
 	case "logout":
 		$u = new User();

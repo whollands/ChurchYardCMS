@@ -9,7 +9,7 @@ include("templates/dashboard/header.php");
     <div class="col-md-12">
 
   <p>
-    <a href="<?php echo GetPageURL("admin/pages/new"); ?>" class="btn btn-success align-right">
+    <a href="<?php echo GetPageURL("admin/users/new"); ?>" class="btn btn-success align-right">
       <i class="fa fa-plus"></i> Create User</a>
   </p>
 

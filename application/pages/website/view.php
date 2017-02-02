@@ -1,6 +1,32 @@
 <?php if(!defined("ChurchYard_Execute")) die("Access Denied.");
 
 
+$Path = GetCurrentPath();
+
+$PageURL = implode("/", $Path["call_parts"]);
+
+if($PageURL == null)
+{
+    $PageURL = "homepage";
+    // load homepage if no URL specified
+}
+
+$PageURL = $db -> Filter($PageURL);
+
+$Data = $db -> Select("SELECT PageName, Content FROM Pages WHERE URL=$PageURL");
+
+
+if(count($Data) != 1)
+{
+  include("application/pages/errors/404Error.php");
+  exit;
+}
+else
+{
+  $PageName = $Data[0]['PageName'];
+  $PageContent = $Data[0]['Content'];
+}
+
 ?><!DOCTYPE html>
 <html lang="en">
   <head>
@@ -8,7 +34,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     
-    <title><?php echo $GLOBALS['Config']->SiteName; ?></title>
+    <title><?php echo $GLOBALS['Config']->SiteName; ?> :: <?php echo $PageName; ?></title>
     <meta name="author" content="Will Hollands">
 
     <link rel="icon" href="<?php echo GetResourceURL("application/images/Favicon.png"); ?>">
@@ -34,35 +60,7 @@
         <h3 class="text-muted"><?php echo $GLOBALS['Config']->SiteName; ?></h3>
       </div>
 
-      <div class="jumbotron">
-        <h1>Jumbotron heading</h1>
-        <p class="lead">Cras justo odio, dapibus ac facilisis in, egestas eget quam. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p>
-        <p><a class="btn btn-lg btn-success" href="#" role="button">Sign up today</a></p>
-      </div>
-
-      <div class="row marketing">
-        <div class="col-lg-6">
-          <h4>Subheading</h4>
-          <p>Donec id elit non mi porta gravida at eget metus. Maecenas faucibus mollis interdum.</p>
-
-          <h4>Subheading</h4>
-          <p>Morbi leo risus, porta ac consectetur ac, vestibulum at eros. Cras mattis consectetur purus sit amet fermentum.</p>
-
-          <h4>Subheading</h4>
-          <p>Maecenas sed diam eget risus varius blandit sit amet non magna.</p>
-        </div>
-
-        <div class="col-lg-6">
-          <h4>Subheading</h4>
-          <p>Donec id elit non mi porta gravida at eget metus. Maecenas faucibus mollis interdum.</p>
-
-          <h4>Subheading</h4>
-          <p>Morbi leo risus, porta ac consectetur ac, vestibulum at eros. Cras mattis consectetur purus sit amet fermentum.</p>
-
-          <h4>Subheading</h4>
-          <p>Maecenas sed diam eget risus varius blandit sit amet non magna.</p>
-        </div>
-      </div>
+      <?php echo $PageContent; ?>
 
       <footer class="footer">
         <p>&copy; Will Hollands 2016 - <a href="<?php echo GetPageURL("admin/"); ?>">Sign In</a></p>

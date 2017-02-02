@@ -22,46 +22,37 @@ if(isset($_POST["Submitted"]))
 
 include("templates/dashboard/header.php");
 
-?><h1 class="page-header">Editor</h1>
+?><h1 class="page-header">Create Page</h1>
 
 <div class="row">
     <div class="col-md-12">
 
       <form method="post" action="">
-        <fieldset>
+        <fieldset class="col-md-6 form-horizontal">
 
-        <!-- Form Name -->
-        <legend>Create Page</legend>
 
         <input type="hidden" name="Submitted" value="true">
 
         <!-- Text input-->
         <div class="form-group">
-          <label class="col-md-4 control-label" for="PageName">Page Name</label>  
-          <div class="col-md-5">
+          <label class="control-label" for="PageName">Page Name</label>  
             <input id="PageName" name="PageName" type="text" placeholder="My First Page" class="form-control input-md" required="">
-          <span class="help-block">Human Friendly, appears in the title of your site</span>  
-          </div>
+            <span class="help-block">Human Friendly, appears in the title of your site</span>  
         </div>
 
         <!-- Text input-->
         <div class="form-group">
-          <label class="col-md-4 control-label" for="URL">Page URL</label>  
-          <div class="col-md-5">
+          <label class="control-label" for="URL">Page URL</label>  
           <div class="input-group">
             <span class="input-group-addon" id="basic-addon1"><?php echo $GLOBALS["Config"]->URL->Domain; ?>/</span>
             <input id="URL" name="URL" type="text" placeholder="my-first-page" class="form-control input-md" required="">
           </div>
           <span class="help-block">The location of the page on your site</span>  
-          </div>
         </div>
 
         <!-- Button -->
         <div class="form-group">
-          <label class="col-md-4 control-label" for=""></label>
-          <div class="col-md-4">
-            <button id="" name="" class="btn btn-danger">Create Page</button>
-          </div>
+            <button type="submit" class="btn btn-danger"><i class="fa fa-pencil"></i> Create Page</button>
         </div>
 
         </fieldset>

@@ -26,7 +26,7 @@ if(isset($_POST["Submitted"]))
   }
   else
   {
-    Redirect("admin/editor/edit/" . $PageID . "?saved");
+    Redirect("admin/pages/edit/" . $PageID . "?saved");
   }
 }
 
@@ -84,50 +84,50 @@ if($_SERVER["QUERY_STRING"] == "saved")
 
         <script type="text/javascript">
             CKEDITOR.replace( 'PageContent' );
+            CKEDITOR.config.height = 300;
         </script>
 
 
         <br>
 
-        <button type="submit" class="btn btn-danger">Save Changes</button>
+        <button type="submit" class="btn btn-danger"><i class="fa fa-check"></i> Save Changes</button>
 
          <button type="button" class="btn btn-default" data-toggle="modal" data-target="#page-settings"><i class="fa fa-gear"></i></button>
 
-<!-- Modal -->
-<div class="modal fade" id="page-settings" tabindex="-1" role="dialog" aria-labelledby="page-settings">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">Page Settings</h4>
-      </div>
-      <div class="modal-body">
+        <!-- Modal -->
+        <div class="modal fade" id="page-settings" tabindex="-1" role="dialog" aria-labelledby="page-settings">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Page Settings</h4>
+              </div>
+              <div class="modal-body">
 
-        <!-- Text input-->
-        <div class="form-group">
-            <input id="PageName" name="PageName" type="text" value="<?php echo $PageName; ?>" class="form-control input-md" required="">
-          <span class="help-block">Human Friendly, appears in the title of your site</span>  
-        </div>
+                <!-- Text input-->
+                <div class="form-group">
+                    <input id="PageName" name="PageName" type="text" value="<?php echo $PageName; ?>" class="form-control input-md" required="">
+                  <span class="help-block">Human Friendly, appears in the title of your site</span>  
+                </div>
 
-        <!-- Text input-->
-        <div class="form-group">
-          <div class="input-group">
-            <span class="input-group-addon" id="basic-addon1"><?php echo $GLOBALS["Config"]->URL->Domain; ?>/</span>
-            <input id="PageURL" name="PageURL" type="text" value="<?php echo $PageURL; ?>" class="form-control input-md" required="">
+                <!-- Text input-->
+                <div class="form-group">
+                  <div class="input-group">
+                    <span class="input-group-addon" id="basic-addon1"><?php echo $GLOBALS["Config"]->URL->Domain; ?>/</span>
+                    <input id="PageURL" name="PageURL" type="text" value="<?php echo $PageURL; ?>" class="form-control input-md" required="">
+                  </div>
+                  <span class="help-block">The location of the page on your site</span>  
+                </div>
+               
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-danger"><i class="fa fa-check"></i> Save changes</button>
+              </div>
+            </div>
           </div>
-          <span class="help-block">The location of the page on your site</span>  
         </div>
-       
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-        <button type="submit" class="btn btn-danger">Save changes</button>
-      </div>
-    </div>
-  </div>
-</div>
 
-      
       </form>
 
     </div><!-- /.col -->

@@ -22,7 +22,7 @@ include("templates/dashboard/header.php");
 
            $db = new Database();
            
-           $Data = $db -> Select("SELECT PageID, PageName, LastEdited FROM Pages");
+           $Data = $db -> Select("SELECT PageID, PageName, URL, LastEdited FROM Pages");
 
             if(count($Data) == 0)
             {
@@ -47,7 +47,7 @@ include("templates/dashboard/header.php");
               foreach($Data as $Data)
               {
                   echo "<tr>";
-                  echo "<td>" . $Data["PageName"] . "</td>";
+                  echo "<td><a href=\"".GetPageURL($Data["URL"])."\">" . $Data["PageName"] . "</a></td>";
                   echo "<td>" . $Data["LastEdited"] . "</td>";
                   echo "<td>";
                   echo Button("Edit", GetPageURL("admin/pages/edit/" . $Data["PageID"]), "btn btn-primary btn-xs");
