@@ -72,15 +72,15 @@ class Database {
 
     public function Select($query)
     {
-        $rows = array();
+        $Data = array();
         $result = $this -> query($query);
         if($result === false) {
             return false;
         }
         while ($row = $result -> fetch_assoc()) {
-            $rows[] = $row;
+            $Data[] = $row;
         }
-        return $rows;
+        return $Data;
     }
 
     public function Error() 

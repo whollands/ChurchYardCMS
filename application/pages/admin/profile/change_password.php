@@ -3,14 +3,14 @@
 include("templates/dashboard/header.php");
 
 
-?><h1 class="page-header">Editor</h1>
+?><h1 class="page-header">Change Password</h1>
 
 <div class="row">
     <div class="col-md-12">
 
   <p>
-    <a href="<?php echo GetPageURL("admin/editor/new"); ?>" class="btn btn-success align-right">
-      <i class="fa fa-plus"></i> Create Page</a>
+    <a href="<?php echo GetPageURL("admin/pages/new"); ?>" class="btn btn-success align-right">
+      <i class="fa fa-plus"></i> Create User</a>
   </p>
 
       
@@ -22,11 +22,11 @@ include("templates/dashboard/header.php");
 
            $db = new Database();
            
-           $rows = $db -> Select("SELECT PageID, PageName, LastEdited FROM Pages");
+           $Data = $db -> Select("SELECT UserID, Username, Name FROM Users");
 
-            if(count($rows) == 0)
+            if(count($Data) == 0)
             {
-              echo AlertWarning("No pages could be found.");
+              echo AlertWarning("No users could be found.");
             }
             else
             {
@@ -37,22 +37,22 @@ include("templates/dashboard/header.php");
       <div class="panel panel-default">
         <table class="table">
             <tr>
-              <th>Page Name</th>
-              <th>Last Edited</th>
+              <th>Name</th>
+              <th>Username</th>
               <th>Actions</th>
             </tr>
 
               <?php
 
-              foreach($rows as $Data)
+              foreach($Data as $Data)
               {
                   echo "<tr>";
-                  echo "<td>" . $Data["PageName"] . "</td>";
-                  echo "<td>" . $Data["LastEdited"] . "</td>";
+                  echo "<td>" . $Data["Name"] . "</td>";
+                  echo "<td>" . $Data["Username"] . "</td>";
                   echo "<td>";
-                  echo Button("Edit", GetPageURL("admin/editor/edit/" . $Data["PageID"]), "btn btn-primary btn-xs");
+                  echo Button("Edit", GetPageURL("admin/users/edit/" . $Data["PageID"]), "btn btn-primary btn-xs");
                   echo " ";
-                  echo Button("Delete", GetPageURL("admin/editor/delete/" . $Data["PageID"]), "btn btn-danger btn-xs");
+                  echo Button("Delete", GetPageURL("admin/users/delete/" . $Data["PageID"]), "btn btn-danger btn-xs");
                   echo "</td>";
                   echo "</tr>";
               }

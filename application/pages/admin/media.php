@@ -15,9 +15,9 @@ include("templates/dashboard/header.php");
 
            $db = new Database();
            
-           $rows = $db -> Select("SELECT MediaID, MediaName, DateUploaded FROM Media");
+           $Data = $db -> Select("SELECT MediaID, MediaName, DateUploaded FROM Media");
 
-            if(count($rows) == 0)
+            if(count($Data) == 0)
             {
               echo AlertWarning("No media could be found.");
             }
@@ -37,7 +37,7 @@ include("templates/dashboard/header.php");
 
               <?php
 
-              foreach($rows as $Data)
+              foreach($Data as $Data)
               {
                   echo "<tr>";
                   echo "<td>" . $Data["MediaName"] . "</td>";

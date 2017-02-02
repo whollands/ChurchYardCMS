@@ -4,6 +4,10 @@ include("templates/dashboard/header.php");
 
 
 ?><h1 class="page-header">Jobs</h1>
+
+        <?php echo AlertInfo("Jobs have not been implemented in V.1.0 Alpha"); ?>
+
+
 <div class="row">
     <div class="col-md-4">
       <div class="panel panel-default">
@@ -12,7 +16,7 @@ include("templates/dashboard/header.php");
           </div>
           <div class="panel-body">
               <p>Updates sitemap.xml file. This is used by search engines to index your site.</p>
-              <a class="btn btn-danger" href="#" role="button">Update Sitemap.xml</a>
+              <a class="btn btn-danger" href="#" role="button" disabled>Update Sitemap.xml</a>
           </div>
       </div>
     </div>
@@ -23,7 +27,7 @@ include("templates/dashboard/header.php");
           </div>
           <div class="panel-body">
               <p>Updates robots.txt file. This is used to control what search engines can access.</p>
-              <a class="btn btn-danger" href="#" role="button">Update Robots.txt</a>
+              <a class="btn btn-danger" href="#" role="button" disabled>Update Robots.txt</a>
           </div>
       </div>
     </div>
@@ -34,7 +38,7 @@ include("templates/dashboard/header.php");
           </div>
           <div class="panel-body">
               <p>Clearing the cache may refresh outdated content that is not updating properly.</p>
-              <a class="btn btn-danger" href="#" role="button">Clear Cache</a>
+              <a class="btn btn-danger" href="#" role="button" disabled>Clear Cache</a>
           </div>
       </div>
     </div>      

@@ -13,13 +13,12 @@ if(isset($_POST["Submitted"]))
   $PageContent = strip_tags($PageContent, $AllowedTags);
   // remove banned html
 
-  $PageID = $db -> Filter($PageID);
   $PageName = $db -> Filter($PageName);
   $PageURL = $db -> Filter($PageURL);
   $PageContent = $db -> Filter($PageContent);
   // make safe to prevent injection
 
-  $SQL = "UPDATE Pages SET PageName=$PageName, URL=$PageURL, Content=$PageContent WHERE PageID=$PageID";
+  $SQL = "UPDATE Pages SET PageName=$PageName, URL=$PageURL, Content=$PageContent WHERE PageID='$PageID'";
 
   if(!$db -> Query($SQL))
   {
@@ -27,7 +26,7 @@ if(isset($_POST["Submitted"]))
   }
   else
   {
-    die("Success.");
+    Redirect("admin/editor/edit/" . $PageID . "?saved");
   }
 }
 
@@ -53,6 +52,16 @@ else
 include("templates/dashboard/header.php");
 
 ?><h1 class="page-header">Editor</h1>
+
+
+<?php
+
+if($_SERVER["QUERY_STRING"] == "saved")
+{
+  AlertSuccess("Changes saved");
+}
+
+?>
 
 <div class="row">
     <div class="col-md-12">

@@ -15,9 +15,9 @@ include("templates/dashboard/header.php");
 
            $db = new Database();
            
-           $rows = $db -> Select("SELECT PageID, PageName, LastEdited FROM Pages");
+           $Data = $db -> Select("SELECT PageID, PageName, LastEdited FROM Pages");
 
-            if(count($rows) == 0)
+            if(count($Data) == 0)
             {
               echo AlertWarning("No pages could be found.");
             }
@@ -37,7 +37,7 @@ include("templates/dashboard/header.php");
 
               <?php
 
-              foreach($rows as $Data)
+              foreach($Data as $Data)
               {
                   echo "<tr>";
                   echo "<td>" . $Data["PageName"] . "</td>";

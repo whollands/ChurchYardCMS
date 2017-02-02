@@ -13,7 +13,7 @@ include("templates/dashboard/header.php");
         </div>
         <div class="panel-body">
 
-        <?php echo AlertInfo("Settings currently cannot be changed"); ?>
+        <?php echo AlertInfo("Settings have not been implemented in V.1.0 Alpha"); ?>
         
           <div class="col-md-4">
 
@@ -47,7 +47,7 @@ include("templates/dashboard/header.php");
               </div><!-- /.form-group -->
 
 
-              <button type="submit" class="btn btn-danger">Save Changes</button>
+              <button type="submit" class="btn btn-danger" disabled>Save Changes</button>
 
           </div><!-- /.col-md-4 -->
 

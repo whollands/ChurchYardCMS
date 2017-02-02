@@ -39,8 +39,9 @@
                <li class="dropdown">
                   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><i class="fa fa-user"></i> Will Hollands <span class="caret"></span></a>
                 <ul class="dropdown-menu">
-                  <li><a href="#"><i class="fa fa-pencil"></i> Edit profile</a></li>
-                  <li><a href="#"><i class="fa fa-key"></i> Change password</a></li>
+                  <li><a href="<?php echo GetPageURL("admin/profile/edit"); ?>"><i class="fa fa-pencil"></i> Edit profile</a></li>
+                  <li><a href="<?php echo GetPageURL("admin/profile/change_password"); ?>"><i class="fa fa-key"></i> Change password</a></li>
+                  <li><a href="<?php echo GetPageURL("admin/profile/sessions"); ?>"><i class="fa fa-desktop"></i> Sessions</a></li>
                   <li role="separator" class="divider"></li>
                   <li><a href="<?php echo GetPageURL("logout"); ?>"><i class="fa fa-lock"></i> Sign Out &rarr;</a></li>
                 </ul>
@@ -67,7 +68,7 @@
                 'dashboard' => "<i class=\"fa fa-dashboard\"></i> Dashboard",
                 '1' => "",
 
-                'editor' => "<i class=\"fa fa-pencil\"></i> Editor",
+                'pages' => "<i class=\"fa fa-pencil\"></i> Editor",
                 'media' => "<i class=\"fa fa-folder\"></i> Media",
                 '2' => "",
 
@@ -75,6 +76,7 @@
                 'relationships' => "<i class=\"fa fa-heart\"></i> Relationships",
                 '3' => "",
 
+                'users' => "<i class=\"fa fa-users\"></i> Users",
                 'jobs' => "<i class=\"fa fa-server\"></i> Jobs",
                 'settings' => "<i class=\"fa fa-gears\"></i> Settings",
                 'help' => "<i class=\"fa fa-question-circle\"></i> Help"

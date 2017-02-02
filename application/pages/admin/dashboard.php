@@ -17,26 +17,26 @@ include("templates/dashboard/header.php");
           <div class="panel-body">
             <div class="row placeholders">
               <div class="col-md-3">
-                <a href="#" title="Records">
+                <a href="<?php echo GetPageURL("admin/records"); ?>" title="Records">
                   <i class="fa fa-book fa-5x"></i>
                   <p>Records</p>
                 </a>
                 <br>
               </div>
               <div class="col-md-3">
-                <a href="#" title="Media">
+                <a href="<?php echo GetPageURL("admin/media"); ?>" title="Media">
                   <i class="fa fa-folder fa-5x"></i>
                   <p>Media</p>
                 </a>
               </div>
               <div class="col-md-3">
-                <a href="#" title="Pages">
+                <a href="<?php echo GetPageURL("admin/pages"); ?>" title="Pages">
                   <i class="fa fa-pencil fa-5x"></i>
                   <p>Editor</p>
                 </a>
               </div>
               <div class="col-md-3">
-                <a href="#" title="Users">
+                <a href="<?php echo GetPageURL("admin/users"); ?>" title="Users">
                   <i class="fa fa-users fa-5x"></i>
                   <p>Users</p>
                 </a>

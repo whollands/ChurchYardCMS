@@ -82,28 +82,64 @@ switch(GetPathPart(0))
 
 			case "dashboard":  include("application/pages/admin/dashboard.php"); break;
 
-			case "editor":
+			case "pages":
 				switch(GetPathPart(2))
 				{
 					default: include("application/pages/errors/404Error.php"); break;
 					// return 404 error by default
 
-					case "": include("application/pages/admin/editor/view.php"); break;
-					case "new": include("application/pages/admin/editor/new.php"); break;
-					case "edit": include("application/pages/admin/editor/edit.php"); break;
-
+					case "": include("application/pages/admin/pages/view.php"); break;
+					case "new": include("application/pages/admin/pages/new.php"); break;
+					case "edit": include("application/pages/admin/pages/edit.php"); break;
 				}
 
 			break;
 
-			case "media": include("application/pages/admin/media.php"); break;
+			case "media":
+				switch(GetPathPart(2))
+				{
+					default: include("application/pages/errors/404Error.php"); break;
+					// return 404 error by default
+
+					case "": include("application/pages/admin/media/view.php"); break;
+					case "upload": include("application/pages/admin/media/upload.php"); break;
+					case "details": include("application/pages/admin/media/details.php"); break;
+				}
+
+			break;
 
 			case "records": include("application/pages/admin/records.php"); break;
 			case "relationships": include("application/pages/admin/relationships.php"); break;
 
+			case "users":
+				switch(GetPathPart(2))
+				{
+					default: include("application/pages/errors/404Error.php"); break;
+					// return 404 error by default
+
+					case "": include("application/pages/admin/users/view.php"); break;
+					case "new": include("application/pages/admin/users/new.php"); break;
+					case "edit": include("application/pages/admin/users/edit.php"); break;
+				}
+
+			break;
+
 			case "settings": include("application/pages/admin/settings.php"); break;
 			case "jobs": include("application/pages/admin/jobs.php"); break;
 			case "help": include("application/pages/admin/help.php"); break;
+
+			case "profile":
+				switch(GetPathPart(2))
+				{
+					default: include("application/pages/errors/404Error.php"); break;
+					// return 404 error by default
+
+					case "": Redirect("admin/profile/edit"); break;
+					case "edit": include("application/pages/admin/profile/edit.php"); break;
+					case "change_password": include("application/pages/admin/profile/change_password.php"); break;
+					case "sessions": include("application/pages/admin/profile/sessions.php"); break;
+				}
+			break;
 		}
 	// end of admin section
 	break;
@@ -111,9 +147,9 @@ switch(GetPathPart(0))
 	case "login": include("application/pages/admin/authentication/login.php"); break;
 
 	case "logout":
-		$Session = new User();
-		$Session->Logout();
-		header("Location: " . GetPageURL());
+		$u = new User();
+		$u->Logout();
+		Redirect();
 	break;
 }
 

@@ -19,9 +19,9 @@ include("templates/dashboard/header.php");
 
            $db = new Database();
            
-           $rows = $db -> Select("SELECT FirstName, DateOfDeath FROM Records");
+           $Data = $db -> Select("SELECT FirstName, DateOfDeath FROM Records");
 
-            if(count($rows) == 0)
+            if(count($Data) == 0)
             {
               echo AlertWarning("No records could be found.");
             }
@@ -41,7 +41,7 @@ include("templates/dashboard/header.php");
 
               <?php
 
-              foreach($rows as $Data)
+              foreach($Data as $Data)
               {
                   echo "<tr>";
                   echo "<td>" . $Data["DateOfDeath"] . "</td>";

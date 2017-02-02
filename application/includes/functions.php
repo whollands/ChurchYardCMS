@@ -76,6 +76,12 @@ function GetPageURL($file = "")
 	return $GLOBALS["Config"]->URL->Base;
 }
 
+function Redirect($Location = "", $StatusCode = 303)
+{
+   header('Location: ' . GetPageURL($Location), true, $StatusCode);
+   exit;
+}
+
 function GetResourceURL($file = "")
 {
 	return $GLOBALS['Config']->URL->Base . $file;
@@ -87,16 +93,7 @@ function GetRandomToken()
     // return random md5, or based off of a unique string
 }
 
-function Check_Loggedin()
-{
-    $UserToken = $_SESSION["SessionToken"];
 
-
-    $SQL =  "SELECT FROM Sessions WHERE SessionToken='$UserToken' AND DATE_SUB(CURDATE(),INTERVAL 30 DAY) <= DateCreated";
-
-
-
-}
 
 function ErrorMessage($Message)
 {
