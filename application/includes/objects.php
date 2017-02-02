@@ -31,9 +31,9 @@
 /* ------------------------------------------------------------------------ */
 
 class Database {
-    // The database conn
-    protected static $conn;
 
+    // The database Connection
+    protected static $conn;
    
     public function Connect() 
     {    
@@ -52,6 +52,11 @@ class Database {
             return false;
         }
         return self::$conn;
+    }
+
+    public function Disconnect()
+    {
+    	self::$conn -> close();
     }
 
     public function Query($query)
@@ -188,14 +193,14 @@ Class User
 
 	function Logout()
 	{
-
 		$db = new Database();
-		// Create connection
 
 		$SessionToken = $db -> Filter($_COOKIE["SessionToken"]);
 
 		$Data = $db -> Query("DELETE FROM Sessions WHERE SessionToken=$SessionToken");
 		// Execute
+
+		$db -> Disconnect();
 
 		setcookie("SessionToken", "", time() -3600);
 		session_destroy();

@@ -8,7 +8,14 @@ include("templates/dashboard/header.php");
 <div class="row">
     <div class="col-md-12">
 
-  <p><a href="<?php echo GetPageURL("admin/editor/new"); ?>" class="btn btn-success align-right"><i class="fa fa-plus"></i> Create Page</a></p>
+  <p>
+    <a href="<?php echo GetPageURL("admin/editor/new"); ?>" class="btn btn-success align-right">
+      <i class="fa fa-plus"></i> Create Page</a>
+  </p>
+
+      
+    
+
 
 
             <?php

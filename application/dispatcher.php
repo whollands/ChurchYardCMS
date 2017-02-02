@@ -32,8 +32,6 @@
 
 define("Version", "1.0 Alpha");
 
-session_start();
-
 $GLOBALS["Config"] = include("config/general.php");
 // Assign config file to variable
 
@@ -41,6 +39,10 @@ include("application/includes/Objects.php");
 include("application/includes/Functions.php");
 include("application/includes/Bootstrap-Elements.functions.php");
 // include all objects, functions
+
+session_start();
+
+$db = new Database();
 
 function GetPathPart($Part = 0)
 {
@@ -80,7 +82,20 @@ switch(GetPathPart(0))
 
 			case "dashboard":  include("application/pages/admin/dashboard.php"); break;
 
-			case "editor": include("application/pages/admin/editor.php"); break;
+			case "editor":
+				switch(GetPathPart(2))
+				{
+					default: include("application/pages/errors/404Error.php"); break;
+					// return 404 error by default
+
+					case "": include("application/pages/admin/editor/view.php"); break;
+					case "new": include("application/pages/admin/editor/new.php"); break;
+					case "edit": include("application/pages/admin/editor/edit.php"); break;
+
+				}
+
+			break;
+
 			case "media": include("application/pages/admin/media.php"); break;
 
 			case "records": include("application/pages/admin/records.php"); break;

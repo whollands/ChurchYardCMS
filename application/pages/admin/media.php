@@ -8,26 +8,57 @@ include("templates/dashboard/header.php");
 <div class="row">
     <div class="col-md-12">
 
-      <p><a href="<?php echo GetPageURL("admin/media/upload"); ?>" class="btn btn-success align-right"><i class="fa fa-upload"></i> Upload files</a></p>
+  <p><a href="<?php echo GetPageURL("admin/media/new"); ?>" class="btn btn-success align-right"><i class="fa fa-upload"></i> Upload Media</a></p>
 
+
+            <?php
+
+           $db = new Database();
+           
+           $rows = $db -> Select("SELECT MediaID, MediaName, DateUploaded FROM Media");
+
+            if(count($rows) == 0)
+            {
+              echo AlertWarning("No media could be found.");
+            }
+            else
+            {
+
+              ?>
 
 
       <div class="panel panel-default">
-    
-            <table class="table">
-          
+        <table class="table">
             <tr>
-              <th>Name</th>
-              <th>Action</th>
+              <th>Media Name</th>
+              <th>Last Edited</th>
+              <th>Actions</th>
             </tr>
 
-            <tr>
-              <td>Some media</td>
-              <td>Some action</td>
-            </tr>
+              <?php
+
+              foreach($rows as $Data)
+              {
+                  echo "<tr>";
+                  echo "<td>" . $Data["MediaName"] . "</td>";
+                  echo "<td>" . $Data["DateUploaded"] . "</td>";
+                  echo "<td>";
+                  echo Button("Edit", GetPageURL("admin/media/edit/" . $Data["MediaID"]), "btn btn-primary btn-xs");
+                  echo " ";
+                  echo Button("Delete", GetPageURL("admin/media/delete/" . $Data["MediaID"]), "btn btn-danger btn-xs");
+                  echo "</td>";
+                  echo "</tr>";
+              }
+
+              echo "</table>";
+
+
+            }
+
+            ?>
               
 
-            </table>
+            
       </div><!-- /.panel-->
     </div><!-- /.col -->
 </div><!-- /.row -->
