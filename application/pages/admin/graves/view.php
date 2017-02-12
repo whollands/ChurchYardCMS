@@ -3,34 +3,39 @@
 include("templates/dashboard/header.php");
 
 
-?><h1 class="page-header">Sessions</h1>
+?><h1 class="page-header">Graves</h1>
 
 <div class="row">
     <div class="col-md-12">
+
+  <p><a href="<?php echo GetPageURL("admin/graves/new"); ?>" class="btn btn-success align-right"><i class="fa fa-plus"></i> Create Grave</a></p>
+
       
+    
+
+
+
             <?php
 
            $db = new Database();
            
-           $Data = $db -> Select("SELECT SessionID, DateCreated, IP FROM Sessions");
+           $Data = $db -> Select("SELECT GraveID, Type FROM Graves");
 
             if(count($Data) == 0)
             {
-              echo AlertWarning("No sessions could be found.");
+              echo AlertWarning("No graves could be found.");
             }
             else
             {
 
               ?>
 
-              <p>Devices and web browsers you are signed in on are shown below. Click "Revoke" to sign a device out of your account.</p>
-
 
       <div class="panel panel-default">
         <table class="table">
             <tr>
-              <th>Session ID</th>
-              <th>Date Created</th>
+              <th>Grave ID</th>
+              <th>Type</th>
               <th>Actions</th>
             </tr>
 
@@ -39,10 +44,12 @@ include("templates/dashboard/header.php");
               foreach($Data as $Data)
               {
                   echo "<tr>";
-                  echo "<td>" . $Data["SessionID"] . "</td>";
-                  echo "<td>" . $Data["DateCreated"] . "</td>";
+                  echo "<td>" . $Data["GraveID"] . "</td>";
+                  echo "<td>" . $Data["Type"] . "</td>";
                   echo "<td>";
-                  echo Button("Revoke", GetPageURL("admin/users/delete/" . $Data["PageID"]), "btn btn-default btn-xs");
+                  echo Button("Edit", "#", "btn btn-primary btn-xs");
+                  echo " ";
+                  echo Button("Delete", "#", "btn btn-danger btn-xs");
                   echo "</td>";
                   echo "</tr>";
               }

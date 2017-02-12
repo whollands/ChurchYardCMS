@@ -9,7 +9,7 @@ if(isset($_POST["Submitted"]))
   $PageContent = $_POST["PageContent"];
   // get values submitted
 
-  $AllowedTags = "<p><strong><pre><h1><h2><h3><h4><i><a><img><s><blockquote><li><ul><table><hr>";
+  $AllowedTags = "<p><strong><pre><h1><h2><h3><h4><i><a><img><s><blockquote><li><ul><table><br><hr>";
   $PageContent = strip_tags($PageContent, $AllowedTags);
   // remove banned html
 
@@ -18,7 +18,7 @@ if(isset($_POST["Submitted"]))
   $PageContent = $db -> Filter($PageContent);
   // make safe to prevent injection
 
-  $SQL = "UPDATE Pages SET PageName=$PageName, URL=$PageURL, Content=$PageContent WHERE PageID='$PageID'";
+  $SQL = "UPDATE Pages SET PageName=$PageName, URL=$PageURL, Content=$PageContent, LastEdited=CURRENT_TIMESTAMP WHERE PageID='$PageID'";
 
   if(!$db -> Query($SQL))
   {

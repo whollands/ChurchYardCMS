@@ -35,6 +35,17 @@ define("Version", "1.0 Alpha");
 $GLOBALS["Config"] = include("config/general.php");
 // Assign config file to variable
 
+//error handler function
+function customError($errno, $errstr) 
+{
+	echo "Error Occurred";
+    echo "<b>Error:</b> [$errno] $errstr";
+    exit;
+}
+
+//set error handler
+//set_error_handler("customError");
+
 include("application/includes/Objects.php");
 include("application/includes/Functions.php");
 include("application/includes/Bootstrap-Elements.functions.php");
@@ -65,6 +76,13 @@ switch(GetPathPart(0))
 
 	case "": include("application/pages/website/view.php"); break;
 	// return 404 error by default
+
+
+	case "ajax_request":
+			$db = new Database();
+			$Data = $db -> Select("SELECT GraveID, Type, Location FROM Graves ORDER BY GraveID");
+			echo json_encode($Data);
+	break;
 
 	case "admin":
 
@@ -120,7 +138,19 @@ switch(GetPathPart(0))
 				}
 
 			break;
-			case "relationships": include("application/pages/admin/relationships.php"); break;
+
+			case "graves":
+				switch(GetPathPart(2))
+				{
+					default: include("application/pages/errors/404Error.php"); break;
+					// return 404 error by default
+
+					case "": include("application/pages/admin/graves/view.php"); break;
+					case "new": include("application/pages/admin/graves/new.php"); break;
+					case "edit": include("application/pages/admin/graves/edit.php"); break;
+				}
+
+			break;
 
 			case "users":
 				switch(GetPathPart(2))

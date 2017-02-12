@@ -68,7 +68,7 @@ function AlertInfo($message)
 	return $html;
 }
 
-function Button ($Title, $URL, $CSS)
+function Button ($Title, $URL, $CSS = "btn btn-default")
 {
     $html = "<a class=\"$CSS\" href=\"$URL\" role=\"button\">$Title</a>";
     return $html;

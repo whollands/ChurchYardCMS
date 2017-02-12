@@ -33,66 +33,82 @@
 class Database {
 
     // The database Connection
-    protected static $conn;
+    protected static $Conn;
    
     public function Connect() 
     {    
         // Try and connect to the database
-        if(!isset(self::$conn))
+        if(!isset(self::$Conn))
         {   
         	$Config = include("config/database.php");
         	// Load config from database file
-
-            self::$conn = new mysqli($Config->Host, $Config->Username, $Config->Password, $Config->DatabaseName);
+     
+        	self::$Conn = new mysqli($Config->Host, $Config->Username, $Config->Password, $Config->DatabaseName);
         }
 
         // If conn was not successful, handle the error
-        if(self::$conn === false) {
+        if(self::$Conn === false)
+        {
             // Handle error - notify administrator, log to a file, show an error screen, etc.
+            die("Database error");
             return false;
         }
-        return self::$conn;
+        return self::$Conn;
     }
 
     public function Disconnect()
     {
-    	self::$conn -> close();
+    	self::$Conn -> close();
     }
 
     public function Query($query)
     {
         // Connect to the database
-        $conn = $this -> connect();
+        $Conn = $this -> connect();
 
         // Query the database
-        $result = $conn -> query($query);
+        $Result = $Conn -> query($query);
 
-        return $result;
+        return $Result;
     }
 
     public function Select($query)
     {
         $Data = array();
-        $result = $this -> query($query);
-        if($result === false) {
+
+        $Result = $this -> query($query);
+
+        if($Result === false)
+        {
             return false;
         }
-        while ($row = $result -> fetch_assoc()) {
-            $Data[] = $row;
+
+        while ($Row = $Result -> fetch_assoc())
+        {
+            $Data[] = $Row;
         }
+
         return $Data;
     }
 
     public function Error() 
     {
-        $conn = $this -> connect();
-        return $conn -> error;
+    	if($GLOBALS['Config'] -> Dev -> EnableDebug)
+    	{
+    		$Conn = $this -> connect();
+        	return "<h2>Database Error:</h2> <p>" .$Conn -> error . "</p>";
+    	}
+    	else
+    	{
+    		return "An error occurred whilst communicating to the database.";
+    	}
+        
     }
 
     public function Filter($value)
     {
-        $conn = $this -> connect();
-        return "'" . $conn -> real_escape_string($value) . "'";
+        $Conn = $this -> connect();
+        return "'" . $Conn -> real_escape_string($value) . "'";
     }
 }
 
@@ -124,7 +140,6 @@ Class User
 
 		$Password =  md5($MasterSalt . $Password . $UserSalt);
 
-
 		$db = new Database();
 		// Create connection
 
@@ -132,7 +147,10 @@ Class User
 		$Password = $db -> Filter($Password);
 		// Prevent injection
 
-		$Data = $db -> Select("SELECT UserID, Name, Username FROM Users WHERE Username=$Username AND Password=$Password");
+		$SQL = "SELECT UserID, Name, Username FROM Users WHERE Username=$Username AND Password=$Password";
+		// prepare
+
+		$Data = $db -> Select($SQL)or die($db -> Error());
 		// Execute
 		
 		if(Count($Data) == 1)
@@ -147,7 +165,10 @@ Class User
 			$db = new Database();
 			// Create connection
 
-			$db -> Query("INSERT INTO Sessions (UserID, SessionToken) VALUES ($UserID, $SessionToken)");
+			$SQL = "INSERT INTO Sessions (UserID, SessionToken) VALUES ($UserID, $SessionToken)";
+			// prepare
+
+			$db -> Query($SQL)or die($db -> Error());
 			// insert session into database
 
 			setcookie("SessionToken", $RandomToken, time() + (3600 * 24 * 30), "/");
@@ -161,7 +182,7 @@ Class User
 		}
 	}
 
-	function ChangePassword($Username, $NewPassword)
+	function ChangePassword($UserID, $NewPassword)
 	{
 		$UserSalt = GetRandomToken();
 		// generate a new random user salt
@@ -169,9 +190,27 @@ Class User
 		$NewPassword = $GLOBALS["Config"]->MasterSalt . md5($NewPassword) . $UserSalt;
 		// create a hash for the password
 
-		$Database = new Database();
-		$Database->Update("UPDATE Users SET Password = $NewPassword AND Salt = $UserSalt WHERE Username = $Username");
+		$NewPassword = $db -> Filter($NewPassword);
+		$UserSalt = $db -> Filter($UserSalt);
+		$UserID = $db -> Filter($UserID);
+		// prevent injection
+
+		$SQL = "UPDATE Users SET Password=$NewPassword AND Salt=$UserSalt WHERE UserID=$UserID";
+		// prepare query
+
+		$db = new Database();
+		// open connection
+		
+		if(!$db -> Query($SQL)or die($db -> Error()))
 		// perform query to update database
+		{
+			die("Failed to update new password to database.");
+		}
+		else
+		{
+			die("Success.");
+		}
+		
 	}
 
 	function IsLoggedin()
@@ -181,7 +220,7 @@ Class User
 
 		$SessionToken = $db -> Filter($_COOKIE["SessionToken"]);
 
-		$Data = $db -> Select("SELECT UserID FROM Sessions WHERE SessionToken=$SessionToken");
+		$Data = $db -> Select("SELECT UserID FROM Sessions WHERE SessionToken=$SessionToken")or die($db -> Error());
 		// Execute
 
 		if(count($Data) != 1)
@@ -197,7 +236,7 @@ Class User
 
 		$SessionToken = $db -> Filter($_COOKIE["SessionToken"]);
 
-		$Data = $db -> Query("DELETE FROM Sessions WHERE SessionToken=$SessionToken");
+		$Data = $db -> Query("DELETE FROM Sessions WHERE SessionToken=$SessionToken")or die($db -> Error());
 		// Execute
 
 		$db -> Disconnect();

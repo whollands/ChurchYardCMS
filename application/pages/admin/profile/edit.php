@@ -3,71 +3,60 @@
 include("templates/dashboard/header.php");
 
 
+$db = new Database();
+
+$UserID = $db -> Filter('0');
+
+$Data = $db -> Select("SELECT Name, Username, EmailAddress FROM Users WHERE UserID='0'")or die($db -> Error());
+
+$Name = $Data[0]['Name'];
+$Username = $Data[0]['Username'];
+$EmailAddress = $Data[0]['EmailAddress'];
+
+
+
 ?><h1 class="page-header">Edit Profile</h1>
 
 <div class="row">
     <div class="col-md-12">
 
-  <p>
-    <a href="<?php echo GetPageURL("admin/pages/new"); ?>" class="btn btn-success align-right">
-      <i class="fa fa-plus"></i> Create User</a>
-  </p>
+        <form method="post" action="">
+          <fieldset class="form-horizontal col-md-6">
 
-      
-    
+          <!-- Text input-->
+          <div class="form-group">
+            <label class="control-label" for="Name">Full Name</label>  
+            <input id="Name" name="Name" type="text" value="<?php echo $Name; ?>" class="form-control input-md" required="true">
+          </div>
 
+          <!-- Text input-->
+          <div class="form-group">
+            <label class="control-label" for="Username">Username</label>  
+            <input id="Username" name="Username" type="text" value="<?php echo $Username; ?>" class="form-control input-md" required="true">
+            <span class="help-block"><span style="color:green;">Current</span></span>  
+          </div>
 
+          <!-- Email input-->
+          <div class="form-group">
+            <label class="control-label" for="Email">Email Address</label>  
+            <input id="Email" name="Email" type="email" value="<?php echo $EmailAddress; ?>" class="form-control input-md" required="true">
+            <span class="help-block">For notifications and password resets</span>  
+          </div>
 
-            <?php
+          <!-- Password input-->
+          <div class="form-group">
+            <label class="control-label" for="Password">Current Password</label>
+              <input id="Password" name="Password" type="password" class="form-control input-md" required="true">
+              <span class="help-block">Enter current password to save</span>
+          </div>
 
-           $db = new Database();
-           
-           $Data = $db -> Select("SELECT UserID, Username, Name FROM Users");
+          <!-- Button -->
+          <div class="form-group">
+            <label class="control-label" for=""></label>
+              <button type="submit" class="btn btn-danger"><i class="fa fa-pencil"></i> Save Profile</button>
+          </div>
 
-            if(count($Data) == 0)
-            {
-              echo AlertWarning("No users could be found.");
-            }
-            else
-            {
-
-              ?>
-
-
-      <div class="panel panel-default">
-        <table class="table">
-            <tr>
-              <th>Name</th>
-              <th>Username</th>
-              <th>Actions</th>
-            </tr>
-
-              <?php
-
-              foreach($Data as $Data)
-              {
-                  echo "<tr>";
-                  echo "<td>" . $Data["Name"] . "</td>";
-                  echo "<td>" . $Data["Username"] . "</td>";
-                  echo "<td>";
-                  echo Button("Edit", GetPageURL("admin/users/edit/" . $Data["PageID"]), "btn btn-primary btn-xs");
-                  echo " ";
-                  echo Button("Delete", GetPageURL("admin/users/delete/" . $Data["PageID"]), "btn btn-danger btn-xs");
-                  echo "</td>";
-                  echo "</tr>";
-              }
-
-              echo "</table>";
-
-
-            }
-
-            ?>
-              
-
-            
-      </div><!-- /.panel-->
-    </div><!-- /.col -->
-</div><!-- /.row -->
+          </fieldset>
+        </form>
 
 <?php include("templates/dashboard/footer.php");

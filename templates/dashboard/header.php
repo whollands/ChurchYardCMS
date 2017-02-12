@@ -34,8 +34,11 @@
         </div>
         <div class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right hidden-xs">
-              <li><a href="#" data-toggle="modal" data-target="#DevModal"><i class="fa fa-code"></i> Developer</a></li> 
-              <li><a href="<?php echo GetPageURL(); ?>"><i class="fa fa-globe"></i> Visit Website</a></li>
+              
+
+
+<!--               <li><a href="#" data-toggle="modal" data-target="#DevModal"><i class="fa fa-code"></i> Developer</a></li> 
+ -->              
                <li class="dropdown">
                   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><i class="fa fa-user"></i> Will Hollands <span class="caret"></span></a>
                 <ul class="dropdown-menu">
@@ -45,8 +48,9 @@
                   <li role="separator" class="divider"></li>
                   <li><a href="<?php echo GetPageURL("logout"); ?>"><i class="fa fa-lock"></i> Sign Out &rarr;</a></li>
                 </ul>
-              </li>    
-              <li><a href="<?php echo GetPageURL("logout"); ?>"><i class="fa fa-lock"></i> Sign Out &rarr;</a></li>
+              </li>
+              <li><a href="<?php echo GetPageURL(); ?>"><i class="fa fa-globe"></i> Visit Website</a></li>
+  
           </ul>
           <!--
           <form class="navbar-form navbar-right">
@@ -73,7 +77,7 @@
                 '2' => "",
 
                 'records' => "<i class=\"fa fa-book\"></i> Records",
-                'relationships' => "<i class=\"fa fa-heart\"></i> Relationships",
+                'graves' => "<i class=\"fa fa-compass\"></i> Graves",
                 '3' => "",
 
                 'users' => "<i class=\"fa fa-users\"></i> Users",
@@ -109,7 +113,6 @@
         </ul>
         <ul class="nav nav-sidebar visible-xs">
           <li><a href="<?php echo GetPageURL(); ?>"><i class="fa fa-globe"></i> Visit Website</a></li>
-          <li><a href="<?php echo GetPageURL("admin/logout"); ?>"><i class="fa fa-lock"></i> Sign Out &rarr;</a></li>
         </ul>
       </div>
   </div>

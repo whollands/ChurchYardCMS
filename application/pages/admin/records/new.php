@@ -5,15 +5,21 @@ if(isset($_POST["Submitted"]))
 
   $db = new Database();
 
-  $UserID = "'0'";
-  $PageName = $db -> Filter($_POST["PageName"]);
-  $URL = $db -> Filter($_POST["URL"]);
-  $Content = "'No content has been added to this page yet'";
+  $GraveID = $_POST['GraveID'];
+  $FirstName = $_POST['FirstName'];
+  $LastName = $_POST['LastName'];
+  $Gender = $_POST['Gender'];
+  $DateOfDeath = $_POST['DateOfDeath'];
+  $DateOfBirth = $_POST['DateOfBirth'];
+  $MediaID = $_POST['MediaID'];
 
-  $SQL = "INSERT INTO Pages (UserID, PageName, URL, Content) VALUES ($UserID, $PageName, $URL, $Content)";
+
+
+  $SQL = "INSERT INTO Records (RecordID, GraveID, FirstName, LastName, Gender, DateOfDeath, DateOfBirth, MediaID)
+          VALUES (DEFAULT, $GraveID, $FirstName, $LastName, $Gender, $DateOfDeath, $DateOfBirth, $MediaID)";
   
   $db -> Query($SQL)or die($db -> Error());
-  
+  // perform sql query.
 
 
   die("Done.");

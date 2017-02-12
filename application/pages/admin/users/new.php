@@ -8,9 +8,8 @@ if(isset($_POST["Submitted"]))
   $UserID = "'0'";
   $PageName = $db -> Filter($_POST["PageName"]);
   $URL = $db -> Filter($_POST["URL"]);
-  $Content = "'No content has been added to this page yet'";
 
-  $SQL = "INSERT INTO Pages (UserID, PageName, URL, Content) VALUES ($UserID, $PageName, $URL, $Content)";
+  $SQL = "";
   
   $db -> Query($SQL)or die($db -> Error());
   
