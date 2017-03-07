@@ -42,14 +42,14 @@ class Database {
         {   
         	$Config = include("config/database.php");
         	// Load config from database file
+        	// encapsulated within Connect() function
      
         	self::$Conn = new mysqli($Config->Host, $Config->Username, $Config->Password, $Config->DatabaseName);
         }
 
-        // If conn was not successful, handle the error
+        // If conn was NOT successful, handle the error
         if(self::$Conn === false)
         {
-            // Handle error - notify administrator, log to a file, show an error screen, etc.
             die("Database error");
             return false;
         }
@@ -59,6 +59,7 @@ class Database {
     public function Disconnect()
     {
     	self::$Conn -> close();
+    	// use the default MySQL close() function
     }
 
     public function Query($query)
@@ -87,6 +88,7 @@ class Database {
         {
             $Data[] = $Row;
         }
+        // return the result of the query as an array.
 
         return $Data;
     }
@@ -100,7 +102,7 @@ class Database {
     	}
     	else
     	{
-    		return "An error occurred whilst communicating to the database.";
+    		return "An error occurred whilst connecting to the database.";
     	}
         
     }
@@ -131,6 +133,20 @@ Class User
 		return $Data[0]['Salt'];
 	}
 
+	function GetUserID()
+	{
+		$Db = new Database();
+		// Create connection
+
+		$SQL = "SELECT UserID FROM Sessions, Users WHERE Sessions.SessionID = $SessionToken AND Sessions.UserID = Users.UserID";
+
+		$Data = $Db -> Select($SQL)or die($Db -> Error());
+
+		echo "";
+
+		die();
+	}
+
 	function CheckCredentials($Username, $Password)
 	{
 
@@ -145,7 +161,7 @@ Class User
 
 		$Username = $db -> Filter($Username);
 		$Password = $db -> Filter($Password);
-		// Prevent injection
+		// Prevent injection on input
 
 		$SQL = "SELECT UserID, Name, Username FROM Users WHERE Username=$Username AND Password=$Password";
 		// prepare
@@ -160,12 +176,13 @@ Class User
 
 			$UserID = $db -> Filter($Data[0]['UserID']);
 			$SessionToken = $db -> Filter($RandomToken);
+			$IPAddress = $db -> Filter($_SERVER['REMOTE_ADDR']);
 			// Prevent injection
 
 			$db = new Database();
 			// Create connection
 
-			$SQL = "INSERT INTO Sessions (UserID, SessionToken) VALUES ($UserID, $SessionToken)";
+			$SQL = "INSERT INTO Sessions (UserID, SessionToken, IP) VALUES ($UserID, $SessionToken, $IPAddress)";
 			// prepare
 
 			$db -> Query($SQL)or die($db -> Error());
@@ -220,7 +237,7 @@ Class User
 
 		$SessionToken = $db -> Filter($_COOKIE["SessionToken"]);
 
-		$Data = $db -> Select("SELECT UserID FROM Sessions WHERE SessionToken=$SessionToken")or die($db -> Error());
+		$Data = $db -> Select("SELECT UserID FROM Sessions WHERE SessionToken=$SessionToken");
 		// Execute
 
 		if(count($Data) != 1)
@@ -327,36 +344,4 @@ Class Media
 	{
 
 	}
-}
-
-Class RecordSearch
-{
-
-}
-
-Class Cache
-{
-	function CachePage()
-	{
-
-	}
-
-	function CacheFamilyData()
-	{
-
-	}
-
-	function CacheMap()
-	{
-
-	}
-}
-
-Class Map
-{
-	function GetGraveData()
-	{
-
-	}
-
 }

@@ -60,13 +60,13 @@ include("templates/dashboard/header.php");
         <!-- Date input-->
         <div class="form-group">
           <label class="control-label" for="PageName">Date Of Birth (optional)</label>  
-            <input id="DateOfBirth" name="DateOfBirth" type="text" placeholder="Doe" class="form-control input-md" required="">
+            <input id="DateOfBirth" name="DateOfBirth" type="text" placeholder="dd/mm/yyyy" class="form-control input-md" required="">
         </div>
 
         <!-- Date input-->
         <div class="form-group">
           <label class="control-label" for="PageName">Date Of Death (optional)</label>  
-            <input id="DateOfDeath" name="DateOfDeath" type="text" placeholder="Doe" class="form-control input-md" required="">
+            <input id="DateOfDeath" name="DateOfDeath" type="text" placeholder="dd/mm/yyyy" class="form-control input-md" required="">
         </div>
 
         <div class="radio">

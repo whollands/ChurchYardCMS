@@ -26,7 +26,7 @@ include("templates/dashboard/header.php");
 
             if(count($Data) == 0)
             {
-              echo AlertWarning("No pages could be found.");
+              echo AlertWarning("No pages have been created yet.");
             }
             else
             {

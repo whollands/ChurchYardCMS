@@ -67,10 +67,14 @@ function GetPageURL($file = "")
 	if($GLOBALS['Config']->URL->CleanURLs == true)
 	{
 		return $GLOBALS['Config']->URL->Base . $file;
+        // if clean URLs are enabled, then no need to
+        // display /index.php in the URL
 	}
 	else
 	{
 		return $GLOBALS['Config']->URL->Base . "index.php/" . $file;
+        // if clean URL's have not been enabled in .htaccess then
+        // /index.php/ will be required in the URL
 	}
 
 	return $GLOBALS["Config"]->URL->Base;
@@ -80,17 +84,20 @@ function Redirect($Location = "", $StatusCode = 303)
 {
    header('Location: ' . GetPageURL($Location), true, $StatusCode);
    exit;
+   // redirect a browser to the location specified, default is the homepage
+   // default error code is set to 303 for application redirect
 }
 
 function GetResourceURL($file = "")
 {
 	return $GLOBALS['Config']->URL->Base . $file;
+    // get the full uri for a file parsed
 }
 
 function GetRandomToken()
 {
     return md5(uniqid(rand(), true));
-    // return random md5, or based off of a unique string
+    // return random md5 hash
 }
 
 
@@ -100,10 +107,12 @@ function ErrorMessage($Message)
     if($GLOBALS["Config"]->Dev->EnableDebug)
     {
         echo AlertDanger("An Error Occurred: $Message");
+        // show detailed error message if enabled in the config file
     }
     else
     {
         echo AlertDanger("An Error Occurred While Proccessing Your Request.");
+        // show generic error message if enabled in the config file
     }
 
     exit;

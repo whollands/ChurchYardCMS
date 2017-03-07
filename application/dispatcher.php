@@ -72,10 +72,10 @@ function GetPathPart($Part = 0)
 switch(GetPathPart(0))
 {
 	default: include("application/pages/website/view.php"); break;
-	// return 404 error by default
+	// return main website homepage
 
 	case "": include("application/pages/website/view.php"); break;
-	// return 404 error by default
+	// return main website homepage
 
 
 	case "ajax_request":
@@ -83,6 +83,32 @@ switch(GetPathPart(0))
 			$Data = $db -> Select("SELECT GraveID, Type, Location FROM Graves ORDER BY GraveID");
 			echo json_encode($Data);
 	break;
+
+
+	case "database":
+		switch(GetPathPart(1))
+		{
+			default: include("application/pages/errors/404Error.php"); break;
+			// return 404 error by default
+
+			case "map":
+
+			break;
+
+			case "trees":
+
+			break;
+
+			case "search":
+
+			break;
+
+			case "view":
+
+			break;
+		}
+	break;
+
 
 	case "admin":
 
@@ -189,7 +215,7 @@ switch(GetPathPart(0))
 
 	case "logout":
 		$u = new User();
-		$u->Logout();
+		$u -> Logout();
 		Redirect();
 	break;
 }
