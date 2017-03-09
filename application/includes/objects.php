@@ -98,7 +98,7 @@ class Database {
     	if($GLOBALS['Config'] -> Dev -> EnableDebug)
     	{
     		$Conn = $this -> connect();
-        	return "<h2>Database Error:</h2> <p>" .$Conn -> error . "</p>";
+        	return "<h2>Database Error:</h2> <p>" . $Conn -> error . "</p>";
     	}
     	else
     	{
@@ -121,13 +121,13 @@ Class User
 
 	function GetUserSalt($Username)
 	{
-		$db = new Database();
+		$Db = new Database();
 		// Create connection
 
-		$Username = $db -> Filter($Username);
+		$Username = $Db -> Filter($Username);
 		// Prevent injection
 
-		$Data = $db -> Select("SELECT Salt FROM Users WHERE Username=$Username");
+		$Data = $Db -> Select("SELECT Salt FROM Users WHERE Username=$Username");
 		// Execute
 
 		return $Data[0]['Salt'];
@@ -166,7 +166,7 @@ Class User
 		$SQL = "SELECT UserID, Name, Username FROM Users WHERE Username=$Username AND Password=$Password";
 		// prepare
 
-		$Data = $db -> Select($SQL)or die($db -> Error());
+		$Data = $db -> Select($SQL);
 		// Execute
 		
 		if(Count($Data) == 1)

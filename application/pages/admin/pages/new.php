@@ -21,6 +21,13 @@ if(isset($_POST["Submitted"]))
     $Validated = false;
   }
 
+  if(strlen($PageName) > 60)
+  // check length
+  {
+    $PageNameError = "Page name is too long. ";
+    $Validated = false;
+  }
+
   if(!preg_match("/^[a-zA-Z0-9-._!()@+&;:, ]*$/", $PageName))
   // check character types
   {
@@ -33,6 +40,13 @@ if(isset($_POST["Submitted"]))
   // check length
   {
     $PageURLError = "Page URL is too short. ";
+    $Validated = false;
+  }
+
+  if(strlen($PageURL) > 60)
+  // check length
+  {
+    $PageURLError = "Page URL is too long. ";
     $Validated = false;
   }
 
@@ -57,7 +71,6 @@ if(isset($_POST["Submitted"]))
     $Validated = false;
   }
   // done validating PageURL
-
 
   if($Validated == true)
   {
@@ -88,7 +101,6 @@ if(isset($_POST["Submitted"]))
     }
   }
 }
-
 
 include("templates/dashboard/header.php");
 
@@ -131,5 +143,4 @@ include("templates/dashboard/header.php");
 
     </div><!-- /.col -->
 </div><!-- /.row -->
-
 <?php include("templates/dashboard/footer.php");

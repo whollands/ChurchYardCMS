@@ -81,7 +81,7 @@
                 '3' => "",
 
                 'users' => "<i class=\"fa fa-users\"></i> Users",
-                'jobs' => "<i class=\"fa fa-server\"></i> Jobs",
+                'jobs' => "<i class=\"fa fa-check-square-o\"></i> Jobs",
                 'settings' => "<i class=\"fa fa-gears\"></i> Settings",
                 'help' => "<i class=\"fa fa-question-circle\"></i> Help"
 

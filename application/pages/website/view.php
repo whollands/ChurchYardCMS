@@ -27,46 +27,9 @@ else
   $PageContent = $Data[0]['Content'];
 }
 
-?><!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    
-    <title><?php echo $GLOBALS['Config']->SiteName; ?> :: <?php echo $PageName; ?></title>
-    <meta name="author" content="Will Hollands">
+include("templates/mainsite/header.php");
 
-    <link rel="icon" href="<?php echo GetResourceURL("application/images/Favicon.png"); ?>">
-    <link rel="apple-touch-icon" href="<?php echo GetResourceURL("application/images/Apple-Touch-Icon.png"); ?>">
+echo $PageContent;
 
-    <link href="<?php echo GetResourceURL("application/css/bootstrap.min.css"); ?>" rel="stylesheet">
-    <link href="<?php echo GetResourceURL("application/css/font-awesome.min.css"); ?>" rel="stylesheet">
-    <link href="<?php echo GetResourceURL("application/css/main-overrides.css"); ?>" rel="stylesheet">
-
-  </head>
-
-  <body>
-
-    <div class="container">
-      <div class="header clearfix">
-        <nav>
-          <ul class="nav nav-pills pull-right">
-            <li role="presentation" class="active"><a href="#">Home</a></li>
-            <li role="presentation"><a href="#">About</a></li>
-            <li role="presentation"><a href="#">Contact</a></li>
-          </ul>
-        </nav>
-        <h3 class="text-muted"><?php echo $GLOBALS['Config']->SiteName; ?></h3>
-      </div>
-
-      <?php echo $PageContent; ?>
-
-      <footer class="footer">
-        <p>&copy; Will Hollands 2016 - <a href="<?php echo GetPageURL("admin/"); ?>">Sign In</a></p>
-      </footer>
-
-    </div> <!-- /container -->
-
-  </body>
-</html>
+include("templates/mainsite/footer.php");
+      

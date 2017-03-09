@@ -91,20 +91,18 @@ switch(GetPathPart(0))
 			default: include("application/pages/errors/404Error.php"); break;
 			// return 404 error by default
 
-			case "map":
-
-			break;
-
-			case "trees":
-
-			break;
-
-			case "search":
-
-			break;
+			case "": Redirect("database/view"); break;
 
 			case "view":
+				include("application/pages/database/view.php");
+			break;
 
+			case "map":
+				include("application/pages/database/map.php");
+			break;
+
+			case "tree":
+				include("application/pages/database/tree.php");
 			break;
 		}
 	break;

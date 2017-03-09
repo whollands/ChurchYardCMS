@@ -1,5 +1,10 @@
 <?php if(!defined("ChurchYard_Execute")) die("Access Denied.");
 
+$SiteName = $GLOBALS['Config'] -> SiteName;
+$EnableCleanURLs = $GLOBALS['Config'] -> URL -> CleanURLs;
+$EnableDebug = $GLOBALS['Config'] -> Dev -> EnableDebug;
+
+
 include("templates/dashboard/header.php");
 
 
@@ -19,14 +24,8 @@ include("templates/dashboard/header.php");
 
               <div class="form-group">
                 <label class="control-label" for="">Site Name</label>
-                <input type="text" class="form-control" name="" value="St. Peter's Church Rendcomb">
+                <input type="text" class="form-control" name="SiteName" value="<?php echo $SiteName; ?>">
                 <span class="help-block">Appears in HTML title tag and at top of admin interface.</span>
-              </div>
-
-              <div class="form-group">
-                <label class="control-label" for="">Database Salt</label>
-                <input type="text" class="form-control" name="" value="<?php echo $GLOBALS["Config"]->MasterSalt; ?>" disabled>
-                <span class="help-block">Used to protect user's passwords</span>
               </div>
 
               <div class="form-group">
@@ -34,13 +33,13 @@ include("templates/dashboard/header.php");
 
                 <div class="checkbox">
                   <label for="checkboxes-0">
-                    <input type="checkbox" name="checkboxes" id="checkboxes-0" value="1">
+                    <input type="checkbox" name="checkboxes" id="checkboxes-0" value="1"<?php if($EnableCleanURLs == true) { echo " checked"; } ?>>
                     Enable Clean URL's
                   </label>
                 </div>
                 <div class="checkbox">
                   <label for="checkboxes-1">
-                    <input type="checkbox" name="checkboxes" id="checkboxes-1" value="2">
+                    <input type="checkbox" name="checkboxes" id="checkboxes-1" value="2"<?php if($EnableDebug == true) { echo " checked"; } ?>>
                     Enable debug
                   </label>
                 </div>
