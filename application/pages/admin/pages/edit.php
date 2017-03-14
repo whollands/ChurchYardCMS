@@ -13,14 +13,14 @@ if(isset($_POST["Submitted"]))
   $PageContent = strip_tags($PageContent, $AllowedTags);
   // remove banned html
 
-  $PageName = $db -> Filter($PageName);
-  $PageURL = $db -> Filter($PageURL);
-  $PageContent = $db -> Filter($PageContent);
+  $PageName = $Db -> Filter($PageName);
+  $PageURL = $Db -> Filter($PageURL);
+  $PageContent = $Db -> Filter($PageContent);
   // make safe to prevent injection
 
   $SQL = "UPDATE Pages SET PageName=$PageName, URL=$PageURL, Content=$PageContent, LastEdited=CURRENT_TIMESTAMP WHERE PageID='$PageID'";
 
-  if(!$db -> Query($SQL))
+  if(!$Db -> Query($SQL))
   {
     die("Failed to save document.");
   }
@@ -31,10 +31,10 @@ if(isset($_POST["Submitted"]))
 }
 
 
-$PageID = $db -> Filter(GetPathPart(3));
+$PageID = $Db -> Filter(GetPathPart(3));
 
 
-$Data = $db -> Select("SELECT PageID, PageName, URL, Content FROM Pages WHERE PageID=$PageID")or die($db -> Error());
+$Data = $Db -> Select("SELECT PageID, PageName, URL, Content FROM Pages WHERE PageID=$PageID")or die($Db -> Error());
 
 if(count($Data) == 1)
 {

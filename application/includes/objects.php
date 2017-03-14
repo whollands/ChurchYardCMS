@@ -138,11 +138,13 @@ Class User
 		$Db = new Database();
 		// Create connection
 
-		$SQL = "SELECT UserID FROM Sessions, Users WHERE Sessions.SessionID = $SessionToken AND Sessions.UserID = Users.UserID";
+		$SessionToken = $_COOKIE["SessionToken"];
+
+		$SQL = "SELECT Users.UserID FROM Users, Sessions WHERE Sessions.SessionID = $SessionToken AND Sessions.UserID = Users.UserID";
 
 		$Data = $Db -> Select($SQL)or die($Db -> Error());
 
-		echo "";
+		echo $Data[0]['UserID'];
 
 		die();
 	}
@@ -156,17 +158,17 @@ Class User
 
 		$Password =  md5($MasterSalt . $Password . $UserSalt);
 
-		$db = new Database();
+		$Db = new Database();
 		// Create connection
 
-		$Username = $db -> Filter($Username);
-		$Password = $db -> Filter($Password);
+		$Username = $Db -> Filter($Username);
+		$Password = $Db -> Filter($Password);
 		// Prevent injection on input
 
 		$SQL = "SELECT UserID, Name, Username FROM Users WHERE Username=$Username AND Password=$Password";
 		// prepare
 
-		$Data = $db -> Select($SQL);
+		$Data = $Db -> Select($SQL);
 		// Execute
 		
 		if(Count($Data) == 1)
@@ -174,18 +176,18 @@ Class User
 
 			$RandomToken = GetRandomToken();
 
-			$UserID = $db -> Filter($Data[0]['UserID']);
-			$SessionToken = $db -> Filter($RandomToken);
-			$IPAddress = $db -> Filter($_SERVER['REMOTE_ADDR']);
+			$UserID = $Db -> Filter($Data[0]['UserID']);
+			$SessionToken = $Db -> Filter($RandomToken);
+			$IPAddress = $Db -> Filter($_SERVER['REMOTE_ADDR']);
 			// Prevent injection
 
-			$db = new Database();
+			$Db = new Database();
 			// Create connection
 
 			$SQL = "INSERT INTO Sessions (UserID, SessionToken, IP) VALUES ($UserID, $SessionToken, $IPAddress)";
 			// prepare
 
-			$db -> Query($SQL)or die($db -> Error());
+			$Db -> Query($SQL)or die($Db -> Error());
 			// insert session into database
 
 			setcookie("SessionToken", $RandomToken, time() + (3600 * 24 * 30), "/");
@@ -207,18 +209,18 @@ Class User
 		$NewPassword = $GLOBALS["Config"]->MasterSalt . md5($NewPassword) . $UserSalt;
 		// create a hash for the password
 
-		$NewPassword = $db -> Filter($NewPassword);
-		$UserSalt = $db -> Filter($UserSalt);
-		$UserID = $db -> Filter($UserID);
+		$NewPassword = $Db -> Filter($NewPassword);
+		$UserSalt = $Db -> Filter($UserSalt);
+		$UserID = $Db -> Filter($UserID);
 		// prevent injection
 
 		$SQL = "UPDATE Users SET Password=$NewPassword AND Salt=$UserSalt WHERE UserID=$UserID";
 		// prepare query
 
-		$db = new Database();
+		$Db = new Database();
 		// open connection
 		
-		if(!$db -> Query($SQL)or die($db -> Error()))
+		if(!$Db -> Query($SQL)or die($Db -> Error()))
 		// perform query to update database
 		{
 			die("Failed to update new password to database.");
@@ -232,12 +234,12 @@ Class User
 
 	function IsLoggedin()
 	{
-		$db = new Database();
+		$Db = new Database();
 		// Create connection
 
-		$SessionToken = $db -> Filter($_COOKIE["SessionToken"]);
+		$SessionToken = $Db -> Filter($_COOKIE["SessionToken"]);
 
-		$Data = $db -> Select("SELECT UserID FROM Sessions WHERE SessionToken=$SessionToken");
+		$Data = $Db -> Select("SELECT UserID FROM Sessions WHERE SessionToken=$SessionToken");
 		// Execute
 
 		if(count($Data) != 1)
@@ -249,14 +251,14 @@ Class User
 
 	function Logout()
 	{
-		$db = new Database();
+		$Db = new Database();
 
-		$SessionToken = $db -> Filter($_COOKIE["SessionToken"]);
+		$SessionToken = $Db -> Filter($_COOKIE["SessionToken"]);
 
-		$Data = $db -> Query("DELETE FROM Sessions WHERE SessionToken=$SessionToken")or die($db -> Error());
+		$Data = $Db -> Query("DELETE FROM Sessions WHERE SessionToken=$SessionToken")or die($Db -> Error());
 		// Execute
 
-		$db -> Disconnect();
+		$Db -> Disconnect();
 
 		setcookie("SessionToken", "", time() -3600);
 		session_destroy();

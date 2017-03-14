@@ -1,18 +1,88 @@
 <?php if(!defined("ChurchYard_Execute")) die("Access Denied.");
 
+
+
+if(isset($_POST['Submitted']))
+{
+
+
+  $Name = $_POST['Name'];
+  $Username = $_POST['Username'];
+  $EmailAddress = $_POST['EmailAddress'];
+
+
+  $Validated = true;
+
+
+  if(strlen($Name) < 4 || strlen($Name) > 30)
+  {
+    $NameError = "Name must be 4-30 characters in length.";
+    $Validated = false;
+  }
+  // done validating name
+
+  if(strlen($Username) < 4 || strlen($Username) > 20)
+  {
+    $UsernameError = "Username must be 4-20 characters in length.";
+    $Validated = false;
+  }
+
+  if(!preg_match("/^[\w\.]*$/", $UsernameError))
+  {
+    $UsernameError .= " Username can only contain alphanumeric, underscores and periods.";
+    $Validated = false;
+  }
+  // done validating username
+
+  if(!filter_var($EmailAddress, FILTER_VALIDATE_EMAIL))
+  {
+    $EmailAddressError = " Invalid email address.";
+    $Validated = false;
+  }
+  // done validating email address
+
+
+
+
+
+
+  if($Validated == true)
+  {
+
+    $User = new User();
+    $User -> GetUserID();
+
+    die();
+    
+    $Name = $Db -> Filter($Name);
+    $Username = $Db -> Filter($Username);
+    $EmailAddress = $Db -> Filter($EmailAddress);
+
+    $SQL = "UPDATE Users SET Name=$Name, Username=$Username, EmailAddress=$EmailAddress WHERE UserID=$UserID";
+
+    $Db -> Query($SQL)or die($Db -> Error());
+
+  }
+
+}
+else
+{
+
+  $Db = new Database();
+
+  $UserID = $Db -> Filter('0');
+
+  $Data = $Db -> Select("SELECT Name, Username, EmailAddress FROM Users WHERE UserID='0'")or die($Db -> Error());
+
+  $Name = $Data[0]['Name'];
+  $Username = $Data[0]['Username'];
+  $EmailAddress = $Data[0]['EmailAddress'];
+
+}
+
+
+
 include("templates/dashboard/header.php");
-
-
-$db = new Database();
-
-$UserID = $db -> Filter('0');
-
-$Data = $db -> Select("SELECT Name, Username, EmailAddress FROM Users WHERE UserID='0'")or die($db -> Error());
-
-$Name = $Data[0]['Name'];
-$Username = $Data[0]['Username'];
-$EmailAddress = $Data[0]['EmailAddress'];
-
 
 
 ?><h1 class="page-header">Edit Profile</h1>
@@ -21,25 +91,30 @@ $EmailAddress = $Data[0]['EmailAddress'];
     <div class="col-md-12">
 
         <form method="post" action="">
+
+          <input type="hidden" name="Submitted" value="true"/>
+
           <fieldset class="form-horizontal col-md-6">
 
           <!-- Text input-->
           <div class="form-group">
             <label class="control-label" for="Name">Full Name</label>  
             <input id="Name" name="Name" type="text" value="<?php echo $Name; ?>" class="form-control input-md" required="true">
+            <span class="help-block" style="color:red;"><?php echo $NameError; ?></span>
           </div>
 
           <!-- Text input-->
           <div class="form-group">
             <label class="control-label" for="Username">Username</label>  
             <input id="Username" name="Username" type="text" value="<?php echo $Username; ?>" class="form-control input-md" required="true">
-            <span class="help-block"><span style="color:green;">Current</span></span>  
+            <span class="help-block" style="color:red;"><?php echo $UsernameError; ?></span>  
           </div>
 
           <!-- Email input-->
           <div class="form-group">
             <label class="control-label" for="Email">Email Address</label>  
-            <input id="Email" name="Email" type="email" value="<?php echo $EmailAddress; ?>" class="form-control input-md" required="true">
+            <input id="EmailAddress" name="EmailAddress" type="email" value="<?php echo $EmailAddress; ?>" class="form-control input-md" required="true">
+            <span class="help-block" style="color:red;"><?php echo $EmailAddressError; ?></span>
             <span class="help-block">For notifications and password resets</span>  
           </div>
 

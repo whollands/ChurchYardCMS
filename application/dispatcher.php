@@ -32,6 +32,8 @@
 
 define("Version", "1.0 Alpha");
 
+date_default_timezone_set('UTC');
+
 $GLOBALS["Config"] = include("config/general.php");
 // Assign config file to variable
 
@@ -53,7 +55,7 @@ include("application/includes/Bootstrap-Elements.functions.php");
 
 session_start();
 
-$db = new Database();
+$Db = new Database();
 
 function GetPathPart($Part = 0)
 {
@@ -71,17 +73,25 @@ function GetPathPart($Part = 0)
 
 switch(GetPathPart(0))
 {
-	default: include("application/pages/website/view.php"); break;
+	default: 
+	case "":
+		include("application/pages/website/view.php"); 
+	break;
 	// return main website homepage
-
-	case "": include("application/pages/website/view.php"); break;
-	// return main website homepage
-
 
 	case "ajax_request":
-			$db = new Database();
-			$Data = $db -> Select("SELECT GraveID, Type, Location FROM Graves ORDER BY GraveID");
-			echo json_encode($Data);
+
+
+			$Db = new Database();
+			$Data = $Db -> Select("SELECT GraveID, XCoord, YCoord FROM Graves ORDER BY YCoord ASC, XCoord ASC;");
+			
+
+			for($i = 0; $i = $Data['XCoord'][0]; i++)
+			{
+				for($i = 0; $i = $Data['XCoord'][0]; i++)
+				{
+				}
+			}
 	break;
 
 
@@ -91,7 +101,9 @@ switch(GetPathPart(0))
 			default: include("application/pages/errors/404Error.php"); break;
 			// return 404 error by default
 
-			case "": Redirect("database/view"); break;
+			case "": 
+				Redirect("database/view");
+			break;
 
 			case "view":
 				include("application/pages/database/view.php");
@@ -107,11 +119,10 @@ switch(GetPathPart(0))
 		}
 	break;
 
-
 	case "admin":
 
-		$user = new User();
-		$user -> IsLoggedIn();
+		$User = new User();
+		$User -> IsLoggedIn();
 
 
 		switch(GetPathPart(1))
@@ -212,9 +223,8 @@ switch(GetPathPart(0))
 	case "login": include("application/pages/auth/login.php"); break;
 
 	case "logout":
-		$u = new User();
-		$u -> Logout();
+		$User = new User();
+		$User -> Logout();
 		Redirect();
 	break;
 }
-

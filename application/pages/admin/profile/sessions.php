@@ -10,9 +10,9 @@ include("templates/dashboard/header.php");
       
             <?php
 
-           $db = new Database();
+           $Db = new Database();
            
-           $Data = $db -> Select("SELECT SessionID, DateCreated, IP FROM Sessions");
+           $Data = $Db -> Select("SELECT SessionID, DateCreated, IP FROM Sessions");
 
             if(count($Data) == 0)
             {

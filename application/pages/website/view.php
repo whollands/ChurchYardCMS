@@ -11,9 +11,9 @@ if($PageURL == null)
     // load homepage if no URL specified
 }
 
-$PageURL = $db -> Filter($PageURL);
+$PageURL = $Db -> Filter($PageURL);
 
-$Data = $db -> Select("SELECT PageName, Content FROM Pages WHERE URL=$PageURL");
+$Data = $Db -> Select("SELECT PageName, Content FROM Pages WHERE URL=$PageURL");
 
 
 if(count($Data) != 1)

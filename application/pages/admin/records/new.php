@@ -4,7 +4,7 @@ if(isset($_POST["Submitted"]))
 {
 
 
-  $Validated = false;
+  $Validated = true;
 
 
   $GraveID = trim($_POST['GraveID']);
@@ -12,6 +12,41 @@ if(isset($_POST["Submitted"]))
   $LastName = trim($_POST['LastName']);
   $DateOfBirth = trim($_POST['DateOfBirth']);
   $DateOfDeath = trim($_POST['DateOfDeath']);
+
+
+
+
+
+
+  if(!preg_match("/^\d$/", $GraveID))
+  {
+    $GraveIDError = "Must be an number.";
+    $Validated = false;
+  }
+
+  if(strlen($FirstName) < 2 || strlen($FirstName) > 30)
+  {
+    $FirstNameError = "Name must be 2-30 characters in length";
+    $Validated = false;
+  }
+
+  if(strlen($LastName) < 2 || strlen($LastName) > 30)
+  {
+    $LastNameError = "Name must be 2-30 characters in length";
+    $Validated = false;
+  }
+
+  if(!preg_match("/^\d{2}\/\d{2}\/\d{4}$/", $DateOfBirth))
+  {
+    $DateOfBirthError = "Invalid date format.";
+    $Validated = false;
+  }
+
+  if(!preg_match("/^\d{2}\/\d{2}\/\d{4}$/", $DateOfDeath))
+  {
+    $DateOfDeathError = "Invalid date format.";
+    $Validated = false;
+  }
 
   switch ($_POST['Gender'])
   {
@@ -34,14 +69,45 @@ if(isset($_POST["Submitted"]))
 
   if($Validated == true)
   {
-    $db = new Database();
+    $Db = new Database();
+
+    $DateOfBirth = str_replace('/', '-', $DateOfBirth);
+    $DateOfBirth = date('Y-m-d', strtotime($DateOfBirth));
+    // convert dd/mm/yyyy to yyyy-mm-dd for MySQL
+
+    $DateOfDeath = str_replace('/', '-', $DateOfDeath);
+    $DateOfDeath = date('Y-m-d', strtotime($DateOfDeath));
+    // convert dd/mm/yyyy to yyyy-mm-dd for MySQL
+
+    $MediaID = 0;
+    $MediaID = $Db -> Filter($MediaID);
 
 
+    $GraveID = $Db -> Filter($GraveID);
+    $FirstName = $Db -> Filter($FirstName);
+    $LastName = $Db -> Filter($LastName);
+    $DateOfBirth = $Db -> Filter($DateOfBirth);
+    $DateOfDeath = $Db -> Filter($DateOfDeath);
+    $Gender = $Db -> Filter($Gender);
+    // prevent MySQL injection.
 
-    $SQL = "INSERT INTO Records (RecordID, GraveID, FirstName, LastName, Gender, DateOfDeath, DateOfBirth, MediaID)
-            VALUES (DEFAULT, $GraveID, $FirstName, $LastName, $Gender, $DateOfDeath, $DateOfBirth, $MediaID)";
+    $GraveID = $Db -> Filter($GraveID);
+
+    $SQL = "SELECT GraveID FROM Graves WHERE GraveID=$GraveID";
+
+    $Data = $Db -> Select($SQL);
     
-    $db -> Query($SQL)or die($db -> Error());
+    if(count($Data) != 1)
+    {
+      $GraveIDError = "Grave does not exist!";
+    }
+    else
+    {
+      $SQL = "INSERT INTO Records (RecordID, GraveID, FirstName, LastName, Gender, DateOfDeath, DateOfBirth, MediaID)
+            VALUES (DEFAULT, $GraveID, $FirstName, $LastName, $Gender, $DateOfDeath, $DateOfBirth, $MediaID)";
+    }
+
+    $Db -> Query($SQL)or die($Db -> Error());
     // perform sql query.
 
     die("Done.");
@@ -68,6 +134,7 @@ include("templates/dashboard/header.php");
           <label class="control-label" for="PageName">Grave ID</label>  
             <input id="GraveID" name="GraveID" type="number" placeholder="01" class="form-control input-md" required="true" value="<?php echo $GraveID; ?>">
             <span class="help-block" style="color:red;"><?php echo $GraveIDError; ?></span>
+            <span class="help-block">Leave blank to create a new grave or enter ID of existing</span>
         </div>
 
         <!-- Text input-->

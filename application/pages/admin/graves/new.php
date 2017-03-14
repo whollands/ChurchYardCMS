@@ -3,16 +3,16 @@
 if(isset($_POST["Submitted"]))
 {
 
-  $db = new Database();
+  $Db = new Database();
 
   $UserID = "'0'";
-  $PageName = $db -> Filter($_POST["PageName"]);
-  $URL = $db -> Filter($_POST["URL"]);
+  $PageName = $Db -> Filter($_POST["PageName"]);
+  $URL = $Db -> Filter($_POST["URL"]);
   $Content = "'No content has been added to this page yet'";
 
   $SQL = "INSERT INTO Pages (UserID, PageName, URL, Content) VALUES ($UserID, $PageName, $URL, $Content)";
   
-  $db -> Query($SQL)or die($db -> Error());
+  $Db -> Query($SQL)or die($Db -> Error());
   
 
 

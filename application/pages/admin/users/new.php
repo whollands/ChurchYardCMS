@@ -3,15 +3,15 @@
 if(isset($_POST["Submitted"]))
 {
 
-  $db = new Database();
+  $Db = new Database();
 
   $UserID = "'0'";
-  $PageName = $db -> Filter($_POST["PageName"]);
-  $URL = $db -> Filter($_POST["URL"]);
+  $PageName = $Db -> Filter($_POST["PageName"]);
+  $URL = $Db -> Filter($_POST["URL"]);
 
   $SQL = "";
   
-  $db -> Query($SQL)or die($db -> Error());
+  $Db -> Query($SQL)or die($Db -> Error());
   
 
 

@@ -5,7 +5,7 @@ if(isset($_POST["Submitted"]))
 {
     
   $PageName = trim($_POST["PageName"]);
-  $PageURL = trim($_POST["PageURL"]);
+  $PageURL = trim(strtolower($_POST["PageURL"]));
   // Get values submitted by form
 
   $Validated = true;
@@ -28,7 +28,7 @@ if(isset($_POST["Submitted"]))
     $Validated = false;
   }
 
-  if(!preg_match("/^[a-zA-Z0-9-._!()@+&;:, ]*$/", $PageName))
+  if(!preg_match("/^[\w-.!()@+&;:, ]*$/", $PageName))
   // check character types
   {
     $PageNameError .= "Standard keyboard characters only.";
@@ -50,7 +50,7 @@ if(isset($_POST["Submitted"]))
     $Validated = false;
   }
 
-  if(!preg_match("/^[a-zA-Z0-9-_]*$/", $PageURL))
+  if(!preg_match("/^[\w-]*$/", $PageURL))
   // check character types
   {
     $PageURLError .= "Alphanumeric, dashes and underscores only. ";

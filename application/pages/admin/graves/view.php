@@ -17,9 +17,9 @@ include("templates/dashboard/header.php");
 
             <?php
 
-           $db = new Database();
+           $Db = new Database();
            
-           $Data = $db -> Select("SELECT GraveID, Type FROM Graves");
+           $Data = $Db -> Select("SELECT GraveID, Type FROM Graves");
 
             if(count($Data) == 0)
             {
