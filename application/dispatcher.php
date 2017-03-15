@@ -50,12 +50,10 @@ function customError($errno, $errstr)
 
 include("application/includes/Objects.php");
 include("application/includes/Functions.php");
-include("application/includes/Bootstrap-Elements.functions.php");
 // include all objects, functions
 
 session_start();
 
-$Db = new Database();
 
 function GetPathPart($Part = 0)
 {
@@ -75,30 +73,29 @@ switch(GetPathPart(0))
 {
 	default: 
 	case "":
-		include("application/pages/website/view.php"); 
+		$Page = new Page();
+		$Page -> DisplayContent();
 	break;
 	// return main website homepage
 
 	case "ajax_request":
+		switch(GetPathPart(1))
+		{
+			default: IncludeScript("errors/404Error.php"); break;
+			// return 404 error by default
 
-
-			$Db = new Database();
-			$Data = $Db -> Select("SELECT GraveID, XCoord, YCoord FROM Graves ORDER BY YCoord ASC, XCoord ASC;");
-			
-
-			for($i = 0; $i = $Data['XCoord'][0]; i++)
-			{
-				for($i = 0; $i = $Data['XCoord'][0]; i++)
-				{
-				}
-			}
+			case "map_get_grave_list": 
+				$Map = new Map();
+				$Map -> GetGraveList();
+			break;
+		}
 	break;
 
 
 	case "database":
 		switch(GetPathPart(1))
 		{
-			default: include("application/pages/errors/404Error.php"); break;
+			default: IncludeScript("errors/404Error.php"); break;
 			// return 404 error by default
 
 			case "": 
@@ -106,15 +103,15 @@ switch(GetPathPart(0))
 			break;
 
 			case "view":
-				include("application/pages/database/view.php");
+				IncludeScript("database/view.php");
 			break;
 
 			case "map":
-				include("application/pages/database/map.php");
+				IncludeScript("database/map.php");
 			break;
 
 			case "tree":
-				include("application/pages/database/tree.php");
+				IncludeScript("database/tree.php");
 			break;
 		}
 	break;
@@ -127,23 +124,23 @@ switch(GetPathPart(0))
 
 		switch(GetPathPart(1))
 		{
-			default: include("application/pages/errors/404Error.php"); break;
+			default: IncludeScript("errors/404Error.php"); break;
 			// return 404 error by default
 
 			case "": header("Location: " . GetPageURL("admin/dashboard")); break;
 			// redirect directory index to dashboard
 
-			case "dashboard":  include("application/pages/admin/dashboard.php"); break;
+			case "dashboard":  IncludeScript("admin/dashboard.php"); break;
 
 			case "pages":
 				switch(GetPathPart(2))
 				{
-					default: include("application/pages/errors/404Error.php"); break;
+					default: IncludeScript("errors/404Error.php"); break;
 					// return 404 error by default
 
-					case "": include("application/pages/admin/pages/view.php"); break;
-					case "new": include("application/pages/admin/pages/new.php"); break;
-					case "edit": include("application/pages/admin/pages/edit.php"); break;
+					case "": IncludeScript("admin/pages/view.php"); break;
+					case "new": IncludeScript("admin/pages/new.php"); break;
+					case "edit": IncludeScript("admin/pages/edit.php"); break;
 				}
 
 			break;
@@ -151,12 +148,12 @@ switch(GetPathPart(0))
 			case "media":
 				switch(GetPathPart(2))
 				{
-					default: include("application/pages/errors/404Error.php"); break;
+					default: IncludeScript("errors/404Error.php"); break;
 					// return 404 error by default
 
-					case "": include("application/pages/admin/media/view.php"); break;
-					case "upload": include("application/pages/admin/media/upload.php"); break;
-					case "details": include("application/pages/admin/media/details.php"); break;
+					case "": IncludeScript("admin/media/view.php"); break;
+					case "upload": IncludeScript("admin/media/upload.php"); break;
+					case "details": IncludeScript("admin/media/details.php"); break;
 				}
 
 			break;
@@ -164,12 +161,12 @@ switch(GetPathPart(0))
 			case "records":
 				switch(GetPathPart(2))
 				{
-					default: include("application/pages/errors/404Error.php"); break;
+					default: IncludeScript("errors/404Error.php"); break;
 					// return 404 error by default
 
-					case "": include("application/pages/admin/records/view.php"); break;
-					case "new": include("application/pages/admin/records/new.php"); break;
-					case "edit": include("application/pages/admin/records/edit.php"); break;
+					case "": IncludeScript("admin/records/view.php"); break;
+					case "new": IncludeScript("admin/records/new.php"); break;
+					case "edit": IncludeScript("admin/records/edit.php"); break;
 				}
 
 			break;
@@ -177,12 +174,12 @@ switch(GetPathPart(0))
 			case "graves":
 				switch(GetPathPart(2))
 				{
-					default: include("application/pages/errors/404Error.php"); break;
+					default: IncludeScript("errors/404Error.php"); break;
 					// return 404 error by default
 
-					case "": include("application/pages/admin/graves/view.php"); break;
-					case "new": include("application/pages/admin/graves/new.php"); break;
-					case "edit": include("application/pages/admin/graves/edit.php"); break;
+					case "": IncludeScript("admin/graves/view.php"); break;
+					case "new": IncludeScript("admin/graves/new.php"); break;
+					case "edit": IncludeScript("admin/graves/edit.php"); break;
 				}
 
 			break;
@@ -190,41 +187,42 @@ switch(GetPathPart(0))
 			case "users":
 				switch(GetPathPart(2))
 				{
-					default: include("application/pages/errors/404Error.php"); break;
+					default: IncludeScript("errors/404Error.php"); break;
 					// return 404 error by default
 
-					case "": include("application/pages/admin/users/view.php"); break;
-					case "new": include("application/pages/admin/users/new.php"); break;
-					case "edit": include("application/pages/admin/users/edit.php"); break;
+					case "": IncludeScript("admin/users/view.php"); break;
+					case "new": IncludeScript("admin/users/new.php"); break;
+					case "edit": IncludeScript("admin/users/edit.php"); break;
 				}
 
 			break;
 
-			case "settings": include("application/pages/admin/settings.php"); break;
-			case "jobs": include("application/pages/admin/jobs.php"); break;
-			case "help": include("application/pages/admin/help.php"); break;
+			case "settings": IncludeScript("admin/settings.php"); break;
+			case "jobs": IncludeScript("admin/jobs.php"); break;
+			case "help": IncludeScript("admin/help.php"); break;
 
 			case "profile":
 				switch(GetPathPart(2))
 				{
-					default: include("application/pages/errors/404Error.php"); break;
+					default: IncludeScript("errors/404Error.php"); break;
 					// return 404 error by default
 
 					case "": Redirect("admin/profile/edit"); break;
-					case "edit": include("application/pages/admin/profile/edit.php"); break;
-					case "change_password": include("application/pages/admin/profile/change_password.php"); break;
-					case "sessions": include("application/pages/admin/profile/sessions.php"); break;
+					case "edit": IncludeScript("admin/profile/edit.php"); break;
+					case "change_password": IncludeScript("admin/profile/change_password.php"); break;
+					case "sessions": IncludeScript("admin/profile/sessions.php"); break;
 				}
 			break;
 		}
 	// end of admin section
 	break;
 
-	case "login": include("application/pages/auth/login.php"); break;
+	case "login": IncludeScript("auth/login.php"); break;
 
 	case "logout":
 		$User = new User();
 		$User -> Logout();
 		Redirect();
+		unset($User);
 	break;
 }

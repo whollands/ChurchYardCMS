@@ -119,6 +119,11 @@ Class User
 	private $UserTokenCookie = "UserToken";
 	// id of cookie that stores user's session
 
+	public $UserID = null;
+	public $Username = null;
+	public $EmailAddress = null;
+	public $IsAdmin = false;
+
 	function GetUserSalt($Username)
 	{
 		$Db = new Database();
@@ -174,15 +179,14 @@ Class User
 		if(Count($Data) == 1)
 		{
 
+			
+
 			$RandomToken = GetRandomToken();
 
 			$UserID = $Db -> Filter($Data[0]['UserID']);
 			$SessionToken = $Db -> Filter($RandomToken);
 			$IPAddress = $Db -> Filter($_SERVER['REMOTE_ADDR']);
 			// Prevent injection
-
-			$Db = new Database();
-			// Create connection
 
 			$SQL = "INSERT INTO Sessions (UserID, SessionToken, IP) VALUES ($UserID, $SessionToken, $IPAddress)";
 			// prepare
@@ -199,6 +203,8 @@ Class User
 		{
 			return false;
 		}
+
+		unset($Db);
 	}
 
 	function ChangePassword($UserID, $NewPassword)
@@ -265,11 +271,58 @@ Class User
 	}
 }
 
-Class WebAddress
+Class Page
 {
 	// private $Base = $GLOBALS['Config']->URL->Base;
 	//private $CleanURLs = $GLOBALS['Config']->URL->CleanURLs;
 
+	function DisplayContent()
+	{
+		$Db = new Database();
+
+		$Path = GetCurrentPath();
+
+		$PageURL = implode("/", $Path["call_parts"]);
+
+		if($PageURL == null)
+		{
+		    $PageURL = "homepage";
+		    // load homepage if no URL specified
+		}
+
+		$PageURL = $Db -> Filter($PageURL);
+
+		$Data = $Db -> Select("SELECT PageName, Content FROM Pages WHERE URL=$PageURL");
+
+
+		if(count($Data) != 1)
+		{
+		  IncludeScript("errors/404Error.php");
+		  exit;
+		}
+		else
+		{
+		  $PageName = $Data[0]['PageName'];
+		  $PageContent = $Data[0]['Content'];
+		}
+
+		include("templates/mainsite/header.php");
+
+		echo $PageContent;
+
+		include("templates/mainsite/footer.php");
+
+	}
+
+	function DisplayNavigation()
+	{
+
+	}
+
+}
+
+Class Server
+{
 	function GetFullPath()
 	{
 
@@ -345,5 +398,22 @@ Class Media
 	function Modify()
 	{
 
+	}
+}
+
+Class Map
+{
+	function GetGraveList()
+	{
+		$Db = new Database();
+		$Data = $Db -> Select("SELECT GraveID, XCoord, YCoord FROM Graves ORDER BY YCoord ASC, XCoord ASC");
+		
+		return serialize($Data);
+		// for($i = 0; $i = $Data['XCoord'][0]; i++)
+		// {
+		// 	for($i = 0; $i = $Data['XCoord'][0]; i++)
+		// 	{
+		// 	}
+		// }
 	}
 }

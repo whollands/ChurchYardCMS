@@ -47,16 +47,8 @@ function GetCurrentPath() {
     }
 
     $path['call_parts'] = explode('/', $path['call']);
-    
-    $path['query_utf8'] = urldecode($request_path[1]);
-    $path['query'] = utf8_decode(urldecode($request_path[1]));
-    $vars = explode('&', $path['query']);
-
-    foreach ($vars as $var)
-    {
-      $t = explode('=', $var);
-      $path['query_vars'][$t[0]] = $t[1];
-    }
+  
+  
   }
 return $path;
 }
@@ -88,9 +80,9 @@ function Redirect($Location = "", $StatusCode = 303)
    // default error code is set to 303 for application redirect
 }
 
-function GetResourceURL($file = "")
+function GetResourceURL($URL = "")
 {
-	return $GLOBALS['Config']->URL->Base . $file;
+	return $GLOBALS['Config']->URL->Base . $URL;
     // get the full uri for a file parsed
 }
 
@@ -116,4 +108,60 @@ function ErrorMessage($Message)
     }
 
     exit;
+}
+
+function IncludeScript($URI)
+{
+    $URI = "application/pages/" . $URI;
+
+    if(!file_exists($URI))
+    {
+        die("Failed to locate script " . $URI);
+    }
+    include($URI);
+}
+
+/* --------------------------------------------
+
+    Pre-Configured Bootstrap
+    Alert Messages
+
+    http://getbootstrap.com/components/#alerts
+
+----------------------------------------------- */
+
+
+function AlertSuccess($Message)
+{
+    $HTML = "<div class=\"alert alert-success alert-dismissible\" role=\"alert\">";
+    $HTML .= "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>";
+    $HTML .= "<i class=\"fa fa-check\"></i>&nbsp;&nbsp;&nbsp;" . $Message . "</div>";
+    return $HTML;
+}
+function AlertWarning($Message)
+{
+    $HTML = "<div class=\"alert alert-warning alert-dismissible\" role=\"alert\">";
+    $HTML .= "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>";
+    $HTML .= "<i class=\"fa fa-warning\"></i>&nbsp;&nbsp;&nbsp;" . $Message . "</div>";
+    return $HTML;
+}
+function AlertDanger($Message)
+{
+    $HTML = "<div class=\"alert alert-danger alert-dismissible\" role=\"alert\">";
+    $HTML .= "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>";
+    $HTML .= "<i class=\"fa fa-times\"></i>&nbsp;&nbsp;&nbsp;" . $Message . "</div>";
+    return $HTML;
+}
+function AlertInfo($Message)
+{
+    $HTML = "<div class=\"alert alert-info alert-dismissible\" role=\"alert\">";
+    $HTML .= "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>";
+    $HTML .= "<i class=\"fa fa-info\"></i>&nbsp;&nbsp;&nbsp;" . $Message . "</div>";
+    return $HTML;
+}
+
+function Button ($Title, $URL, $CSS = "btn btn-default")
+{
+    $HTML = "<a class=\"$CSS\" href=\"$URL\" role=\"button\">$Title</a>";
+    return $HTML;
 }

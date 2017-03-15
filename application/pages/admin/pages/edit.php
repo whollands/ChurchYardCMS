@@ -13,6 +13,9 @@ if(isset($_POST["Submitted"]))
   $PageContent = strip_tags($PageContent, $AllowedTags);
   // remove banned html
 
+  $Db = new Database();
+  // create new connection
+
   $PageName = $Db -> Filter($PageName);
   $PageURL = $Db -> Filter($PageURL);
   $PageContent = $Db -> Filter($PageContent);
@@ -28,13 +31,19 @@ if(isset($_POST["Submitted"]))
   {
     Redirect("admin/pages/edit/" . $PageID . "?saved");
   }
+
+  unset($Db);
+  // destory object
 }
 
+$Db = new Database();
+// create new connection
 
 $PageID = $Db -> Filter(GetPathPart(3));
-
+// get page being edited, and filter it to prevent injection
 
 $Data = $Db -> Select("SELECT PageID, PageName, URL, Content FROM Pages WHERE PageID=$PageID")or die($Db -> Error());
+// query database
 
 if(count($Data) == 1)
 {
@@ -48,6 +57,9 @@ else
   echo "Page not found.";
   exit;
 }
+
+unset($Db);
+// destory object
 
 include("templates/dashboard/header.php");
 
@@ -68,9 +80,6 @@ if($_SERVER["QUERY_STRING"] == "saved")
 
       <form method="post" action="">
       
-
-      
-
         <input type="hidden" name="Submitted" value="true">
 
         <input type="hidden" name="PageID" value="<?php echo $PageID; ?>">
@@ -86,7 +95,6 @@ if($_SERVER["QUERY_STRING"] == "saved")
             CKEDITOR.replace( 'PageContent' );
             CKEDITOR.config.height = 300;
         </script>
-
 
         <br>
 
