@@ -15,7 +15,7 @@ include("templates/dashboard/header.php");
 
            $Db = new Database();
            
-           $Data = $Db -> Select("SELECT MediaID, MediaName, DateUploaded FROM Media");
+           $Data = $Db->Select("SELECT MediaID, MediaName, DateUploaded FROM Media");
 
             if(count($Data) == 0)
             {

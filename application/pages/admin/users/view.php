@@ -22,7 +22,7 @@ include("templates/dashboard/header.php");
 
            $Db = new Database();
            
-           $Data = $Db -> Select("SELECT UserID, Username, Name FROM Users");
+           $Data = $Db->Select("SELECT UserID, Username, Name FROM Users");
 
             if(count($Data) == 0)
             {
@@ -50,9 +50,13 @@ include("templates/dashboard/header.php");
                   echo "<td>" . $Data["Name"] . "</td>";
                   echo "<td>" . $Data["Username"] . "</td>";
                   echo "<td>";
-                  echo Button("Edit", GetPageURL("admin/users/edit/" . $Data["PageID"]), "btn btn-primary btn-xs");
+                  echo Button("Edit", GetPageURL("admin/users/edit/" . $Data["UserID"]), "btn btn-primary btn-xs");
                   echo " ";
-                  echo Button("Delete", GetPageURL("admin/users/delete/" . $Data["PageID"]), "btn btn-danger btn-xs");
+                  if($UserID != 0)
+                  // don't show delete button for SuperUser of ID 0
+                  {
+                    echo Button("Delete", GetPageURL("admin/users/delete/" . $Data["UserID"]), "btn btn-danger btn-xs");
+                  }
                   echo "</td>";
                   echo "</tr>";
               }
@@ -63,8 +67,6 @@ include("templates/dashboard/header.php");
             }
 
             ?>
-              
-
             
       </div><!-- /.panel-->
     </div><!-- /.col -->

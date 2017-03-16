@@ -83,16 +83,16 @@ if(isset($_POST["Submitted"]))
     $PageContent = "'No content has been added to this page yet'";
     $UserID = "'0'";
 
-    $PageName = $Db -> Filter($_POST["PageName"]);
-    $PageURL = $Db -> Filter($PageURL);
+    $PageName = $Db->Filter($_POST["PageName"]);
+    $PageURL = $Db->Filter($PageURL);
     // prevent injection
 
     $SQL = "INSERT INTO Pages (UserID, PageName, URL, Content) VALUES ($UserID, $PageName, $PageURL, $PageContent)";
     // prepare query
 
-    if(!$Db -> Query($SQL))
+    if(!$Db->Query($SQL))
     {
-      $Db -> Error();
+      $Db->Error();
       // If error, output error message
     }
     else

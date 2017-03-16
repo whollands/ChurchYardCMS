@@ -22,7 +22,7 @@ include("templates/dashboard/header.php");
 
            $Db = new Database();
            
-           $Data = $Db -> Select("SELECT PageID, PageName, URL, LastEdited FROM Pages");
+           $Data = $Db->Select("SELECT PageID, PageName, URL, LastEdited FROM Pages");
 
             if(count($Data) == 0)
             {

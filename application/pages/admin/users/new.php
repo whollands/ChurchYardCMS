@@ -6,12 +6,12 @@ if(isset($_POST["Submitted"]))
   $Db = new Database();
 
   $UserID = "'0'";
-  $PageName = $Db -> Filter($_POST["PageName"]);
-  $URL = $Db -> Filter($_POST["URL"]);
+  $PageName = $Db->Filter($_POST["PageName"]);
+  $URL = $Db->Filter($_POST["URL"]);
 
   $SQL = "";
   
-  $Db -> Query($SQL)or die($Db -> Error());
+  $Db->Query($SQL)or die($Db->Error());
   
 
 

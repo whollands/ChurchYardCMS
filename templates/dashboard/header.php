@@ -40,7 +40,7 @@
 <!--               <li><a href="#" data-toggle="modal" data-target="#DevModal"><i class="fa fa-code"></i> Developer</a></li> 
  -->              
                <li class="dropdown">
-                  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><i class="fa fa-user"></i> Will Hollands <span class="caret"></span></a>
+                  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><i class="fa fa-user"></i> <?php echo $User->Name; ?> <span class="caret"></span></a>
                 <ul class="dropdown-menu">
                   <li><a href="<?php echo GetPageURL("admin/profile/edit"); ?>"><i class="fa fa-pencil"></i> Edit profile</a></li>
                   <li><a href="<?php echo GetPageURL("admin/profile/change_password"); ?>"><i class="fa fa-key"></i> Change password</a></li>

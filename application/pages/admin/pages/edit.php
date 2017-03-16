@@ -16,14 +16,14 @@ if(isset($_POST["Submitted"]))
   $Db = new Database();
   // create new connection
 
-  $PageName = $Db -> Filter($PageName);
-  $PageURL = $Db -> Filter($PageURL);
-  $PageContent = $Db -> Filter($PageContent);
+  $PageName = $Db->Filter($PageName);
+  $PageURL = $Db->Filter($PageURL);
+  $PageContent = $Db->Filter($PageContent);
   // make safe to prevent injection
 
   $SQL = "UPDATE Pages SET PageName=$PageName, URL=$PageURL, Content=$PageContent, LastEdited=CURRENT_TIMESTAMP WHERE PageID='$PageID'";
 
-  if(!$Db -> Query($SQL))
+  if(!$Db->Query($SQL))
   {
     die("Failed to save document.");
   }
@@ -39,10 +39,10 @@ if(isset($_POST["Submitted"]))
 $Db = new Database();
 // create new connection
 
-$PageID = $Db -> Filter(GetPathPart(3));
+$PageID = $Db->Filter(GetPathPart(3));
 // get page being edited, and filter it to prevent injection
 
-$Data = $Db -> Select("SELECT PageID, PageName, URL, Content FROM Pages WHERE PageID=$PageID")or die($Db -> Error());
+$Data = $Db->Select("SELECT PageID, PageName, URL, Content FROM Pages WHERE PageID=$PageID")or die($Db->Error());
 // query database
 
 if(count($Data) == 1)

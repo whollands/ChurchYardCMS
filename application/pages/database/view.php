@@ -27,7 +27,7 @@ include("templates/mainsite/header.php");
 
    $Db = new Database();
    
-   $Data = $Db -> Select("SELECT FirstName, DateOfDeath FROM Records");
+   $Data = $Db->Select("SELECT FirstName, DateOfDeath FROM Records");
 
     if(count($Data) == 0)
     {

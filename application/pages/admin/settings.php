@@ -1,8 +1,8 @@
 <?php if(!defined("ChurchYard_Execute")) die("Access Denied.");
 
-$SiteName = $GLOBALS['Config'] -> SiteName;
-$EnableCleanURLs = $GLOBALS['Config'] -> URL -> CleanURLs;
-$EnableDebug = $GLOBALS['Config'] -> Dev -> EnableDebug;
+$SiteName = $GLOBALS['Config']->SiteName;
+$EnableCleanURLs = $GLOBALS['Config']->URL->CleanURLs;
+$EnableDebug = $GLOBALS['Config']->Dev->EnableDebug;
 
 
 include("templates/dashboard/header.php");

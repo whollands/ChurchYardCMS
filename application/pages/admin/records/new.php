@@ -18,7 +18,7 @@ if(isset($_POST["Submitted"]))
 
 
 
-  if(!preg_match("/^\d$/", $GraveID))
+  if(!preg_match("/^\d*$/", $GraveID))
   {
     $GraveIDError = "Must be an number.";
     $Validated = false;
@@ -80,38 +80,36 @@ if(isset($_POST["Submitted"]))
     // convert dd/mm/yyyy to yyyy-mm-dd for MySQL
 
     $MediaID = 0;
-    $MediaID = $Db -> Filter($MediaID);
+    $MediaID = $Db->Filter($MediaID);
 
 
-    $GraveID = $Db -> Filter($GraveID);
-    $FirstName = $Db -> Filter($FirstName);
-    $LastName = $Db -> Filter($LastName);
-    $DateOfBirth = $Db -> Filter($DateOfBirth);
-    $DateOfDeath = $Db -> Filter($DateOfDeath);
-    $Gender = $Db -> Filter($Gender);
+    $GraveID = $Db->Filter($GraveID);
+    $FirstName = $Db->Filter($FirstName);
+    $LastName = $Db->Filter($LastName);
+    $DateOfBirth = $Db->Filter($DateOfBirth);
+    $DateOfDeath = $Db->Filter($DateOfDeath);
+    $Gender = $Db->Filter($Gender);
     // prevent MySQL injection.
-
-    $GraveID = $Db -> Filter($GraveID);
 
     $SQL = "SELECT GraveID FROM Graves WHERE GraveID=$GraveID";
 
-    $Data = $Db -> Select($SQL);
+    $Data = $Db->Select($SQL);
     
     if(count($Data) != 1)
     {
-      $GraveIDError = "Grave does not exist!";
+      $SQL = "INSERT INTO Graves (GraveID, XCoord, YCoord, Type) VALUES ($GraveID, '0', '0', '?'";
     }
     else
     {
       $SQL = "INSERT INTO Records (RecordID, GraveID, FirstName, LastName, Gender, DateOfDeath, DateOfBirth, MediaID)
             VALUES (DEFAULT, $GraveID, $FirstName, $LastName, $Gender, $DateOfDeath, $DateOfBirth, $MediaID)";
-    }
-
-    $Db -> Query($SQL)or die($Db -> Error());
+    
+    $Db->Query($SQL)or die($Db->Error());
     // perform sql query.
 
-    die("Done.");
+    }
 
+  
   }
 }
 
@@ -154,14 +152,14 @@ include("templates/dashboard/header.php");
 
         <!-- Date input-->
         <div class="form-group">
-          <label class="control-label" for="PageName">Date Of Birth (optional)</label>  
+          <label class="control-label" for="PageName">Date Of Birth</label>  
             <input id="DateOfBirth" name="DateOfBirth" type="text" placeholder="dd/mm/yyyy" class="form-control input-md" required="true" value="<?php echo $DateOfBirth; ?>">
             <span class="help-block" style="color:red;"><?php echo $DateOfBirthError; ?></span>
         </div>
 
         <!-- Date input-->
         <div class="form-group">
-          <label class="control-label" for="PageName">Date Of Death (optional)</label>  
+          <label class="control-label" for="PageName">Date Of Death</label>  
             <input id="DateOfDeath" name="DateOfDeath" type="text" placeholder="dd/mm/yyyy" class="form-control input-md" required="true" value="<?php echo $DateOfDeath; ?>">
             <span class="help-block" style="color:red;"><?php echo $DateOfDeathError; ?></span>
         </div>

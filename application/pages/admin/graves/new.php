@@ -3,20 +3,36 @@
 if(isset($_POST["Submitted"]))
 {
 
-  $Db = new Database();
-
-  $UserID = "'0'";
-  $PageName = $Db -> Filter($_POST["PageName"]);
-  $URL = $Db -> Filter($_POST["URL"]);
-  $Content = "'No content has been added to this page yet'";
-
-  $SQL = "INSERT INTO Pages (UserID, PageName, URL, Content) VALUES ($UserID, $PageName, $URL, $Content)";
+  $GraveID = trim($_POST["GraveID"]);
+  $XCoord = trim(strtolower($_POST["XCoord"]));
+  $YCoord = trim(strtolower($_POST["YCoord"]));
+  // Get values submitted by form
   
-  $Db -> Query($SQL)or die($Db -> Error());
-  
+  switch ($_POST['GraveType']) 
+  {
+    case 'u':
+       $GraveType = 'u';
+      break;
+    case 'f':
+       $GraveType = 'f';
+      break;
+    case 'c':
+       $GraveType = 'c';
+      break;
+    case 'm':
+       $GraveType = 'm';
+      break;
+    default:
+       $GraveType = '?';
+      break;
+  }
 
 
-  die("Done.");
+  if($Validated == true)
+  {
+
+  }
+
 }
 
 
@@ -35,37 +51,41 @@ include("templates/dashboard/header.php");
 
         <!-- Number input-->
         <div class="form-group">
-          <label class="control-label" for="PageName">Grave ID</label>  
-            <input id="GraveID" name="GraveID" type="number" placeholder="01" class="form-control input-md" required="">
+          <label class="control-label" for="GraveID">Grave ID</label>  
+            <input id="GraveID" name="GraveID" type="number" placeholder="01" class="form-control input-md" required="true" value="<?php echo $GraveID; ?>">
+            <span class="help-block" style="color:red;"><?php echo $GraveIDError; ?></span>
         </div>
+
 
         <!-- Text input-->
         <div class="form-group">
-          <label class="control-label" for="PageName">Location Co-Ordinates</label>  
-            <input id="Username" name="Username" type="text" placeholder="1, 4" class="form-control input-md" required="">
+          <label class="control-label" for="XCoord">Location Co-Ordinates</label>  
+            <input id="XCoord" name="XCoord" type="text" placeholder="1" class="form-control input-md" required="true" value="<?php echo $XCoord; ?>">
+            <input id="YCoord" name="YCoord" type="text" placeholder="1" class="form-control input-md" required="true" value="<?php echo $YCoord; ?>">
+            <span class="help-block" style="color:red;"><?php echo $LocationError; ?></span>
         </div>
 
         <div class="radio">
           <label>
-            <input type="radio" name="GraveType" id="Gender" value="m">
+            <input type="radio" name="GraveType" id="GraveType" value="u">
             Upright Headstone
           </label>
         </div>
         <div class="radio">
           <label>
-            <input type="radio" name="GraveType" id="Gender" value="f">
+            <input type="radio" name="GraveType" id="GraveType" value="f">
             Flat Headstone
           </label>
         </div>
         <div class="radio">
           <label>
-            <input type="radio" name="GraveType" id="Gender" value="f">
+            <input type="radio" name="GraveType" id="GraveType" value="c">
             Curbed Headstone
           </label>
         </div>
         <div class="radio">
           <label>
-            <input type="radio" name="GraveType" id="Gender" value="f">
+            <input type="radio" name="GraveType" id="GraveType" value="m">
             Monument
           </label>
         </div>

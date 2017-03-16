@@ -37,23 +37,12 @@ date_default_timezone_set('UTC');
 $GLOBALS["Config"] = include("config/general.php");
 // Assign config file to variable
 
-//error handler function
-function customError($errno, $errstr) 
-{
-	echo "Error Occurred";
-    echo "<b>Error:</b> [$errno] $errstr";
-    exit;
-}
-
-//set error handler
-//set_error_handler("customError");
 
 include("application/includes/Objects.php");
 include("application/includes/Functions.php");
 // include all objects, functions
 
-session_start();
-
+$User = new User();
 
 function GetPathPart($Part = 0)
 {
@@ -74,7 +63,7 @@ switch(GetPathPart(0))
 	default: 
 	case "":
 		$Page = new Page();
-		$Page -> DisplayContent();
+		$Page->DisplayContent();
 	break;
 	// return main website homepage
 
@@ -86,7 +75,7 @@ switch(GetPathPart(0))
 
 			case "map_get_grave_list": 
 				$Map = new Map();
-				$Map -> GetGraveList();
+				$Map->GetGraveList();
 			break;
 		}
 	break;
@@ -118,9 +107,7 @@ switch(GetPathPart(0))
 
 	case "admin":
 
-		$User = new User();
-		$User -> IsLoggedIn();
-
+		$User->CheckAuthenticated();
 
 		switch(GetPathPart(1))
 		{
@@ -141,6 +128,14 @@ switch(GetPathPart(0))
 					case "": IncludeScript("admin/pages/view.php"); break;
 					case "new": IncludeScript("admin/pages/new.php"); break;
 					case "edit": IncludeScript("admin/pages/edit.php"); break;
+					case "delete":
+						$PageID = GetPathPart(3);
+						$Page = new Page();
+						$Page->Delete($PageID);
+						unset($Page);
+						Redirect("admin/pages");
+					break;
+
 				}
 
 			break;
@@ -193,6 +188,16 @@ switch(GetPathPart(0))
 					case "": IncludeScript("admin/users/view.php"); break;
 					case "new": IncludeScript("admin/users/new.php"); break;
 					case "edit": IncludeScript("admin/users/edit.php"); break;
+					case "delete":
+
+						$UserID = GetPathPart(3);
+						$User = new User();
+						$User->Delete($UserID);
+						unset($User);
+
+						Redirect("admin/users");
+
+					break;
 				}
 
 			break;
@@ -211,6 +216,11 @@ switch(GetPathPart(0))
 					case "edit": IncludeScript("admin/profile/edit.php"); break;
 					case "change_password": IncludeScript("admin/profile/change_password.php"); break;
 					case "sessions": IncludeScript("admin/profile/sessions.php"); break;
+					case "delete_session":
+						$SessionID = GetPathPart(3);
+						$User->DeleteSession($SessionID);
+						Redirect("admin/profile/sessions");
+					break;
 				}
 			break;
 		}
@@ -220,9 +230,10 @@ switch(GetPathPart(0))
 	case "login": IncludeScript("auth/login.php"); break;
 
 	case "logout":
-		$User = new User();
-		$User -> Logout();
+
+		$User->Logout();
 		Redirect();
-		unset($User);
+		
 	break;
 }
+unset($User);

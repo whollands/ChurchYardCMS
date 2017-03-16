@@ -12,7 +12,7 @@ include("templates/dashboard/header.php");
 
            $Db = new Database();
            
-           $Data = $Db -> Select("SELECT SessionID, DateCreated, IP FROM Sessions");
+           $Data = $Db->Select("SELECT SessionID, DateCreated, IP FROM Sessions");
 
             if(count($Data) == 0)
             {
@@ -42,7 +42,7 @@ include("templates/dashboard/header.php");
                   echo "<td>" . $Data["SessionID"] . "</td>";
                   echo "<td>" . $Data["DateCreated"] . "</td>";
                   echo "<td>";
-                  echo Button("Revoke", GetPageURL("admin/users/delete/" . $Data["PageID"]), "btn btn-default btn-xs");
+                  echo Button("Revoke", GetPageURL("admin/profile/sessions/delete_session/" . $Data["SessionID"]), "btn btn-default btn-xs");
                   echo "</td>";
                   echo "</tr>";
               }

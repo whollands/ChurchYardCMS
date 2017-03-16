@@ -58,17 +58,17 @@ class Database {
 
     public function Disconnect()
     {
-    	self::$Conn -> close();
+    	self::$Conn->close();
     	// use the default MySQL close() function
     }
 
     public function Query($query)
     {
         // Connect to the database
-        $Conn = $this -> connect();
+        $Conn = $this->connect();
 
         // Query the database
-        $Result = $Conn -> query($query);
+        $Result = $Conn->query($query);
 
         return $Result;
     }
@@ -77,14 +77,14 @@ class Database {
     {
         $Data = array();
 
-        $Result = $this -> query($query);
+        $Result = $this->query($query);
 
         if($Result === false)
         {
             return false;
         }
 
-        while ($Row = $Result -> fetch_assoc())
+        while ($Row = $Result->fetch_assoc())
         {
             $Data[] = $Row;
         }
@@ -95,10 +95,10 @@ class Database {
 
     public function Error() 
     {
-    	if($GLOBALS['Config'] -> Dev -> EnableDebug)
+    	if($GLOBALS['Config']->Dev->EnableDebug)
     	{
-    		$Conn = $this -> connect();
-        	return "<h2>Database Error:</h2> <p>" . $Conn -> error . "</p>";
+    		$Conn = $this->connect();
+        	return "<h2>Database Error:</h2> <p>" . $Conn->error . "</p>";
     	}
     	else
     	{
@@ -109,220 +109,15 @@ class Database {
 
     public function Filter($value)
     {
-        $Conn = $this -> connect();
-        return "'" . $Conn -> real_escape_string($value) . "'";
+        $Conn = $this->connect();
+        return "'" . $Conn->real_escape_string($value) . "'";
     }
-}
-
-Class User
-{
-	private $UserTokenCookie = "UserToken";
-	// id of cookie that stores user's session
-
-	public $UserID = null;
-	public $Username = null;
-	public $EmailAddress = null;
-	public $IsAdmin = false;
-
-	function GetUserSalt($Username)
-	{
-		$Db = new Database();
-		// Create connection
-
-		$Username = $Db -> Filter($Username);
-		// Prevent injection
-
-		$Data = $Db -> Select("SELECT Salt FROM Users WHERE Username=$Username");
-		// Execute
-
-		return $Data[0]['Salt'];
-	}
-
-	function GetUserID()
-	{
-		$Db = new Database();
-		// Create connection
-
-		$SessionToken = $_COOKIE["SessionToken"];
-
-		$SQL = "SELECT Users.UserID FROM Users, Sessions WHERE Sessions.SessionID = $SessionToken AND Sessions.UserID = Users.UserID";
-
-		$Data = $Db -> Select($SQL)or die($Db -> Error());
-
-		echo $Data[0]['UserID'];
-
-		die();
-	}
-
-	function CheckCredentials($Username, $Password)
-	{
-
-		$UserSalt = $this -> GetUserSalt($Username);
-
-		$MasterSalt = $GLOBALS["Config"]->MasterSalt;
-
-		$Password =  md5($MasterSalt . $Password . $UserSalt);
-
-		$Db = new Database();
-		// Create connection
-
-		$Username = $Db -> Filter($Username);
-		$Password = $Db -> Filter($Password);
-		// Prevent injection on input
-
-		$SQL = "SELECT UserID, Name, Username FROM Users WHERE Username=$Username AND Password=$Password";
-		// prepare
-
-		$Data = $Db -> Select($SQL);
-		// Execute
-		
-		if(Count($Data) == 1)
-		{
-
-			
-
-			$RandomToken = GetRandomToken();
-
-			$UserID = $Db -> Filter($Data[0]['UserID']);
-			$SessionToken = $Db -> Filter($RandomToken);
-			$IPAddress = $Db -> Filter($_SERVER['REMOTE_ADDR']);
-			// Prevent injection
-
-			$SQL = "INSERT INTO Sessions (UserID, SessionToken, IP) VALUES ($UserID, $SessionToken, $IPAddress)";
-			// prepare
-
-			$Db -> Query($SQL)or die($Db -> Error());
-			// insert session into database
-
-			setcookie("SessionToken", $RandomToken, time() + (3600 * 24 * 30), "/");
-			// save session token to user's computer
-
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-
-		unset($Db);
-	}
-
-	function ChangePassword($UserID, $NewPassword)
-	{
-		$UserSalt = GetRandomToken();
-		// generate a new random user salt
-
-		$NewPassword = $GLOBALS["Config"]->MasterSalt . md5($NewPassword) . $UserSalt;
-		// create a hash for the password
-
-		$NewPassword = $Db -> Filter($NewPassword);
-		$UserSalt = $Db -> Filter($UserSalt);
-		$UserID = $Db -> Filter($UserID);
-		// prevent injection
-
-		$SQL = "UPDATE Users SET Password=$NewPassword AND Salt=$UserSalt WHERE UserID=$UserID";
-		// prepare query
-
-		$Db = new Database();
-		// open connection
-		
-		if(!$Db -> Query($SQL)or die($Db -> Error()))
-		// perform query to update database
-		{
-			die("Failed to update new password to database.");
-		}
-		else
-		{
-			die("Success.");
-		}
-		
-	}
-
-	function IsLoggedin()
-	{
-		$Db = new Database();
-		// Create connection
-
-		$SessionToken = $Db -> Filter($_COOKIE["SessionToken"]);
-
-		$Data = $Db -> Select("SELECT UserID FROM Sessions WHERE SessionToken=$SessionToken");
-		// Execute
-
-		if(count($Data) != 1)
-		{
-			header("Location: " . GetPageURL("login"));
-			exit;
-		}
-	}
-
-	function Logout()
-	{
-		$Db = new Database();
-
-		$SessionToken = $Db -> Filter($_COOKIE["SessionToken"]);
-
-		$Data = $Db -> Query("DELETE FROM Sessions WHERE SessionToken=$SessionToken")or die($Db -> Error());
-		// Execute
-
-		$Db -> Disconnect();
-
-		setcookie("SessionToken", "", time() -3600);
-		session_destroy();
-	}
-}
-
-Class Page
-{
-	// private $Base = $GLOBALS['Config']->URL->Base;
-	//private $CleanURLs = $GLOBALS['Config']->URL->CleanURLs;
-
-	function DisplayContent()
-	{
-		$Db = new Database();
-
-		$Path = GetCurrentPath();
-
-		$PageURL = implode("/", $Path["call_parts"]);
-
-		if($PageURL == null)
-		{
-		    $PageURL = "homepage";
-		    // load homepage if no URL specified
-		}
-
-		$PageURL = $Db -> Filter($PageURL);
-
-		$Data = $Db -> Select("SELECT PageName, Content FROM Pages WHERE URL=$PageURL");
-
-
-		if(count($Data) != 1)
-		{
-		  IncludeScript("errors/404Error.php");
-		  exit;
-		}
-		else
-		{
-		  $PageName = $Data[0]['PageName'];
-		  $PageContent = $Data[0]['Content'];
-		}
-
-		include("templates/mainsite/header.php");
-
-		echo $PageContent;
-
-		include("templates/mainsite/footer.php");
-
-	}
-
-	function DisplayNavigation()
-	{
-
-	}
-
 }
 
 Class Server
 {
+	//private $Config = include("config/general.php");
+
 	function GetFullPath()
 	{
 
@@ -330,7 +125,7 @@ Class Server
 
 	function GetPageURL()
 	{
-		$URL = $Base . $File;
+		$URL = $this->Config->URL->Base . $File;
 
 		if($CleanURLs)
 		{
@@ -378,6 +173,309 @@ Class Jobs
 	}
 }
 
+Class User
+{
+	private $UserTokenCookie = "UserToken";
+	// id of cookie that stores user's session
+
+	public $UserID = null;
+	public $Username = null;
+	public $Name = "Guest";
+	public $EmailAddress = null;
+	public $IsLoggedin = false;
+	public $IsAdmin = false;
+
+
+	function __construct()
+	{
+		$Db = new Database();
+		// Create connection
+
+		$SessionToken = $Db->Filter($_COOKIE["SessionToken"]);
+
+		$Data = $Db->Select("SELECT UserID FROM Sessions WHERE SessionToken=$SessionToken");
+		// Execute
+
+		if(count($Data) == 1)
+		{
+			$this->IsLoggedin = true;
+
+			$UserID = $Db->Filter($Data[0]['UserID']);
+			$SQL = "SELECT UserID, Username, Name, EmailAddress, IsAdmin FROM Users WHERE UserID=$UserID";
+			$Data = $Db -> Select($SQL)or die($Db->Error());
+
+			$this->UserID = $Data[0]['UserID'];
+			$this->Username = $Data[0]['Username'];
+			$this->Name = $Data[0]['Name'];
+			$this->EmailAddress = $Data[0]['EmailAddress'];
+			$this->IsAdmin = $Data[0]['IsAdmin'];
+		}
+
+		unset($Db);
+	}
+
+
+	function GetUserSalt($Username)
+	{
+		$Db = new Database();
+		// Create connection
+
+		$Username = $Db->Filter($Username);
+		// Prevent injection
+
+		$Data = $Db->Select("SELECT Salt FROM Users WHERE Username=$Username");
+		// Execute
+
+		return $Data[0]['Salt'];
+	}
+
+	function GetUserID()
+	{
+		$Db = new Database();
+		// Create connection
+
+		$SessionToken = $_COOKIE["SessionToken"];
+
+		$SQL = "SELECT Users.UserID FROM Users, Sessions WHERE Sessions.SessionID = $SessionToken AND Sessions.UserID = Users.UserID";
+
+		$Data = $Db->Select($SQL)or die($Db->Error());
+
+		echo $Data[0]['UserID'];
+
+		die();
+	}
+
+	function CheckCredentials($Username, $Password)
+	{
+
+		$UserSalt = $this->GetUserSalt($Username);
+		// use object function to retrive user salt
+
+		$MasterSalt = $GLOBALS["Config"]->MasterSalt;
+		// get master salt from configuration
+
+		$Password =  md5($MasterSalt . $Password . $UserSalt);
+		// hash password
+
+		$Db = new Database();
+		// Create connection
+
+		$Username = $Db->Filter($Username);
+		$Password = $Db->Filter($Password);
+		// Prevent injection on input
+
+		$SQL = "SELECT UserID, Name, EmailAddress, IsAdmin, Username FROM Users WHERE Username=$Username AND Password=$Password";
+		// prepare
+
+		$Data = $Db->Select($SQL);
+		// Execute
+		
+		if(Count($Data) == 1)
+	    // if user is found in database
+		{
+
+			$RandomToken = GetRandomToken();
+			// create a new random session token
+
+			$UserID = $Db->Filter($Data[0]['UserID']);
+			$this->UserID = $UserID;
+			// We know 1 record was found, so $Data[0] refers to the first record in the array
+			// Prevent injection
+
+			$this->Name = $Data[0]['Name'];
+			$this->EmailAddress = $Data[0]['EmailAddress'];
+			$this->Name = $Data[0]['Name'];
+
+			$this->IsLoggedin = true;
+
+			$SessionToken = $Db->Filter($RandomToken);
+			$IPAddress = $Db->Filter($_SERVER['REMOTE_ADDR']);
+			// Prevent injection
+
+			$SQL = "INSERT INTO Sessions (UserID, SessionToken, IP) VALUES ($UserID, $SessionToken, $IPAddress)";
+			// prepare satement
+
+			$Db->Query($SQL)or die($Db->Error());
+			// insert session into database
+			// or die with error message
+
+			setcookie("SessionToken", $RandomToken, time() + (3600 * 24 * 30), "/");
+			// save session token to user's computer
+
+			return true;
+			// user is authenticated
+		}
+		else
+		{
+			return false;
+			// false means username and/or password incorrect
+		}
+
+		unset($Db);
+		// destroy database object
+	}
+
+	function ChangePassword($UserID, $NewPassword)
+	{
+		$UserSalt = GetRandomToken();
+		// generate a new random user salt
+
+		$NewPassword = $GLOBALS["Config"]->MasterSalt . md5($NewPassword) . $UserSalt;
+		// create a hash for the password
+
+		$NewPassword = $Db->Filter($NewPassword);
+		$UserSalt = $Db->Filter($UserSalt);
+		$UserID = $Db->Filter($UserID);
+		// prevent injection
+
+		$SQL = "UPDATE Users SET Password=$NewPassword AND Salt=$UserSalt WHERE UserID=$UserID";
+		// prepare query
+
+		$Db = new Database();
+		// open connection
+		
+		if(!$Db->Query($SQL)or die($Db->Error()))
+		// perform query to update database
+		{
+			die("Failed to update new password to database.");
+		}
+		else
+		{
+			die("Success.");
+		}
+		
+	}
+
+	function CheckAuthenticated()
+	{
+		if($this->IsLoggedin == false)
+		{
+			Redirect("login");
+		}
+	}
+
+	function Logout()
+	{
+		$Db = new Database();
+
+		$SessionToken = $Db->Filter($_COOKIE["SessionToken"]);
+
+		$Data = $Db->Query("DELETE FROM Sessions WHERE SessionToken=$SessionToken")or die($Db->Error());
+		// Execute
+
+		$Db->Disconnect();
+
+		setcookie("SessionToken", "", time() -3600);
+	}
+
+	function DeleteSession($SessionID)
+	{
+		if(!preg_match("/^[0-9]*$/", $SessionID))
+		{
+			die("Session ID must be an integer");
+		}
+		else
+		{
+			$Db = new Database();
+			$SessionID = $Db->Filter($SessionID);
+			$SQL = "DELETE FROM Sessions WHERE SessionID=$SessionID";
+			$Db->Query($SQL)or die($Db->Error());
+			unset($Db);
+		}
+	}
+
+	function Update()
+	{
+
+	}
+
+	function Delete($UserID)
+	{
+		if(!preg_match("/^[0-9]*$/", $UserID))
+		{
+			die("User ID must be an integer");
+		}
+		else if($UserID == 0)
+		{
+			die("Cannot delete the SuperUser! (User ID 0)");
+		}
+		else
+		{
+			$Db = new Database();
+			$UserID = $Db->Filter($UserID);
+			$SQL = "DELETE FROM Users WHERE UserID=$UserID";
+			$Db->Query($SQL)or die($Db->Error());
+			unset($Db);
+		}
+	}
+}
+
+Class Page
+{
+	// private $Base = $GLOBALS['Config']->URL->Base;
+	//private $CleanURLs = $GLOBALS['Config']->URL->CleanURLs;
+
+	function DisplayContent()
+	{
+		$Db = new Database();
+
+		$Path = GetCurrentPath();
+
+		$PageURL = implode("/", $Path["call_parts"]);
+
+		if($PageURL == null)
+		{
+		    $PageURL = "homepage";
+		    // load homepage if no URL specified
+		}
+
+		$PageURL = $Db->Filter($PageURL);
+
+		$Data = $Db->Select("SELECT PageName, Content FROM Pages WHERE URL=$PageURL");
+
+
+		if(count($Data) != 1)
+		{
+		  IncludeScript("errors/404Error.php");
+		  exit;
+		}
+		else
+		{
+		  $PageName = $Data[0]['PageName'];
+		  $PageContent = $Data[0]['Content'];
+		}
+
+		include("templates/mainsite/header.php");
+
+		echo $PageContent;
+
+		include("templates/mainsite/footer.php");
+
+	}
+
+	function DisplayNavigation()
+	{
+
+	}
+
+	function Delete($PageID)
+	{
+		if(!preg_match("/^[0-9]*$/", $PageID))
+		{
+			die("Page ID must be an integer");
+		}
+		else
+		{
+			$Db = new Database();
+			$PageID = $Db->Filter($PageID);
+			$SQL = "DELETE FROM Pages WHERE PageID=$PageID";
+			$Db->Query($SQL)or die($Db->Error());
+			unset($Db);
+		}
+	}
+
+}
+
 Class Media
 {
 	function GetURLByID()
@@ -401,12 +499,22 @@ Class Media
 	}
 }
 
+Class Grave
+{
+
+}
+
+Class Record
+{
+
+}
+
 Class Map
 {
 	function GetGraveList()
 	{
 		$Db = new Database();
-		$Data = $Db -> Select("SELECT GraveID, XCoord, YCoord FROM Graves ORDER BY YCoord ASC, XCoord ASC");
+		$Data = $Db->Select("SELECT GraveID, XCoord, YCoord FROM Graves ORDER BY YCoord ASC, XCoord ASC");
 		
 		return serialize($Data);
 		// for($i = 0; $i = $Data['XCoord'][0]; i++)

@@ -19,7 +19,7 @@ include("templates/dashboard/header.php");
 
            $Db = new Database();
            
-           $Data = $Db -> Select("SELECT FirstName, DateOfDeath FROM Records");
+           $Data = $Db->Select("SELECT FirstName, LastName, DateOfDeath, DateOfBirth FROM Records");
 
             if(count($Data) == 0)
             {
@@ -34,8 +34,9 @@ include("templates/dashboard/header.php");
       <div class="panel panel-default">
         <table class="table">
             <tr>
-              <th>Date Of Death</th>
               <th>First / Last Name(s)</th>
+              <th>Date Of Death</th>
+              <th>Date Of Birth</th>
               <th>Actions</th>
             </tr>
 
@@ -43,9 +44,16 @@ include("templates/dashboard/header.php");
 
               foreach($Data as $Data)
               {
+                  $DateOfDeath = strtotime($Data['DateOfDeath']);
+                  $DateOfDeath = date('n M Y', $DateOfDeath);
+
+                  $DateOfBirth = strtotime($Data['DateOfBirth']);
+                  $DateOfBirth = date('n M Y', $DateOfBirth);
+
                   echo "<tr>";
-                  echo "<td>" . $Data["DateOfDeath"] . "</td>";
                   echo "<td>" . $Data["FirstName"] . " " . $Data["LastName"] . "</td>";
+                  echo "<td>" . $DateOfDeath . "</td>";
+                  echo "<td>" . $DateOfBirth . "</td>";
                   echo "<td>";
                   echo Button("Edit", "#", "btn btn-primary btn-xs");
                   echo " ";
