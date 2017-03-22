@@ -104,7 +104,7 @@ if(isset($_POST["Submitted"]))
       $SQL = "INSERT INTO Records (RecordID, GraveID, FirstName, LastName, Gender, DateOfDeath, DateOfBirth, MediaID)
             VALUES (DEFAULT, $GraveID, $FirstName, $LastName, $Gender, $DateOfDeath, $DateOfBirth, $MediaID)";
     
-    $Db->Query($SQL)or die($Db->Error());
+    $Db->Query($SQL)or ErrorMessage($Db->Error());
     // perform sql query.
 
     }

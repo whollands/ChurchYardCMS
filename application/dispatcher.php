@@ -37,9 +37,8 @@ date_default_timezone_set('UTC');
 $GLOBALS["Config"] = include("config/general.php");
 // Assign config file to variable
 
-
-include("application/includes/Objects.php");
 include("application/includes/Functions.php");
+include("application/includes/Objects.php");
 // include all objects, functions
 
 $User = new User();
@@ -92,7 +91,11 @@ switch(GetPathPart(0))
 			break;
 
 			case "view":
-				IncludeScript("database/view.php");
+			    switch(GetPathPart(2))
+				{
+				default: IncludeScript("database/view_all_records.php"); break;
+				case "record": IncludeScript("database/view_record.php"); break;
+			   }
 			break;
 
 			case "map":
@@ -215,11 +218,16 @@ switch(GetPathPart(0))
 					case "": Redirect("admin/profile/edit"); break;
 					case "edit": IncludeScript("admin/profile/edit.php"); break;
 					case "change_password": IncludeScript("admin/profile/change_password.php"); break;
-					case "sessions": IncludeScript("admin/profile/sessions.php"); break;
-					case "delete_session":
-						$SessionID = GetPathPart(3);
-						$User->DeleteSession($SessionID);
-						Redirect("admin/profile/sessions");
+					case "sessions": 
+						switch(GetPathPart(3))
+						{
+							default: IncludeScript("admin/profile/sessions.php"); break;
+							case "delete":
+							$SessionID = GetPathPart(4);
+							$User->DeleteSession($SessionID);
+							Redirect("admin/profile/sessions");
+							break;
+						}
 					break;
 				}
 			break;

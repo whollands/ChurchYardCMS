@@ -32,28 +32,36 @@
 
 class Database {
 
-    // The database Connection
-    protected static $Conn;
+    private static $Conn;
    
     public function Connect() 
     {    
-        // Try and connect to the database
+      
         if(!isset(self::$Conn))
         {   
         	$Config = include("config/database.php");
         	// Load config from database file
         	// encapsulated within Connect() function
-     
-        	self::$Conn = new mysqli($Config->Host, $Config->Username, $Config->Password, $Config->DatabaseName);
+
+        	try
+        	{
+			  mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+			  // enable mysqli to throw exceptions
+
+        	  self::$Conn = new mysqli($Config->Host, $Config->Username, $Config->Password, $Config->DatabaseName);
+        	  // create connection
+        	}
+
+        	catch (Exception $e)
+	    	{
+	    		ErrorMessage($e->getMessage());
+	    	}
+        	
         }
 
-        // If conn was NOT successful, handle the error
-        if(self::$Conn === false)
-        {
-            die("Database error");
-            return false;
-        }
         return self::$Conn;
+    	
+    	
     }
 
     public function Disconnect()
@@ -64,11 +72,18 @@ class Database {
 
     public function Query($query)
     {
-        // Connect to the database
-        $Conn = $this->connect();
+    	try
+    	{
+	        // Connect to the database
+	        $Conn = $this->connect();
 
-        // Query the database
-        $Result = $Conn->query($query);
+	        // Query the database
+	        $Result = $Conn->query($query);
+    	}
+    	catch (Exception $e)
+    	{
+    		ErrorMessage($e->getMessage());
+    	}
 
         return $Result;
     }
@@ -202,7 +217,7 @@ Class User
 
 			$UserID = $Db->Filter($Data[0]['UserID']);
 			$SQL = "SELECT UserID, Username, Name, EmailAddress, IsAdmin FROM Users WHERE UserID=$UserID";
-			$Data = $Db -> Select($SQL)or die($Db->Error());
+			$Data = $Db -> Select($SQL)or ErrorMessage($Db->Error());
 
 			$this->UserID = $Data[0]['UserID'];
 			$this->Username = $Data[0]['Username'];
@@ -238,11 +253,11 @@ Class User
 
 		$SQL = "SELECT Users.UserID FROM Users, Sessions WHERE Sessions.SessionID = $SessionToken AND Sessions.UserID = Users.UserID";
 
-		$Data = $Db->Select($SQL)or die($Db->Error());
+		$Data = $Db->Select($SQL)or ErrorMessage($Db->Error());
 
 		echo $Data[0]['UserID'];
 
-		die();
+		ErrorMessage();
 	}
 
 	function CheckCredentials($Username, $Password)
@@ -295,7 +310,7 @@ Class User
 			$SQL = "INSERT INTO Sessions (UserID, SessionToken, IP) VALUES ($UserID, $SessionToken, $IPAddress)";
 			// prepare satement
 
-			$Db->Query($SQL)or die($Db->Error());
+			$Db->Query($SQL)or ErrorMessage($Db->Error());
 			// insert session into database
 			// or die with error message
 
@@ -334,14 +349,14 @@ Class User
 		$Db = new Database();
 		// open connection
 		
-		if(!$Db->Query($SQL)or die($Db->Error()))
+		if(!$Db->Query($SQL)or ErrorMessage($Db->Error()))
 		// perform query to update database
 		{
-			die("Failed to update new password to database.");
+			ErrorMessage("Failed to update new password to database.");
 		}
 		else
 		{
-			die("Success.");
+			ErrorMessage("Success.");
 		}
 		
 	}
@@ -360,7 +375,7 @@ Class User
 
 		$SessionToken = $Db->Filter($_COOKIE["SessionToken"]);
 
-		$Data = $Db->Query("DELETE FROM Sessions WHERE SessionToken=$SessionToken")or die($Db->Error());
+		$Data = $Db->Query("DELETE FROM Sessions WHERE SessionToken=$SessionToken")or ErrorMessage($Db->Error());
 		// Execute
 
 		$Db->Disconnect();
@@ -372,14 +387,14 @@ Class User
 	{
 		if(!preg_match("/^[0-9]*$/", $SessionID))
 		{
-			die("Session ID must be an integer");
+			ErrorMessage("Session ID must be an integer");
 		}
 		else
 		{
 			$Db = new Database();
 			$SessionID = $Db->Filter($SessionID);
 			$SQL = "DELETE FROM Sessions WHERE SessionID=$SessionID";
-			$Db->Query($SQL)or die($Db->Error());
+			$Db->Query($SQL)or ErrorMessage($Db->Error());
 			unset($Db);
 		}
 	}
@@ -393,18 +408,18 @@ Class User
 	{
 		if(!preg_match("/^[0-9]*$/", $UserID))
 		{
-			die("User ID must be an integer");
+			ErrorMessage("User ID must be an integer");
 		}
 		else if($UserID == 0)
 		{
-			die("Cannot delete the SuperUser! (User ID 0)");
+			ErrorMessage("Cannot delete the SuperUser! (User ID 0)");
 		}
 		else
 		{
 			$Db = new Database();
 			$UserID = $Db->Filter($UserID);
 			$SQL = "DELETE FROM Users WHERE UserID=$UserID";
-			$Db->Query($SQL)or die($Db->Error());
+			$Db->Query($SQL)or ErrorMessage($Db->Error());
 			unset($Db);
 		}
 	}
@@ -462,14 +477,14 @@ Class Page
 	{
 		if(!preg_match("/^[0-9]*$/", $PageID))
 		{
-			die("Page ID must be an integer");
+			ErrorMessage("Page ID must be an integer");
 		}
 		else
 		{
 			$Db = new Database();
 			$PageID = $Db->Filter($PageID);
 			$SQL = "DELETE FROM Pages WHERE PageID=$PageID";
-			$Db->Query($SQL)or die($Db->Error());
+			$Db->Query($SQL)or ErrorMessage($Db->Error());
 			unset($Db);
 		}
 	}
@@ -506,6 +521,53 @@ Class Grave
 
 Class Record
 {
+
+	function GetRecord($RecordID)
+	{
+		if(!preg_match("/^[0-9]*$/", $RecordID))
+		{
+			ErrorMessage("Record ID must be an integer");
+		}
+		else
+		{
+			try
+			{
+				$Db = new Database();
+				$RecordID = $Db->Filter($RecordID);
+				$SQL = "SELECT * FROM Records WHERE RecordID=$RecordID";
+				$Data = $Db->Select($SQL);
+			}
+			catch (Exception $e)
+			{
+				ErrorMessage($e->getMessage());
+			}
+			
+			if(count($Data) != 1)
+			{
+				ErrorMessage("Record not found.");
+			}
+			
+			echo "<strong>FirstName: </strong>" . $Data[0]['FirstName'] . "
+		    <br><strong>LastName: </strong>" . $Data[0]['LastName'] . "
+		    <br><strong>Date Of Birth: </strong>" . $Data[0]['DateOfBirth'] . "
+
+		  <br><strong>Date Of Death: </strong>" . $Data[0]['DateOfDeath'];
+
+		  
+		}
+	}
+
+	function CheckRecordExists($RecordID)
+	{
+
+	}
+
+	function Create()
+	{
+
+	}
+
+	
 
 }
 

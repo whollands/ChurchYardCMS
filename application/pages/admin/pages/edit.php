@@ -25,7 +25,7 @@ if(isset($_POST["Submitted"]))
 
   if(!$Db->Query($SQL))
   {
-    die("Failed to save document.");
+    ErrorMessage("Failed to save document.");
   }
   else
   {
@@ -42,7 +42,7 @@ $Db = new Database();
 $PageID = $Db->Filter(GetPathPart(3));
 // get page being edited, and filter it to prevent injection
 
-$Data = $Db->Select("SELECT PageID, PageName, URL, Content FROM Pages WHERE PageID=$PageID")or die($Db->Error());
+$Data = $Db->Select("SELECT PageID, PageName, URL, Content FROM Pages WHERE PageID=$PageID")or ErrorMessage($Db->Error());
 // query database
 
 if(count($Data) == 1)

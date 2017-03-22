@@ -96,16 +96,21 @@ function GetRandomToken()
 
 function ErrorMessage($Message)
 {
+    include("templates/error/header.php");
+
     if($GLOBALS["Config"]->Dev->EnableDebug)
     {
-        echo AlertDanger("An Error Occurred: $Message");
+        echo $Message;
         // show detailed error message if enabled in the config file
     }
     else
     {
-        echo AlertDanger("An Error Occurred While Proccessing Your Request.");
+        echo "An Error Occurred While Proccessing Your Request.";
         // show generic error message if enabled in the config file
     }
+
+    include("templates/error/footer.php");
+
 
     exit;
 }
@@ -116,7 +121,7 @@ function IncludeScript($URI)
 
     if(!file_exists($URI))
     {
-        die("Failed to locate script " . $URI);
+        ErrorMessage("Failed to locate script " . $URI);
     }
     include($URI);
 }

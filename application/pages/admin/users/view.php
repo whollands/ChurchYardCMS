@@ -52,7 +52,7 @@ include("templates/dashboard/header.php");
                   echo "<td>";
                   echo Button("Edit", GetPageURL("admin/users/edit/" . $Data["UserID"]), "btn btn-primary btn-xs");
                   echo " ";
-                  if($UserID != 0)
+                  if($Data['UserID'] != 0)
                   // don't show delete button for SuperUser of ID 0
                   {
                     echo Button("Delete", GetPageURL("admin/users/delete/" . $Data["UserID"]), "btn btn-danger btn-xs");

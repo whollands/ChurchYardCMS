@@ -12,12 +12,12 @@ if(isset($_POST['Submitted']))
 
   if($NewPassword != $_POST['ConfirmNewPassword'])
   {
-      die("Passwords did not match");
+      ErrorMessage("Passwords did not match");
   }
 
   if(strlen($NewPassword) < 8)
   {
-      die("Not long enough");
+      ErrorMessage("Not long enough");
   }
 
   if(!preg_match('/[A-Z]/', $NewPassword))

@@ -52,7 +52,7 @@ if(isset($_POST['Submitted']))
     $User = new User();
     $User->GetUserID();
 
-    die();
+    ErrorMessage();
     
     $Name = $Db->Filter($Name);
     $Username = $Db->Filter($Username);
@@ -60,7 +60,7 @@ if(isset($_POST['Submitted']))
 
     $SQL = "UPDATE Users SET Name=$Name, Username=$Username, EmailAddress=$EmailAddress WHERE UserID=$UserID";
 
-    $Db->Query($SQL)or die($Db->Error());
+    $Db->Query($SQL)or ErrorMessage($Db->Error());
 
   }
 
@@ -72,7 +72,7 @@ else
 
   $UserID = $Db->Filter('0');
 
-  $Data = $Db->Select("SELECT Name, Username, EmailAddress FROM Users WHERE UserID='0'")or die($Db->Error());
+  $Data = $Db->Select("SELECT Name, Username, EmailAddress FROM Users WHERE UserID='0'")or ErrorMessage($Db->Error());
 
   $Name = $Data[0]['Name'];
   $Username = $Data[0]['Username'];
