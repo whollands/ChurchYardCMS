@@ -32,6 +32,7 @@
 
 define("Version", "1.0 Alpha");
 
+
 date_default_timezone_set('UTC');
 
 $GLOBALS["Config"] = include("config/general.php");

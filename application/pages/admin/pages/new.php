@@ -81,7 +81,7 @@ if(isset($_POST["Submitted"]))
     // lowercase only for PageURL
 
     $PageContent = "'No content has been added to this page yet'";
-    $UserID = "'0'";
+    $UserID = User::$UserID;
 
     $PageName = $Db->Filter($_POST["PageName"]);
     $PageURL = $Db->Filter($PageURL);

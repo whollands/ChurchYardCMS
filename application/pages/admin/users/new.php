@@ -59,7 +59,9 @@ if(isset($_POST["Submitted"]))
   if($Validated)
   {
 
+    $Salt = RandomToken();
 
+    $Password = md5(str)
     $SQL = "INSERT INTO Users (UserID, Name, Username, EmailAddress, Password, Salt, IsAdmin) VALUES (DEFAULT, $Name, $Username, $EmailAddress, $Password, $Salt, $IsAdmin";
 
   }

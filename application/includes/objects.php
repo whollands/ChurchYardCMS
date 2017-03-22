@@ -33,6 +33,8 @@
 class Database {
 
     private static $Conn;
+
+
    
     public function Connect() 
     {    
@@ -133,12 +135,12 @@ Class Server
 {
 	//private $Config = include("config/general.php");
 
-	function GetFullPath()
+	public static function GetFullPath()
 	{
-
+		die("Yaya;");
 	}
 
-	function GetPageURL()
+	public static function GetPageURL()
 	{
 		$URL = $this->Config->URL->Base . $File;
 
@@ -150,9 +152,36 @@ Class Server
 		return $URL;
 	}
 
-	function GetResourceURL($File = "")
+	public static function GetResourceURL($File = "")
 	{
 		return $Base . $File;
+	}
+
+	public static function Redirect($Location = "", $StatusCode = 303)
+	{
+	   header('Location: ' . GetPageURL($Location), true, $StatusCode);
+	   exit;
+	   // redirect a browser to the location specified, default is the homepage
+	   // default error code is set to 303 for application redirect
+	}
+
+	public static function ErrorMessage($Message)
+	{
+	    include("templates/error/header.php");
+
+	    if($GLOBALS["Config"]->Dev->EnableDebug)
+	    {
+	        echo $Message;
+	        // show detailed error message if enabled in the config file
+	    }
+	    else
+	    {
+	        echo "An Error Occurred While Proccessing Your Request.";
+	        // show generic error message if enabled in the config file
+	    }
+
+	    include("templates/error/footer.php");
+	    exit;
 	}
 }
 
@@ -193,15 +222,15 @@ Class User
 	private $UserTokenCookie = "UserToken";
 	// id of cookie that stores user's session
 
-	public $UserID = null;
-	public $Username = null;
-	public $Name = "Guest";
-	public $EmailAddress = null;
-	public $IsLoggedin = false;
-	public $IsAdmin = false;
+	public static $UserID = null;
+	public static $Username = null;
+	public static $Name = "Guest";
+	public static $EmailAddress = null;
+	public static $IsLoggedin = false;
+	public static $IsAdmin = false;
 
 
-	function __construct()
+    function __construct()
 	{
 		$Db = new Database();
 		// Create connection
@@ -219,21 +248,25 @@ Class User
 			$SQL = "SELECT UserID, Username, Name, EmailAddress, IsAdmin FROM Users WHERE UserID=$UserID";
 			$Data = $Db -> Select($SQL)or ErrorMessage($Db->Error());
 
-			$this->UserID = $Data[0]['UserID'];
-			$this->Username = $Data[0]['Username'];
-			$this->Name = $Data[0]['Name'];
-			$this->EmailAddress = $Data[0]['EmailAddress'];
-			$this->IsAdmin = $Data[0]['IsAdmin'];
+			self::$UserID = $Data[0]['UserID'];
+			self::$Username = $Data[0]['Username'];
+			self::$Name = $Data[0]['Name'];
+			self::$EmailAddress = $Data[0]['EmailAddress'];
+			self::$IsAdmin = $Data[0]['IsAdmin'];
 		}
 
 		unset($Db);
 	}
 
-
-	function GetUserSalt($Username)
+	private function GetUserSalt($Username)
 	{
 		$Db = new Database();
 		// Create connection
+
+		if(!preg_match("/^[\w.]*$/", $Username))
+		{
+			ErrorMessage("Username can only contain alphanumeric, periods and underscores");
+		}
 
 		$Username = $Db->Filter($Username);
 		// Prevent injection
@@ -244,7 +277,28 @@ Class User
 		return $Data[0]['Salt'];
 	}
 
-	function GetUserID()
+	public function CheckUserExists($UserID)
+	{
+		if(!preg_match("/^[\d]*$/", $UserID))
+		{
+			ErrorMessage("User ID must be a positive integer");
+		}
+
+		$Db = new Database();
+		$UserID = $Db->Filter($UserID);
+		$SQL = "SELECT UserID FROM Users WHERE UserID=$UserID";
+		$Data = $Db->Select($SQL);
+		if(count($Data) == 1)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	public function GetUserID()
 	{
 		$Db = new Database();
 		// Create connection
@@ -260,7 +314,7 @@ Class User
 		ErrorMessage();
 	}
 
-	function CheckCredentials($Username, $Password)
+	public function CheckCredentials($Username, $Password)
 	{
 
 		$UserSalt = $this->GetUserSalt($Username);
@@ -330,7 +384,7 @@ Class User
 		// destroy database object
 	}
 
-	function ChangePassword($UserID, $NewPassword)
+	public function ChangePassword($UserID, $NewPassword)
 	{
 		$UserSalt = GetRandomToken();
 		// generate a new random user salt
@@ -361,7 +415,7 @@ Class User
 		
 	}
 
-	function CheckAuthenticated()
+	public function CheckAuthenticated()
 	{
 		if($this->IsLoggedin == false)
 		{
@@ -369,7 +423,7 @@ Class User
 		}
 	}
 
-	function Logout()
+	public function Logout()
 	{
 		$Db = new Database();
 
@@ -383,7 +437,7 @@ Class User
 		setcookie("SessionToken", "", time() -3600);
 	}
 
-	function DeleteSession($SessionID)
+	public function DeleteSession($SessionID)
 	{
 		if(!preg_match("/^[0-9]*$/", $SessionID))
 		{
@@ -399,20 +453,24 @@ Class User
 		}
 	}
 
-	function Update()
+	public function Update()
 	{
 
 	}
 
-	function Delete($UserID)
+	public function Delete($UserID)
 	{
 		if(!preg_match("/^[0-9]*$/", $UserID))
 		{
 			ErrorMessage("User ID must be an integer");
 		}
+		else if(!$this->CheckUserExists($UserID))
+		{
+			ErrorMessage("User does not exist.");
+		}
 		else if($UserID == 0)
 		{
-			ErrorMessage("Cannot delete the SuperUser! (User ID 0)");
+			ErrorMessage("Cannot delete the SuperUser (User ID 0)");
 		}
 		else
 		{
@@ -430,7 +488,7 @@ Class Page
 	// private $Base = $GLOBALS['Config']->URL->Base;
 	//private $CleanURLs = $GLOBALS['Config']->URL->CleanURLs;
 
-	function DisplayContent()
+	public function DisplayContent()
 	{
 		$Db = new Database();
 
@@ -468,12 +526,12 @@ Class Page
 
 	}
 
-	function DisplayNavigation()
+	public function DisplayNavigation()
 	{
 
 	}
 
-	function Delete($PageID)
+	public function Delete($PageID)
 	{
 		if(!preg_match("/^[0-9]*$/", $PageID))
 		{
@@ -493,22 +551,22 @@ Class Page
 
 Class Media
 {
-	function GetURLByID()
+	public function GetURLByID()
 	{
 
 	}
 
-	function Upload()
+	public function Upload()
 	{
 
 	}	
 
-	function Delete()
+	public function Delete()
 	{
 
 	}
 
-	function Modify()
+	public function Modify()
 	{
 
 	}
@@ -522,11 +580,11 @@ Class Grave
 Class Record
 {
 
-	function GetRecord($RecordID)
+	public function GetRecord($RecordID)
 	{
 		if(!preg_match("/^[0-9]*$/", $RecordID))
 		{
-			ErrorMessage("Record ID must be an integer");
+			ErrorMessage("Record ID must be an positive integer");
 		}
 		else
 		{
@@ -557,12 +615,12 @@ Class Record
 		}
 	}
 
-	function CheckRecordExists($RecordID)
+	public function CheckRecordExists($RecordID)
 	{
 
 	}
 
-	function Create()
+	public function Create()
 	{
 
 	}
@@ -573,7 +631,7 @@ Class Record
 
 Class Map
 {
-	function GetGraveList()
+	public function GetGraveList()
 	{
 		$Db = new Database();
 		$Data = $Db->Select("SELECT GraveID, XCoord, YCoord FROM Graves ORDER BY YCoord ASC, XCoord ASC");
