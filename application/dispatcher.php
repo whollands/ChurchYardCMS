@@ -76,8 +76,7 @@ switch(GetPathPart(0))
 			// return 404 error by default
 
 			case "map_get_grave_list": 
-				$Map = new Map();
-				$Map->GetGraveList();
+				Map::GetGraveList();
 			break;
 		}
 	break;

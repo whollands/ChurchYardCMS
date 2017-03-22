@@ -70,7 +70,7 @@ class Database {
     	// use the default MySQL close() function
     }
 
-    public static function Query($query)
+    public static function Query($SQL)
     {
     	try
     	{
@@ -78,7 +78,7 @@ class Database {
 	        $Conn = self::Connect();
 
 	        // Query the database
-	        $Result = $Conn->Query($query);
+	        $Result = $Conn->Query($SQL);
     	}
     	catch (Exception $e)
     	{
@@ -88,11 +88,11 @@ class Database {
         return $Result;
     }
 
-    public static function Select($query)
+    public static function Select($SQL)
     {
         $Data = array();
 
-        $Result = self::Query($query);
+        $Result = self::Query($SQL);
 
         if($Result === false)
         {
@@ -110,16 +110,8 @@ class Database {
 
     public static function Error() 
     {
-    	if($GLOBALS['Config']->Dev->EnableDebug)
-    	{
-    		$Conn = self::Connect();
-        	return "<h2>Database Error:</h2> <p>" . $Conn->error . "</p>";
-    	}
-    	else
-    	{
-    		return "An error occurred whilst connecting to the database.";
-    	}
-        
+    	$Conn = self::Connect();
+        return $Conn->error;
     }
 
     public static function Filter($value)
@@ -163,7 +155,7 @@ Class Server
 	   // default error code is set to 303 for application redirect
 	}
 
-	public static function ErrorMessage($Message)
+	public static function ErrorMessage($Message = 'Unknown error occurred')
 	{
 	    include("templates/error/header.php");
 
@@ -286,6 +278,7 @@ Class User
 		$UserID = Database::Filter($UserID);
 		$SQL = "SELECT UserID FROM Users WHERE UserID=$UserID";
 		$Data = Database::Select($SQL);
+
 		if(count($Data) == 1)
 		{
 			return true;
@@ -602,7 +595,24 @@ Class Record
 
 	public function CheckRecordExists($RecordID)
 	{
+		if(!preg_match("/^[\d]*$/", $RecordID))
+		{
+			Server::ErrorMessage("Record ID must be a positive integer");
+		}
 
+		
+		$RecordID = Database::Filter($RecordID);
+		$SQL = "SELECT RecordID FROM Records WHERE RecordID=$RecordID";
+		$Data = Database::Select($SQL);
+		
+		if(count($Data) == 1)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
 	}
 
 	public function Create()
@@ -616,17 +626,18 @@ Class Record
 
 Class Map
 {
-	public function GetGraveList()
+	public static function GetGraveList()
 	{
 		
 		$Data = Database::Select("SELECT GraveID, XCoord, YCoord FROM Graves ORDER BY YCoord ASC, XCoord ASC");
 		
-		return serialize($Data);
-		// for($i = 0; $i = $Data['XCoord'][0]; i++)
-		// {
-		// 	for($i = 0; $i = $Data['XCoord'][0]; i++)
-		// 	{
-		// 	}
-		// }
+		$len = count($Data);
+
+		foreach($Data as $i)
+		{
+
+			echo $i['XCoord'] . ":" . $i['YCoord'] . ",";
+		}
+
 	}
 }
