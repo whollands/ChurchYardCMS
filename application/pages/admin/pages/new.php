@@ -74,7 +74,7 @@ if(isset($_POST["Submitted"]))
 
   if($Validated == true)
   {
-    $Db = new Database();
+    
     // create database connection
 
     $PageURL = strtolower($PageURL);
@@ -83,21 +83,21 @@ if(isset($_POST["Submitted"]))
     $PageContent = "'No content has been added to this page yet'";
     $UserID = User::$UserID;
 
-    $PageName = $Db->Filter($_POST["PageName"]);
-    $PageURL = $Db->Filter($PageURL);
+    $PageName = Database::Filter($_POST["PageName"]);
+    $PageURL = Database::Filter($PageURL);
     // prevent injection
 
     $SQL = "INSERT INTO Pages (UserID, PageName, URL, Content) VALUES ($UserID, $PageName, $PageURL, $PageContent)";
     // prepare query
 
-    if(!$Db->Query($SQL))
+    if(!Database::Query($SQL))
     {
       $Db->Error();
       // If error, output error message
     }
     else
     {
-       Redirect("admin/pages");
+       Server::Redirect("admin/pages");
     }
   }
 }

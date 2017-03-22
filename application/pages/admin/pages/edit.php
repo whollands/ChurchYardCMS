@@ -13,36 +13,36 @@ if(isset($_POST["Submitted"]))
   $PageContent = strip_tags($PageContent, $AllowedTags);
   // remove banned html
 
-  $Db = new Database();
+  
   // create new connection
 
-  $PageName = $Db->Filter($PageName);
-  $PageURL = $Db->Filter($PageURL);
-  $PageContent = $Db->Filter($PageContent);
+  $PageName = Database::Filter($PageName);
+  $PageURL = Database::Filter($PageURL);
+  $PageContent = Database::Filter($PageContent);
   // make safe to prevent injection
 
   $SQL = "UPDATE Pages SET PageName=$PageName, URL=$PageURL, Content=$PageContent, LastEdited=CURRENT_TIMESTAMP WHERE PageID='$PageID'";
 
-  if(!$Db->Query($SQL))
+  if(!Database::Query($SQL))
   {
-    ErrorMessage("Failed to save document.");
+    Server::ErrorMessage("Failed to save document.");
   }
   else
   {
-    Redirect("admin/pages/edit/" . $PageID . "?saved");
+    Server::Redirect("admin/pages/edit/" . $PageID . "?saved");
   }
 
   unset($Db);
   // destory object
 }
 
-$Db = new Database();
+
 // create new connection
 
-$PageID = $Db->Filter(GetPathPart(3));
+$PageID = Database::Filter(GetPathPart(3));
 // get page being edited, and filter it to prevent injection
 
-$Data = $Db->Select("SELECT PageID, PageName, URL, Content FROM Pages WHERE PageID=$PageID")or ErrorMessage($Db->Error());
+$Data = Database::Select("SELECT PageID, PageName, URL, Content FROM Pages WHERE PageID=$PageID")or Server::ErrorMessage($Db->Error());
 // query database
 
 if(count($Data) == 1)

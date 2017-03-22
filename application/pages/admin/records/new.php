@@ -69,7 +69,7 @@ if(isset($_POST["Submitted"]))
 
   if($Validated == true)
   {
-    $Db = new Database();
+    
 
     $DateOfBirth = str_replace('/', '-', $DateOfBirth);
     $DateOfBirth = date('Y-m-d', strtotime($DateOfBirth));
@@ -80,20 +80,20 @@ if(isset($_POST["Submitted"]))
     // convert dd/mm/yyyy to yyyy-mm-dd for MySQL
 
     $MediaID = 0;
-    $MediaID = $Db->Filter($MediaID);
+    $MediaID = Database::Filter($MediaID);
 
 
-    $GraveID = $Db->Filter($GraveID);
-    $FirstName = $Db->Filter($FirstName);
-    $LastName = $Db->Filter($LastName);
-    $DateOfBirth = $Db->Filter($DateOfBirth);
-    $DateOfDeath = $Db->Filter($DateOfDeath);
-    $Gender = $Db->Filter($Gender);
+    $GraveID = Database::Filter($GraveID);
+    $FirstName = Database::Filter($FirstName);
+    $LastName = Database::Filter($LastName);
+    $DateOfBirth = Database::Filter($DateOfBirth);
+    $DateOfDeath = Database::Filter($DateOfDeath);
+    $Gender = Database::Filter($Gender);
     // prevent MySQL injection.
 
     $SQL = "SELECT GraveID FROM Graves WHERE GraveID=$GraveID";
 
-    $Data = $Db->Select($SQL);
+    $Data = Database::Select($SQL);
     
     if(count($Data) != 1)
     {
@@ -104,7 +104,7 @@ if(isset($_POST["Submitted"]))
       $SQL = "INSERT INTO Records (RecordID, GraveID, FirstName, LastName, Gender, DateOfDeath, DateOfBirth, MediaID)
             VALUES (DEFAULT, $GraveID, $FirstName, $LastName, $Gender, $DateOfDeath, $DateOfBirth, $MediaID)";
     
-    $Db->Query($SQL)or ErrorMessage($Db->Error());
+    Database::Query($SQL)or Server::ErrorMessage($Db->Error());
     // perform sql query.
 
     }

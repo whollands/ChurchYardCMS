@@ -56,7 +56,7 @@ class Database {
 
         	catch (Exception $e)
 	    	{
-	    		ErrorMessage($e->getMessage());
+	    		Server::ErrorMessage($e->getMessage());
 	    	}
         	
         }
@@ -72,7 +72,7 @@ class Database {
     	// use the default MySQL close() function
     }
 
-    public function Query($query)
+    public static function Query($query)
     {
     	try
     	{
@@ -84,13 +84,13 @@ class Database {
     	}
     	catch (Exception $e)
     	{
-    		ErrorMessage($e->getMessage());
+    		Server::ErrorMessage($e->getMessage());
     	}
 
         return $Result;
     }
 
-    public function Select($query)
+    public static function Select($query)
     {
         $Data = array();
 
@@ -110,23 +110,23 @@ class Database {
         return $Data;
     }
 
-    public function Error() 
-    {
-    	if($GLOBALS['Config']->Dev->EnableDebug)
-    	{
-    		$Conn = $this->connect();
-        	return "<h2>Database Error:</h2> <p>" . $Conn->error . "</p>";
-    	}
-    	else
-    	{
-    		return "An error occurred whilst connecting to the database.";
-    	}
+    // public static function Error() 
+    // {
+    // 	if($GLOBALS['Config']->Dev->EnableDebug)
+    // 	{
+    // 		$Conn = $this->Connect();
+    //     	return "<h2>Database Error:</h2> <p>" . $Conn->error . "</p>";
+    // 	}
+    // 	else
+    // 	{
+    // 		return "An error occurred whilst connecting to the database.";
+    // 	}
         
-    }
+    // }
 
-    public function Filter($value)
+    public static function Filter($value)
     {
-        $Conn = $this->connect();
+        $Conn = $this->Connect();
         return "'" . $Conn->real_escape_string($value) . "'";
     }
 }
@@ -137,7 +137,7 @@ Class Server
 
 	public static function GetFullPath()
 	{
-		die("Yaya;");
+		
 	}
 
 	public static function GetPageURL()
@@ -232,21 +232,21 @@ Class User
 
     function __construct()
 	{
-		$Db = new Database();
+		
 		// Create connection
 
-		$SessionToken = $Db->Filter($_COOKIE["SessionToken"]);
+		$SessionToken = Database::Filter($_COOKIE["SessionToken"]);
 
-		$Data = $Db->Select("SELECT UserID FROM Sessions WHERE SessionToken=$SessionToken");
+		$Data = Database::Select("SELECT UserID FROM Sessions WHERE SessionToken=$SessionToken");
 		// Execute
 
 		if(count($Data) == 1)
 		{
 			$this->IsLoggedin = true;
 
-			$UserID = $Db->Filter($Data[0]['UserID']);
+			$UserID = Database::Filter($Data[0]['UserID']);
 			$SQL = "SELECT UserID, Username, Name, EmailAddress, IsAdmin FROM Users WHERE UserID=$UserID";
-			$Data = $Db -> Select($SQL)or ErrorMessage($Db->Error());
+			$Data = $Db -> Select($SQL)or Server::ErrorMessage($Db->Error());
 
 			self::$UserID = $Data[0]['UserID'];
 			self::$Username = $Data[0]['Username'];
@@ -260,18 +260,18 @@ Class User
 
 	private function GetUserSalt($Username)
 	{
-		$Db = new Database();
+		
 		// Create connection
 
 		if(!preg_match("/^[\w.]*$/", $Username))
 		{
-			ErrorMessage("Username can only contain alphanumeric, periods and underscores");
+			Server::ErrorMessage("Username can only contain alphanumeric, periods and underscores");
 		}
 
-		$Username = $Db->Filter($Username);
+		$Username = Database::Filter($Username);
 		// Prevent injection
 
-		$Data = $Db->Select("SELECT Salt FROM Users WHERE Username=$Username");
+		$Data = Database::Select("SELECT Salt FROM Users WHERE Username=$Username");
 		// Execute
 
 		return $Data[0]['Salt'];
@@ -281,13 +281,13 @@ Class User
 	{
 		if(!preg_match("/^[\d]*$/", $UserID))
 		{
-			ErrorMessage("User ID must be a positive integer");
+			Server::ErrorMessage("User ID must be a positive integer");
 		}
 
-		$Db = new Database();
-		$UserID = $Db->Filter($UserID);
+		
+		$UserID = Database::Filter($UserID);
 		$SQL = "SELECT UserID FROM Users WHERE UserID=$UserID";
-		$Data = $Db->Select($SQL);
+		$Data = Database::Select($SQL);
 		if(count($Data) == 1)
 		{
 			return true;
@@ -300,18 +300,18 @@ Class User
 
 	public function GetUserID()
 	{
-		$Db = new Database();
+		
 		// Create connection
 
 		$SessionToken = $_COOKIE["SessionToken"];
 
 		$SQL = "SELECT Users.UserID FROM Users, Sessions WHERE Sessions.SessionID = $SessionToken AND Sessions.UserID = Users.UserID";
 
-		$Data = $Db->Select($SQL)or ErrorMessage($Db->Error());
+		$Data = Database::Select($SQL)or Server::ErrorMessage($Db->Error());
 
 		echo $Data[0]['UserID'];
 
-		ErrorMessage();
+		Server::ErrorMessage();
 	}
 
 	public function CheckCredentials($Username, $Password)
@@ -326,17 +326,17 @@ Class User
 		$Password =  md5($MasterSalt . $Password . $UserSalt);
 		// hash password
 
-		$Db = new Database();
+		
 		// Create connection
 
-		$Username = $Db->Filter($Username);
-		$Password = $Db->Filter($Password);
+		$Username = Database::Filter($Username);
+		$Password = Database::Filter($Password);
 		// Prevent injection on input
 
 		$SQL = "SELECT UserID, Name, EmailAddress, IsAdmin, Username FROM Users WHERE Username=$Username AND Password=$Password";
 		// prepare
 
-		$Data = $Db->Select($SQL);
+		$Data = Database::Select($SQL);
 		// Execute
 		
 		if(Count($Data) == 1)
@@ -346,7 +346,7 @@ Class User
 			$RandomToken = GetRandomToken();
 			// create a new random session token
 
-			$UserID = $Db->Filter($Data[0]['UserID']);
+			$UserID = Database::Filter($Data[0]['UserID']);
 			$this->UserID = $UserID;
 			// We know 1 record was found, so $Data[0] refers to the first record in the array
 			// Prevent injection
@@ -357,14 +357,14 @@ Class User
 
 			$this->IsLoggedin = true;
 
-			$SessionToken = $Db->Filter($RandomToken);
-			$IPAddress = $Db->Filter($_SERVER['REMOTE_ADDR']);
+			$SessionToken = Database::Filter($RandomToken);
+			$IPAddress = Database::Filter($_SERVER['REMOTE_ADDR']);
 			// Prevent injection
 
 			$SQL = "INSERT INTO Sessions (UserID, SessionToken, IP) VALUES ($UserID, $SessionToken, $IPAddress)";
 			// prepare satement
 
-			$Db->Query($SQL)or ErrorMessage($Db->Error());
+			Database::Query($SQL)or Server::ErrorMessage($Db->Error());
 			// insert session into database
 			// or die with error message
 
@@ -392,25 +392,25 @@ Class User
 		$NewPassword = $GLOBALS["Config"]->MasterSalt . md5($NewPassword) . $UserSalt;
 		// create a hash for the password
 
-		$NewPassword = $Db->Filter($NewPassword);
-		$UserSalt = $Db->Filter($UserSalt);
-		$UserID = $Db->Filter($UserID);
+		$NewPassword = Database::Filter($NewPassword);
+		$UserSalt = Database::Filter($UserSalt);
+		$UserID = Database::Filter($UserID);
 		// prevent injection
 
 		$SQL = "UPDATE Users SET Password=$NewPassword AND Salt=$UserSalt WHERE UserID=$UserID";
 		// prepare query
 
-		$Db = new Database();
+		
 		// open connection
 		
-		if(!$Db->Query($SQL)or ErrorMessage($Db->Error()))
+		if(!Database::Query($SQL)or Server::ErrorMessage($Db->Error()))
 		// perform query to update database
 		{
-			ErrorMessage("Failed to update new password to database.");
+			Server::ErrorMessage("Failed to update new password to database.");
 		}
 		else
 		{
-			ErrorMessage("Success.");
+			Server::ErrorMessage("Success.");
 		}
 		
 	}
@@ -419,17 +419,17 @@ Class User
 	{
 		if($this->IsLoggedin == false)
 		{
-			Redirect("login");
+			Server::Redirect("login");
 		}
 	}
 
 	public function Logout()
 	{
-		$Db = new Database();
+		
 
-		$SessionToken = $Db->Filter($_COOKIE["SessionToken"]);
+		$SessionToken = Database::Filter($_COOKIE["SessionToken"]);
 
-		$Data = $Db->Query("DELETE FROM Sessions WHERE SessionToken=$SessionToken")or ErrorMessage($Db->Error());
+		$Data = Database::Query("DELETE FROM Sessions WHERE SessionToken=$SessionToken")or Server::ErrorMessage($Db->Error());
 		// Execute
 
 		$Db->Disconnect();
@@ -441,14 +441,14 @@ Class User
 	{
 		if(!preg_match("/^[0-9]*$/", $SessionID))
 		{
-			ErrorMessage("Session ID must be an integer");
+			Server::ErrorMessage("Session ID must be an integer");
 		}
 		else
 		{
-			$Db = new Database();
-			$SessionID = $Db->Filter($SessionID);
+			
+			$SessionID = Database::Filter($SessionID);
 			$SQL = "DELETE FROM Sessions WHERE SessionID=$SessionID";
-			$Db->Query($SQL)or ErrorMessage($Db->Error());
+			Database::Query($SQL)or Server::ErrorMessage($Db->Error());
 			unset($Db);
 		}
 	}
@@ -462,22 +462,22 @@ Class User
 	{
 		if(!preg_match("/^[0-9]*$/", $UserID))
 		{
-			ErrorMessage("User ID must be an integer");
+			Server::ErrorMessage("User ID must be an integer");
 		}
 		else if(!$this->CheckUserExists($UserID))
 		{
-			ErrorMessage("User does not exist.");
+			Server::ErrorMessage("User does not exist.");
 		}
 		else if($UserID == 0)
 		{
-			ErrorMessage("Cannot delete the SuperUser (User ID 0)");
+			Server::ErrorMessage("Cannot delete the SuperUser (User ID 0)");
 		}
 		else
 		{
-			$Db = new Database();
-			$UserID = $Db->Filter($UserID);
+			
+			$UserID = Database::Filter($UserID);
 			$SQL = "DELETE FROM Users WHERE UserID=$UserID";
-			$Db->Query($SQL)or ErrorMessage($Db->Error());
+			Database::Query($SQL)or Server::ErrorMessage($Db->Error());
 			unset($Db);
 		}
 	}
@@ -490,7 +490,7 @@ Class Page
 
 	public function DisplayContent()
 	{
-		$Db = new Database();
+		
 
 		$Path = GetCurrentPath();
 
@@ -502,9 +502,9 @@ Class Page
 		    // load homepage if no URL specified
 		}
 
-		$PageURL = $Db->Filter($PageURL);
+		$PageURL = Database::Filter($PageURL);
 
-		$Data = $Db->Select("SELECT PageName, Content FROM Pages WHERE URL=$PageURL");
+		$Data = Database::Select("SELECT PageName, Content FROM Pages WHERE URL=$PageURL");
 
 
 		if(count($Data) != 1)
@@ -535,14 +535,14 @@ Class Page
 	{
 		if(!preg_match("/^[0-9]*$/", $PageID))
 		{
-			ErrorMessage("Page ID must be an integer");
+			Server::ErrorMessage("Page ID must be an integer");
 		}
 		else
 		{
-			$Db = new Database();
-			$PageID = $Db->Filter($PageID);
+			
+			$PageID = Database::Filter($PageID);
 			$SQL = "DELETE FROM Pages WHERE PageID=$PageID";
-			$Db->Query($SQL)or ErrorMessage($Db->Error());
+			Database::Query($SQL)or Server::ErrorMessage($Db->Error());
 			unset($Db);
 		}
 	}
@@ -584,25 +584,25 @@ Class Record
 	{
 		if(!preg_match("/^[0-9]*$/", $RecordID))
 		{
-			ErrorMessage("Record ID must be an positive integer");
+			Server::ErrorMessage("Record ID must be an positive integer");
 		}
 		else
 		{
 			try
 			{
-				$Db = new Database();
-				$RecordID = $Db->Filter($RecordID);
+				
+				$RecordID = Database::Filter($RecordID);
 				$SQL = "SELECT * FROM Records WHERE RecordID=$RecordID";
-				$Data = $Db->Select($SQL);
+				$Data = Database::Select($SQL);
 			}
 			catch (Exception $e)
 			{
-				ErrorMessage($e->getMessage());
+				Server::ErrorMessage($e->getMessage());
 			}
 			
 			if(count($Data) != 1)
 			{
-				ErrorMessage("Record not found.");
+				Server::ErrorMessage("Record not found.");
 			}
 			
 			echo "<strong>FirstName: </strong>" . $Data[0]['FirstName'] . "
@@ -633,8 +633,8 @@ Class Map
 {
 	public function GetGraveList()
 	{
-		$Db = new Database();
-		$Data = $Db->Select("SELECT GraveID, XCoord, YCoord FROM Graves ORDER BY YCoord ASC, XCoord ASC");
+		
+		$Data = Database::Select("SELECT GraveID, XCoord, YCoord FROM Graves ORDER BY YCoord ASC, XCoord ASC");
 		
 		return serialize($Data);
 		// for($i = 0; $i = $Data['XCoord'][0]; i++)

@@ -17,9 +17,9 @@ include("templates/dashboard/header.php");
 
             <?php
 
-           $Db = new Database();
            
-           $Data = $Db->Select("SELECT FirstName, LastName, DateOfDeath, DateOfBirth FROM Records");
+           
+           $Data = Database::Select("SELECT FirstName, LastName, DateOfDeath, DateOfBirth FROM Records");
 
             if(count($Data) == 0)
             {

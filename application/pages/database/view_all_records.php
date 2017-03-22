@@ -28,7 +28,7 @@ include("templates/mainsite/header.php");
 
  <?php
 
-   $Db = new Database();
+   
    
    $SearchQuery = $_GET["search_query"];
 
@@ -45,7 +45,7 @@ include("templates/mainsite/header.php");
             ";
    }
 
-   $Data = $Db->Select($SQL);
+   $Data = Database::Select($SQL);
 
     if(count($Data) == 0)
     {

@@ -20,9 +20,9 @@ include("templates/dashboard/header.php");
 
             <?php
 
-           $Db = new Database();
            
-           $Data = $Db->Select("SELECT PageID, PageName, URL, LastEdited FROM Pages");
+           
+           $Data = Database::Select("SELECT PageID, PageName, URL, LastEdited FROM Pages");
 
             if(count($Data) == 0)
             {

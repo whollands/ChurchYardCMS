@@ -1,10 +1,7 @@
 <?php if(!defined("ChurchYard_Execute")) die("Access Denied.");
 
-
-
 if(isset($_POST['Submitted']))
 {
-
 
   $Name = $_POST['Name'];
   $Username = $_POST['Username'];
@@ -52,15 +49,15 @@ if(isset($_POST['Submitted']))
     $User = new User();
     $User->GetUserID();
 
-    ErrorMessage();
+    Server::ErrorMessage();
     
-    $Name = $Db->Filter($Name);
-    $Username = $Db->Filter($Username);
-    $EmailAddress = $Db->Filter($EmailAddress);
+    $Name = Database::Filter($Name);
+    $Username = Database::Filter($Username);
+    $EmailAddress = Database::Filter($EmailAddress);
 
     $SQL = "UPDATE Users SET Name=$Name, Username=$Username, EmailAddress=$EmailAddress WHERE UserID=$UserID";
 
-    $Db->Query($SQL)or ErrorMessage($Db->Error());
+    Database::Query($SQL)or Server::ErrorMessage($Db->Error());
 
   }
 
@@ -68,11 +65,11 @@ if(isset($_POST['Submitted']))
 else
 {
 
-  $Db = new Database();
+  
+  $UserID = User::GetUserID();
+  $UserID = Database::Filter($UserID);
 
-  $UserID = $Db->Filter('0');
-
-  $Data = $Db->Select("SELECT Name, Username, EmailAddress FROM Users WHERE UserID='0'")or ErrorMessage($Db->Error());
+  $Data = Database::Select("SELECT Name, Username, EmailAddress FROM Users WHERE UserID='0'")or Server::ErrorMessage($Db->Error());
 
   $Name = $Data[0]['Name'];
   $Username = $Data[0]['Username'];

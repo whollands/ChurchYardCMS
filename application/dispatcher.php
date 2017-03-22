@@ -88,7 +88,7 @@ switch(GetPathPart(0))
 			// return 404 error by default
 
 			case "": 
-				Redirect("database/view");
+				Server::Redirect("database/view");
 			break;
 
 			case "view":
@@ -137,7 +137,7 @@ switch(GetPathPart(0))
 						$Page = new Page();
 						$Page->Delete($PageID);
 						unset($Page);
-						Redirect("admin/pages");
+						Server::Redirect("admin/pages");
 					break;
 
 				}
@@ -199,7 +199,7 @@ switch(GetPathPart(0))
 						$User->Delete($UserID);
 						unset($User);
 
-						Redirect("admin/users");
+						Server::Redirect("admin/users");
 
 					break;
 				}
@@ -216,7 +216,7 @@ switch(GetPathPart(0))
 					default: IncludeScript("errors/404Error.php"); break;
 					// return 404 error by default
 
-					case "": Redirect("admin/profile/edit"); break;
+					case "": Server::Redirect("admin/profile/edit"); break;
 					case "edit": IncludeScript("admin/profile/edit.php"); break;
 					case "change_password": IncludeScript("admin/profile/change_password.php"); break;
 					case "sessions": 
@@ -226,7 +226,7 @@ switch(GetPathPart(0))
 							case "delete":
 							$SessionID = GetPathPart(4);
 							$User->DeleteSession($SessionID);
-							Redirect("admin/profile/sessions");
+							Server::Redirect("admin/profile/sessions");
 							break;
 						}
 					break;
@@ -241,7 +241,7 @@ switch(GetPathPart(0))
 	case "logout":
 
 		$User->Logout();
-		Redirect();
+		Server::Redirect();
 		
 	break;
 }

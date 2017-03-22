@@ -20,9 +20,9 @@ include("templates/dashboard/header.php");
 
             <?php
 
-           $Db = new Database();
            
-           $Data = $Db->Select("SELECT UserID, Username, Name FROM Users");
+           
+           $Data = Database::Select("SELECT UserID, Username, Name FROM Users");
 
             if(count($Data) == 0)
             {

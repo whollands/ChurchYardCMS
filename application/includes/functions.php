@@ -32,25 +32,25 @@
 
 
 function GetCurrentPath() {
-  $path = array();
+  $Path = array();
 
   if (isset($_SERVER['REQUEST_URI'])) 
   {
     $request_path = explode('?', $_SERVER['REQUEST_URI']);
-    $path['base'] = rtrim(dirname($_SERVER['SCRIPT_NAME']), '\/');
-    $path['call_utf8'] = substr(urldecode($request_path[0]), strlen($path['base']) + 1);
-    $path['call'] = utf8_decode($path['call_utf8']);
+    $Path['base'] = rtrim(dirname($_SERVER['SCRIPT_NAME']), '\/');
+    $Path['call_utf8'] = substr(urldecode($request_path[0]), strlen($Path['base']) + 1);
+    $Path['call'] = utf8_decode($Path['call_utf8']);
 
-    if ($path['call'] == basename($_SERVER['PHP_SELF']))
+    if ($Path['call'] == basename($_SERVER['PHP_SELF']))
     {
-      $path['call'] = '';
+      $Path['call'] = '';
     }
 
-    $path['call_parts'] = explode('/', $path['call']);
+    $Path['call_parts'] = explode('/', $Path['call']);
   
   
   }
-return $path;
+return $Path;
 }
 
 
@@ -72,14 +72,6 @@ function GetPageURL($file = "")
 	return $GLOBALS["Config"]->URL->Base;
 }
 
-function Redirect($Location = "", $StatusCode = 303)
-{
-   header('Location: ' . GetPageURL($Location), true, $StatusCode);
-   exit;
-   // redirect a browser to the location specified, default is the homepage
-   // default error code is set to 303 for application redirect
-}
-
 function GetResourceURL($URL = "")
 {
 	return $GLOBALS['Config']->URL->Base . $URL;
@@ -92,36 +84,13 @@ function GetRandomToken()
     // return random md5 hash
 }
 
-
-
-function ErrorMessage($Message)
-{
-    include("templates/error/header.php");
-
-    if($GLOBALS["Config"]->Dev->EnableDebug)
-    {
-        echo $Message;
-        // show detailed error message if enabled in the config file
-    }
-    else
-    {
-        echo "An Error Occurred While Proccessing Your Request.";
-        // show generic error message if enabled in the config file
-    }
-
-    include("templates/error/footer.php");
-
-
-    exit;
-}
-
 function IncludeScript($URI)
 {
     $URI = "application/pages/" . $URI;
 
     if(!file_exists($URI))
     {
-        ErrorMessage("Failed to locate script " . $URI);
+        Server::ErrorMessage("Failed to locate script " . $URI);
     }
     include($URI);
 }
