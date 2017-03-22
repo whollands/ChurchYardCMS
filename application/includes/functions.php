@@ -95,6 +95,13 @@ function IncludeScript($URI)
     include($URI);
 }
 
+function ConvertDate($Date)
+{
+    $Date = strtotime($Date);
+    $Date = date('n M Y', $Date);
+    return $Date;
+}
+
 /* --------------------------------------------
 
     Pre-Configured Bootstrap

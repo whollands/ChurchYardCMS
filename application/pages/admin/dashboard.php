@@ -53,7 +53,7 @@ include("templates/dashboard/header.php");
               <h2 class="panel-title"><i class="fa fa-question-circle"></i> System Information</h2>
             </div>
             <div class="panel-body">
-              <p><strong>Version: </strong><?php echo constant("Version"); ?></p>
+              <p><strong>Version: </strong><?php echo Version; ?></p>
               <p><strong>Domain: </strong><?php echo $GLOBALS["Config"]->URL->Domain; ?></p>
               <p><strong>SSL: </strong><?php if($GLOBALS["Config"]->URL->SSL) { echo "<span class=\"label label-success\">Enabled</span>"; } else { echo "<span class=\"label label-warning\">Disabled</span>"; } ?></p>
               <p><strong>Debug: </strong><?php if($GLOBALS["Config"]->Dev->EnableDebug) { echo "<span class=\"label label-danger\">Enabled</span>"; } else { echo "<span class=\"label label-success\">Disabled</span>"; } ?></p>

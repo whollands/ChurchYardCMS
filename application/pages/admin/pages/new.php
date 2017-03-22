@@ -92,7 +92,7 @@ if(isset($_POST["Submitted"]))
 
     if(!Database::Query($SQL))
     {
-      $Db->Error();
+      Database::Error();
       // If error, output error message
     }
     else

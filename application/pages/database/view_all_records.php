@@ -73,8 +73,8 @@ include("templates/mainsite/header.php");
                   echo "<td><a href=\"";
                   echo GetPageURL("database/view/record/".$Data['RecordID']) . "\">";
                   echo $Data["FirstName"] . " " . $Data["LastName"] . "</a></td>";
-                  echo "<td>" . $Data["DateOfBirth"] . "</td>";
-                  echo "<td>" . $Data["DateOfDeath"] . "</td>";
+                  echo "<td>" . ConvertDate($Data["DateOfBirth"]) . "</td>";
+                  echo "<td>" . ConvertDate($Data["DateOfDeath"]) . "</td>";
                   echo "</tr>";
               }
 

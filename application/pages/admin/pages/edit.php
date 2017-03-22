@@ -32,7 +32,7 @@ if(isset($_POST["Submitted"]))
     Server::Redirect("admin/pages/edit/" . $PageID . "?saved");
   }
 
-  unset($Db);
+  
   // destory object
 }
 
@@ -42,7 +42,7 @@ if(isset($_POST["Submitted"]))
 $PageID = Database::Filter(GetPathPart(3));
 // get page being edited, and filter it to prevent injection
 
-$Data = Database::Select("SELECT PageID, PageName, URL, Content FROM Pages WHERE PageID=$PageID")or Server::ErrorMessage($Db->Error());
+$Data = Database::Select("SELECT PageID, PageName, URL, Content FROM Pages WHERE PageID=$PageID")or Server::ErrorMessage(Database::Error());
 // query database
 
 if(count($Data) == 1)
@@ -58,7 +58,7 @@ else
   exit;
 }
 
-unset($Db);
+
 // destory object
 
 include("templates/dashboard/header.php");

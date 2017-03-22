@@ -57,7 +57,7 @@ if(isset($_POST['Submitted']))
 
     $SQL = "UPDATE Users SET Name=$Name, Username=$Username, EmailAddress=$EmailAddress WHERE UserID=$UserID";
 
-    Database::Query($SQL)or Server::ErrorMessage($Db->Error());
+    Database::Query($SQL)or Server::ErrorMessage(Database::Error());
 
   }
 
@@ -69,7 +69,7 @@ else
   $UserID = User::GetUserID();
   $UserID = Database::Filter($UserID);
 
-  $Data = Database::Select("SELECT Name, Username, EmailAddress FROM Users WHERE UserID='0'")or Server::ErrorMessage($Db->Error());
+  $Data = Database::Select("SELECT Name, Username, EmailAddress FROM Users WHERE UserID='0'")or Server::ErrorMessage(Database::Error());
 
   $Name = $Data[0]['Name'];
   $Username = $Data[0]['Username'];

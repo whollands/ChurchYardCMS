@@ -26,7 +26,7 @@
           <ul class="nav nav-pills pull-right">
             <li role="presentation" class=""><a href="/">Home</a></li>
             <li role="presentation"><a href="/about">About</a></li>
-            <li role="presentation"><a href="/database">Datbase</a></li>
+            <li role="presentation"><a href="/database">Database</a></li>
             <li role="presentation"><a href="/contact">Contact</a></li>
           </ul>
         </nav>

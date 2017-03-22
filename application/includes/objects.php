@@ -33,10 +33,8 @@
 class Database {
 
     private static $Conn;
-
-
    
-    public function Connect() 
+    public static function Connect() 
     {    
       
         if(!isset(self::$Conn))
@@ -66,7 +64,7 @@ class Database {
     	
     }
 
-    public function Disconnect()
+    public static function Disconnect()
     {
     	self::$Conn->close();
     	// use the default MySQL close() function
@@ -77,10 +75,10 @@ class Database {
     	try
     	{
 	        // Connect to the database
-	        $Conn = $this->connect();
+	        $Conn = self::Connect();
 
 	        // Query the database
-	        $Result = $Conn->query($query);
+	        $Result = $Conn->Query($query);
     	}
     	catch (Exception $e)
     	{
@@ -94,7 +92,7 @@ class Database {
     {
         $Data = array();
 
-        $Result = $this->query($query);
+        $Result = self::Query($query);
 
         if($Result === false)
         {
@@ -110,23 +108,23 @@ class Database {
         return $Data;
     }
 
-    // public static function Error() 
-    // {
-    // 	if($GLOBALS['Config']->Dev->EnableDebug)
-    // 	{
-    // 		$Conn = $this->Connect();
-    //     	return "<h2>Database Error:</h2> <p>" . $Conn->error . "</p>";
-    // 	}
-    // 	else
-    // 	{
-    // 		return "An error occurred whilst connecting to the database.";
-    // 	}
+    public static function Error() 
+    {
+    	if($GLOBALS['Config']->Dev->EnableDebug)
+    	{
+    		$Conn = self::Connect();
+        	return "<h2>Database Error:</h2> <p>" . $Conn->error . "</p>";
+    	}
+    	else
+    	{
+    		return "An error occurred whilst connecting to the database.";
+    	}
         
-    // }
+    }
 
     public static function Filter($value)
     {
-        $Conn = $this->Connect();
+        $Conn = self::Connect();
         return "'" . $Conn->real_escape_string($value) . "'";
     }
 }
@@ -246,7 +244,7 @@ Class User
 
 			$UserID = Database::Filter($Data[0]['UserID']);
 			$SQL = "SELECT UserID, Username, Name, EmailAddress, IsAdmin FROM Users WHERE UserID=$UserID";
-			$Data = $Db -> Select($SQL)or Server::ErrorMessage($Db->Error());
+			$Data = Database::Select($SQL)or Server::ErrorMessage(Database::Error());
 
 			self::$UserID = $Data[0]['UserID'];
 			self::$Username = $Data[0]['Username'];
@@ -255,7 +253,7 @@ Class User
 			self::$IsAdmin = $Data[0]['IsAdmin'];
 		}
 
-		unset($Db);
+		
 	}
 
 	private function GetUserSalt($Username)
@@ -300,18 +298,7 @@ Class User
 
 	public function GetUserID()
 	{
-		
-		// Create connection
-
-		$SessionToken = $_COOKIE["SessionToken"];
-
-		$SQL = "SELECT Users.UserID FROM Users, Sessions WHERE Sessions.SessionID = $SessionToken AND Sessions.UserID = Users.UserID";
-
-		$Data = Database::Select($SQL)or Server::ErrorMessage($Db->Error());
-
-		echo $Data[0]['UserID'];
-
-		Server::ErrorMessage();
+		return self::$UserID;
 	}
 
 	public function CheckCredentials($Username, $Password)
@@ -364,7 +351,7 @@ Class User
 			$SQL = "INSERT INTO Sessions (UserID, SessionToken, IP) VALUES ($UserID, $SessionToken, $IPAddress)";
 			// prepare satement
 
-			Database::Query($SQL)or Server::ErrorMessage($Db->Error());
+			Database::Query($SQL)or Server::ErrorMessage(Database::Error());
 			// insert session into database
 			// or die with error message
 
@@ -380,7 +367,7 @@ Class User
 			// false means username and/or password incorrect
 		}
 
-		unset($Db);
+		
 		// destroy database object
 	}
 
@@ -403,7 +390,7 @@ Class User
 		
 		// open connection
 		
-		if(!Database::Query($SQL)or Server::ErrorMessage($Db->Error()))
+		if(!Database::Query($SQL)or Server::ErrorMessage(Database::Error()))
 		// perform query to update database
 		{
 			Server::ErrorMessage("Failed to update new password to database.");
@@ -429,10 +416,8 @@ Class User
 
 		$SessionToken = Database::Filter($_COOKIE["SessionToken"]);
 
-		$Data = Database::Query("DELETE FROM Sessions WHERE SessionToken=$SessionToken")or Server::ErrorMessage($Db->Error());
+		$Data = Database::Query("DELETE FROM Sessions WHERE SessionToken=$SessionToken")or Server::ErrorMessage(Database::Error());
 		// Execute
-
-		$Db->Disconnect();
 
 		setcookie("SessionToken", "", time() -3600);
 	}
@@ -448,8 +433,8 @@ Class User
 			
 			$SessionID = Database::Filter($SessionID);
 			$SQL = "DELETE FROM Sessions WHERE SessionID=$SessionID";
-			Database::Query($SQL)or Server::ErrorMessage($Db->Error());
-			unset($Db);
+			Database::Query($SQL)or Server::ErrorMessage(Database::Error());
+			
 		}
 	}
 
@@ -477,8 +462,8 @@ Class User
 			
 			$UserID = Database::Filter($UserID);
 			$SQL = "DELETE FROM Users WHERE UserID=$UserID";
-			Database::Query($SQL)or Server::ErrorMessage($Db->Error());
-			unset($Db);
+			Database::Query($SQL)or Server::ErrorMessage(Database::Error());
+			
 		}
 	}
 }
@@ -542,8 +527,8 @@ Class Page
 			
 			$PageID = Database::Filter($PageID);
 			$SQL = "DELETE FROM Pages WHERE PageID=$PageID";
-			Database::Query($SQL)or Server::ErrorMessage($Db->Error());
-			unset($Db);
+			Database::Query($SQL)or Server::ErrorMessage(Database::Error());
+			
 		}
 	}
 
@@ -607,9 +592,9 @@ Class Record
 			
 			echo "<strong>FirstName: </strong>" . $Data[0]['FirstName'] . "
 		    <br><strong>LastName: </strong>" . $Data[0]['LastName'] . "
-		    <br><strong>Date Of Birth: </strong>" . $Data[0]['DateOfBirth'] . "
+		    <br><strong>Date Of Birth: </strong>" . ConvertDate($Data[0]['DateOfBirth']) . "
 
-		  <br><strong>Date Of Death: </strong>" . $Data[0]['DateOfDeath'];
+		  <br><strong>Date Of Death: </strong>" . ConvertDate($Data[0]['DateOfDeath']);
 
 		  
 		}

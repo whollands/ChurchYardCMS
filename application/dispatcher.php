@@ -30,10 +30,11 @@
 
 /* ------------------------------------------------------------------------ */
 
-define("Version", "1.0 Alpha");
-
+Const Version = '1.0 Alpha';
+// Current software version running
 
 date_default_timezone_set('UTC');
+// Set the timezone of the server
 
 $GLOBALS["Config"] = include("config/general.php");
 // Assign config file to variable
@@ -43,6 +44,7 @@ include("application/includes/Objects.php");
 // include all objects, functions
 
 $User = new User();
+// redundant, needs removing
 
 function GetPathPart($Part = 0)
 {
@@ -245,4 +247,3 @@ switch(GetPathPart(0))
 		
 	break;
 }
-unset($User);
