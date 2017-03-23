@@ -641,3 +641,52 @@ Class Map
 
 	}
 }
+
+Class FamilyTree
+{
+	public static function DisplayTree($RecordID)
+	{
+		if(!preg_match("/^[\d]*$/", $RecordID))
+		{
+			Server::ErrorMessage("Record ID must be a positive integer");
+		}
+		else
+		{
+			$RecordID = Database::Filter($RecordID);
+
+			$SQL = "SELECT RecordID, MotherID, FatherID, SpouseID, FirstName, LastName FROM Records WHERE MotherID=$RecordID OR FatherID=$RecordID";
+
+			$Data = Database::Select($SQL);
+
+			
+
+
+			if(count($Data) > 0)
+			{
+				echo "<ul>";
+
+				foreach ($Data as $Record)
+				{
+
+					echo "<li>";
+					echo "<a href=\"" . GetPageURL('database/view/record/' . $Record['RecordID']) . "\">";
+					echo $Record['FirstName'] . "</a>";
+
+					
+					
+					if($Record['MotherID'] != null || $Record['FatherID'] != null)
+					{
+						self::DisplayTree($Record['RecordID']);
+						// recursively call function
+					}
+
+					echo "</li>";
+					
+
+				}
+				echo "</ul>";
+			}
+		}
+
+	}
+}
