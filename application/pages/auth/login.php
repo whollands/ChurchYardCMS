@@ -8,8 +8,7 @@ if(isset($_POST["username"]) || isset($_POST["password"]))
 
   if($User->CheckCredentials($_POST["username"], $_POST["password"]))
   {
-    header("Location: /admin");
-    exit;
+    Server::Redirect('admin/dashboard');
   }
   else
   {
@@ -84,9 +83,7 @@ if(isset($_POST["username"]) || isset($_POST["password"]))
           </form>
           <br>
           <?php echo $InfoMessage; ?>
-
         </div>
     </div>
-
 </body>
 </html>

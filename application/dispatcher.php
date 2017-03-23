@@ -72,7 +72,7 @@ switch(GetPathPart(0))
 	case "ajax_request":
 		switch(GetPathPart(1))
 		{
-			default: IncludeScript("errors/404Error.php"); break;
+			default: Server::Error404(); break;
 			// return 404 error by default
 
 			case "map_get_grave_list": 
@@ -85,7 +85,7 @@ switch(GetPathPart(0))
 	case "database":
 		switch(GetPathPart(1))
 		{
-			default: IncludeScript("errors/404Error.php"); break;
+			default: Server::Error404(); break;
 			// return 404 error by default
 
 			case "": 
@@ -116,10 +116,10 @@ switch(GetPathPart(0))
 
 		switch(GetPathPart(1))
 		{
-			default: IncludeScript("errors/404Error.php"); break;
+			default: Server::Error404(); break;
 			// return 404 error by default
 
-			case "": header("Location: " . GetPageURL("admin/dashboard")); break;
+			case "": Server::Redirect("admin/dashboard"); break;
 			// redirect directory index to dashboard
 
 			case "dashboard":  IncludeScript("admin/dashboard.php"); break;
@@ -127,7 +127,7 @@ switch(GetPathPart(0))
 			case "pages":
 				switch(GetPathPart(2))
 				{
-					default: IncludeScript("errors/404Error.php"); break;
+					default: Server::Error404(); break;
 					// return 404 error by default
 
 					case "": IncludeScript("admin/pages/view.php"); break;
@@ -148,7 +148,7 @@ switch(GetPathPart(0))
 			case "media":
 				switch(GetPathPart(2))
 				{
-					default: IncludeScript("errors/404Error.php"); break;
+					default: Server::Error404(); break;
 					// return 404 error by default
 
 					case "": IncludeScript("admin/media/view.php"); break;
@@ -161,7 +161,7 @@ switch(GetPathPart(0))
 			case "records":
 				switch(GetPathPart(2))
 				{
-					default: IncludeScript("errors/404Error.php"); break;
+					default: Server::Error404(); break;
 					// return 404 error by default
 
 					case "": IncludeScript("admin/records/view.php"); break;
@@ -174,7 +174,7 @@ switch(GetPathPart(0))
 			case "graves":
 				switch(GetPathPart(2))
 				{
-					default: IncludeScript("errors/404Error.php"); break;
+					default: Server::Error404(); break;
 					// return 404 error by default
 
 					case "": IncludeScript("admin/graves/view.php"); break;
@@ -187,7 +187,7 @@ switch(GetPathPart(0))
 			case "users":
 				switch(GetPathPart(2))
 				{
-					default: IncludeScript("errors/404Error.php"); break;
+					default: Server::Error404(); break;
 					// return 404 error by default
 
 					case "": IncludeScript("admin/users/view.php"); break;
@@ -214,7 +214,7 @@ switch(GetPathPart(0))
 			case "profile":
 				switch(GetPathPart(2))
 				{
-					default: IncludeScript("errors/404Error.php"); break;
+					default: Server::Error404(); break;
 					// return 404 error by default
 
 					case "": Server::Redirect("admin/profile/edit"); break;

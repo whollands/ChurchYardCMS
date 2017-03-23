@@ -172,6 +172,14 @@ Class Server
 	    include("templates/error/footer.php");
 	    exit;
 	}
+
+	public static function Error404()
+	{
+		include("templates/error/header.php");
+		echo "Error 404: Page not found.";
+		include("templates/error/footer.php");
+	    exit;
+	}
 }
 
 Class Jobs
@@ -550,6 +558,23 @@ Class Media
 
 Class Grave
 {
+
+	public static function CheckGraveExists()
+	{
+		
+	}
+	public static function Create()
+	{
+
+	}
+	public static function Modify()
+	{
+		
+	}
+	public static function Delete()
+	{
+		
+	}
 
 }
 
