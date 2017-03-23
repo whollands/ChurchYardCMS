@@ -428,10 +428,11 @@ Class User
 			Server::ErrorMessage("Session ID must be an integer");
 		}
 		else
-		{
+		{	
+			$UserID = Database::Filter(User::$UserID);
 			
 			$SessionID = Database::Filter($SessionID);
-			$SQL = "DELETE FROM Sessions WHERE SessionID=$SessionID";
+			$SQL = "DELETE FROM Sessions WHERE SessionID=$SessionID AND UserID=$UserID";
 			Database::Query($SQL)or Server::ErrorMessage(Database::Error());
 			
 		}

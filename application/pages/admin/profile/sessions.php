@@ -11,8 +11,9 @@ include("templates/dashboard/header.php");
             <?php
 
            
-           
-           $Data = Database::Select("SELECT SessionID, DateCreated, IP FROM Sessions");
+           $UserID = Database::Filter(User::$UserID);
+           $SQL = "SELECT SessionID, DateCreated, IP FROM Sessions WHERE UserID=$UserID";
+           $Data = Database::Select($SQL);
 
             if(count($Data) == 0)
             {
