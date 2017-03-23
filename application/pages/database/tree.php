@@ -17,18 +17,20 @@ include("templates/mainsite/header.php");
 <link rel="stylesheet" type="text/css" href="<?php echo GetResourceURL("application/css/family-tree.css"); ?>">
 
 <div class="container">
+	<div class="family-tree">
 
+	
 <?php
 
-echo "<div class=\"tree\">";
 
-// FamilyTree::DisplayAllChildren(FamilyTree::FindOldestRelative(11));
+ FamilyTree::DisplayTree(2);
 
 // echo FamilyTree::FindOldestRelative(11);
 
-echo "</div>";
-
 ?>
+
+
+	</div>
 </div>
 
 <?php

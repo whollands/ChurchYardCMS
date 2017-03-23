@@ -61,7 +61,6 @@ class Database {
 
         return self::$Conn;
     	
-    	
     }
 
     public static function Disconnect()
@@ -282,7 +281,7 @@ Class User
 
 		if(count($Data) == 1)
 		{
-			return true;
+			$Found = true;
 		}
 		
 		return $Found;
@@ -643,17 +642,59 @@ Class Map
 
 Class FamilyTree
 {
-	public static function DisplayAllChildren($RecordID)
+	public static function DisplayTree($RecordID)
 	{
 		if(!is_pos_int($RecordID))
 		{
 			Server::ErrorMessage("Record ID must be a positive integer");
+			// output error exception if record id is not a integer
 		}
 		else
 		{
 			$RecordID = Database::Filter($RecordID);
+			// prevent injection
 
-			$SQL = "SELECT RecordID, MotherID, FatherID, SpouseID, FirstName, LastName FROM Records WHERE MotherID=$RecordID OR FatherID=$RecordID";
+			$SQL = "SELECT RecordID, FirstName, LastName FROM Records WHERE RecordID=$RecordID";
+			$Data = Database::Select($SQL);
+			// query database
+
+			if(count($Data) == 1)
+			{
+				echo "<ul>";
+				echo "<li>";
+				echo "<a href=\"" . GetPageURL('database/view/record/' . $Data[0]['RecordID']) . "\">";
+				echo $Data[0]['FirstName'] . "</a>";
+
+				self::DisplayAllChildren($Data[0]['RecordID']);
+
+				echo "</li>";
+				echo "</ul>";
+			}
+			else
+			{
+				Server::ErrorMessage("Record not found.");
+			}
+		}
+	}
+
+	private static function DisplayAllChildren($RecordID)
+	{
+		if(!is_pos_int($RecordID))
+		{
+			Server::ErrorMessage("Record ID must be a positive integer");
+			// output error exception if record id is not a integer
+		}
+		else
+		{
+
+			$RecordID = Database::Filter($RecordID);
+
+			$SQL = "
+					SELECT RecordID, MotherID, FatherID, SpouseID, FirstName, LastName
+					FROM Records
+					WHERE MotherID=$RecordID
+					OR FatherID=$RecordID
+				   ";
 
 			$Data = Database::Select($SQL);
 
@@ -664,16 +705,32 @@ Class FamilyTree
 
 				foreach ($Data as $Record)
 				{
-
 					echo "<li>";
 					echo "<a href=\"" . GetPageURL('database/view/record/' . $Record['RecordID']) . "\">";
 					echo $Record['FirstName'] . "</a>";
 
-					
+					if($Record['SpouseID'] != null)
+					{
+						$SpouseID = Database::Filter($Record['SpouseID']);
+
+						$SQL = "SELECT RecordID, FirstName, LastName
+								FROM Records
+								WHERE RecordID=$SpouseID
+								";
+
+						$Data2 = Database::Select($SQL);
+
+						if(count($Data2) == 1)
+						{
+							echo "<a href=\"" . GetPageURL('database/view/record/' . $Data2[0]['RecordID']) . "\">";
+					echo $Data2[0]['FirstName'] . "</a>";
+						}
+					}
+
 					
 					if($Record['MotherID'] != null || $Record['FatherID'] != null)
 					{
-						self::DisplayTree($Record['RecordID']);
+						self::DisplayAllChildren($Record['RecordID']);
 						// recursively call function
 					}
 
