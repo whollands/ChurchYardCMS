@@ -269,12 +269,13 @@ Class User
 
 	public function CheckUserExists($UserID)
 	{
-		if(!preg_match("/^[\d]*$/", $UserID))
+		$Found = false;
+
+		if(!is_pos_int($UserID))
 		{
 			Server::ErrorMessage("User ID must be a positive integer");
 		}
 
-		
 		$UserID = Database::Filter($UserID);
 		$SQL = "SELECT UserID FROM Users WHERE UserID=$UserID";
 		$Data = Database::Select($SQL);
@@ -283,10 +284,8 @@ Class User
 		{
 			return true;
 		}
-		else
-		{
-			return false;
-		}
+		
+		return $Found;
 	}
 
 	public function GetUserID()
@@ -417,7 +416,7 @@ Class User
 
 	public function DeleteSession($SessionID)
 	{
-		if(!preg_match("/^[0-9]*$/", $SessionID))
+		if(!is_pos_int($SessionID))
 		{
 			Server::ErrorMessage("Session ID must be an integer");
 		}
@@ -438,9 +437,9 @@ Class User
 
 	public function Delete($UserID)
 	{
-		if(!preg_match("/^[0-9]*$/", $UserID))
+		if(!is_pos_int($UserID))
 		{
-			Server::ErrorMessage("User ID must be an integer");
+			Server::ErrorMessage("User ID must be a positive integer");
 		}
 		else if(!$this->CheckUserExists($UserID))
 		{
@@ -464,7 +463,7 @@ Class User
 Class Page
 {
 	// private $Base = $GLOBALS['Config']->URL->Base;
-	//private $CleanURLs = $GLOBALS['Config']->URL->CleanURLs;
+	// private $CleanURLs = $GLOBALS['Config']->URL->CleanURLs;
 
 	public function DisplayContent()
 	{
@@ -511,7 +510,7 @@ Class Page
 
 	public function Delete($PageID)
 	{
-		if(!preg_match("/^[0-9]*$/", $PageID))
+		if(!is_pos_int($PageID))
 		{
 			Server::ErrorMessage("Page ID must be an integer");
 		}
@@ -560,7 +559,7 @@ Class Record
 
 	public function GetRecord($RecordID)
 	{
-		if(!preg_match("/^[0-9]*$/", $RecordID))
+		if(!is_pos_int($RecordID))
 		{
 			Server::ErrorMessage("Record ID must be an positive integer");
 		}
@@ -595,7 +594,7 @@ Class Record
 
 	public function CheckRecordExists($RecordID)
 	{
-		if(!preg_match("/^[\d]*$/", $RecordID))
+		if(!is_pos_int($RecordID))
 		{
 			Server::ErrorMessage("Record ID must be a positive integer");
 		}
@@ -644,9 +643,9 @@ Class Map
 
 Class FamilyTree
 {
-	public static function DisplayTree($RecordID)
+	public static function DisplayAllChildren($RecordID)
 	{
-		if(!preg_match("/^[\d]*$/", $RecordID))
+		if(!is_pos_int($RecordID))
 		{
 			Server::ErrorMessage("Record ID must be a positive integer");
 		}
@@ -657,8 +656,6 @@ Class FamilyTree
 			$SQL = "SELECT RecordID, MotherID, FatherID, SpouseID, FirstName, LastName FROM Records WHERE MotherID=$RecordID OR FatherID=$RecordID";
 
 			$Data = Database::Select($SQL);
-
-			
 
 
 			if(count($Data) > 0)
@@ -688,5 +685,58 @@ Class FamilyTree
 			}
 		}
 
+	}
+
+	public static function FindOldestRelative($RecordID)
+	{
+
+		if(!is_pos_int($RecordID))
+		{
+			Server::ErrorMessage("Record ID must be a positive integer");
+		}
+		else
+		{
+
+			// $RecordID = Database::Filter($RecordID);
+
+			// if($Recursive == false)
+			// {
+			// 	$SQL = "SELECT RecordID, FatherID FROM Records WHERE RecordID=$RecordID";
+			// 	$Data = Database::Select($SQL);
+			// 	// Fetch record's mother and father, first time recursive function is called
+
+			// 	if(count($Data) == 1)
+			// 	{
+			// 		$RecordID = $Data[0]['FatherID'];
+			// 	}
+			// 	else if(count($Data) == 0)
+			// 	{
+			// 		Server::ErrorMessage("Record not found.");
+			// 	}
+			// 	else
+			// 	{
+			// 		Server::ErrorMessage("Multiple records were found with ID " . $RecordID);
+			// 	}
+			// }
+
+			// $RecordID = Database::Filter($RecordID);
+
+			
+			// $SQL = "SELECT RecordID, MotherID, FatherID FROM Records WHERE FatherID=$RecordID";
+			// $Data = Database::Select($SQL);
+
+			// if(count($Data) > 0)
+			// {
+			// 	foreach ($Data as $Record) 
+			// 	{
+			// 		if($Record['MotherID'] != null && $Record['FatherID'] != null)
+			// 		{
+			// 			self::FindOldestRelative($Record[$RecordID], true);
+			// 		}
+			// 	}
+			// }
+
+			// return $Data[0][$RecordID];
+		}
 	}
 }

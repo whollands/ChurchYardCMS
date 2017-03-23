@@ -42,7 +42,7 @@ if(isset($_POST["Submitted"]))
     $Validated = false;
   }
 
-  if(!filter_var($EmailAddress, FILTER_VALIDATE_EMAIL))
+  if(!is_email_address($EmailAddress))
   {
     $EmailAddressError = "Invalid email format.";
     $Validated = false;
@@ -61,7 +61,7 @@ if(isset($_POST["Submitted"]))
 
     $Salt = RandomToken();
 
-    $Password = md5(str)
+    $Password = md5(str);
     $SQL = "INSERT INTO Users (UserID, Name, Username, EmailAddress, Password, Salt, IsAdmin) VALUES (DEFAULT, $Name, $Username, $EmailAddress, $Password, $Salt, $IsAdmin";
 
   }

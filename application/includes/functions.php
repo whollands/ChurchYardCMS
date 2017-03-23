@@ -102,6 +102,35 @@ function ConvertDate($Date)
     return $Date;
 }
 
+function is_pos_int($Value)
+{
+    $IsPosInt = true;
+
+    if(!is_numeric($Value))
+    {
+        $IsPosInt = false;
+    }
+
+    if($Value < 0)
+    {
+        $IsPosInt = false;
+    }
+
+    return $IsPosInt;
+}
+
+function is_email_address($Value)
+{
+    $ValidEmail = true;
+
+    if(!filter_var($Value, FILTER_VALIDATE_EMAIL))
+    {
+        $ValidEmail = false;
+    }
+
+    return $ValidEmail;
+}
+
 /* --------------------------------------------
 
     Pre-Configured Bootstrap
