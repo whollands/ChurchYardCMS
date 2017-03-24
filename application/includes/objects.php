@@ -216,9 +216,6 @@ Class Jobs
 
 Class User
 {
-	private $UserTokenCookie = "UserToken";
-	// id of cookie that stores user's session
-
 	public static $UserID = null;
 	public static $Username = null;
 	public static $Name = "Guest";
@@ -226,40 +223,8 @@ Class User
 	public static $IsLoggedin = false;
 	public static $IsAdmin = false;
 
-
-    function __construct()
+	private static function GetUserSalt($Username)
 	{
-		
-		// Create connection
-
-		$SessionToken = Database::Filter($_COOKIE["SessionToken"]);
-
-		$Data = Database::Select("SELECT UserID FROM Sessions WHERE SessionToken=$SessionToken");
-		// Execute
-
-		if(count($Data) == 1)
-		{
-			$this->IsLoggedin = true;
-
-			$UserID = Database::Filter($Data[0]['UserID']);
-			$SQL = "SELECT UserID, Username, Name, EmailAddress, IsAdmin FROM Users WHERE UserID=$UserID";
-			$Data = Database::Select($SQL)or Server::ErrorMessage(Database::Error());
-
-			self::$UserID = $Data[0]['UserID'];
-			self::$Username = $Data[0]['Username'];
-			self::$Name = $Data[0]['Name'];
-			self::$EmailAddress = $Data[0]['EmailAddress'];
-			self::$IsAdmin = $Data[0]['IsAdmin'];
-		}
-
-		
-	}
-
-	private function GetUserSalt($Username)
-	{
-		
-		// Create connection
-
 		if(!preg_match("/^[\w.]*$/", $Username))
 		{
 			Server::ErrorMessage("Username can only contain alphanumeric, periods and underscores");
@@ -274,7 +239,7 @@ Class User
 		return $Data[0]['Salt'];
 	}
 
-	public function CheckUserExists($UserID)
+	public static function CheckUserExists($UserID)
 	{
 		$Found = false;
 
@@ -295,15 +260,19 @@ Class User
 		return $Found;
 	}
 
-	public function GetUserID()
+	public static function GetUserID()
 	{
 		return self::$UserID;
 	}
 
-	public function CheckCredentials($Username, $Password)
+	public static function CheckCredentials($Username, $Password)
 	{
+		if(!preg_match("/^[\w.]*$/", $Username))
+		{
+			Server::ErrorMessage("Username can only contain alphanumeric, periods and underscores");
+		}
 
-		$UserSalt = $this->GetUserSalt($Username);
+		$UserSalt = self::GetUserSalt($Username);
 		// use object function to retrive user salt
 
 		$MasterSalt = $GLOBALS["Config"]->MasterSalt;
@@ -311,9 +280,6 @@ Class User
 
 		$Password =  md5($MasterSalt . $Password . $UserSalt);
 		// hash password
-
-		
-		// Create connection
 
 		$Username = Database::Filter($Username);
 		$Password = Database::Filter($Password);
@@ -329,33 +295,20 @@ Class User
 	    // if user is found in database
 		{
 
-			$RandomToken = GetRandomToken();
-			// create a new random session token
 
 			$UserID = Database::Filter($Data[0]['UserID']);
-			$this->UserID = $UserID;
+			self::$UserID = $UserID;
 			// We know 1 record was found, so $Data[0] refers to the first record in the array
 			// Prevent injection
 
-			$this->Name = $Data[0]['Name'];
-			$this->EmailAddress = $Data[0]['EmailAddress'];
-			$this->Name = $Data[0]['Name'];
+			self::$Name = $Data[0]['Name'];
+			self::$EmailAddress = $Data[0]['EmailAddress'];
+			self::$Name = $Data[0]['Name'];
 
-			$this->IsLoggedin = true;
+			self::$IsLoggedin = true;
 
-			$SessionToken = Database::Filter($RandomToken);
-			$IPAddress = Database::Filter($_SERVER['REMOTE_ADDR']);
-			// Prevent injection
-
-			$SQL = "INSERT INTO Sessions (UserID, SessionToken, IP) VALUES ($UserID, $SessionToken, $IPAddress)";
-			// prepare satement
-
-			Database::Query($SQL)or Server::ErrorMessage(Database::Error());
-			// insert session into database
-			// or die with error message
-
-			setcookie("SessionToken", $RandomToken, time() + (3600 * 24 * 30), "/");
-			// save session token to user's computer
+			self::CreateSession(self::$UserID);
+			// create session to keep user signed in
 
 			return true;
 			// user is authenticated
@@ -366,11 +319,29 @@ Class User
 			// false means username and/or password incorrect
 		}
 
-		
-		// destroy database object
 	}
 
-	public function ChangePassword($UserID, $NewPassword)
+	private static function CreateSession($UserID)
+	{
+		$RandomToken = GetRandomToken();
+		// create a new random session token
+
+		$SessionToken = Database::Filter($RandomToken);
+		$IPAddress = Database::Filter($_SERVER['REMOTE_ADDR']);
+		// Prevent injection
+
+		$SQL = "INSERT INTO Sessions (UserID, SessionToken, IP) VALUES ($UserID, $SessionToken, $IPAddress)";
+		// prepare satement
+
+		Database::Query($SQL)or Server::ErrorMessage(Database::Error());
+		// insert session into database
+		// or die with error message
+
+		setcookie("CYCMS_SessionToken", $RandomToken, time() + (3600 * 24 * 30), "/");
+		// save session token to user's computer
+	}
+
+	public static function ChangePassword($UserID, $NewPassword)
 	{
 		$UserSalt = GetRandomToken();
 		// generate a new random user salt
@@ -401,27 +372,45 @@ Class User
 		
 	}
 
-	public function CheckAuthenticated()
+	public static function CheckAuthenticated()
 	{
-		if($this->IsLoggedin == false)
+		$SessionToken = Database::Filter($_COOKIE["CYCMS_SessionToken"]);
+
+		$Data = Database::Select("SELECT UserID FROM Sessions WHERE SessionToken=$SessionToken");
+		// Execute
+
+		if(count($Data) == 1)
 		{
-			Server::Redirect("login");
+			self::$IsLoggedin = true;
+
+			$UserID = Database::Filter($Data[0]['UserID']);
+			$SQL = "SELECT UserID, Username, Name, EmailAddress, IsAdmin FROM Users WHERE UserID=$UserID";
+			$Data = Database::Select($SQL)or Server::ErrorMessage(Database::Error());
+
+			self::$UserID = $Data[0]['UserID'];
+			self::$Username = $Data[0]['Username'];
+			self::$Name = $Data[0]['Name'];
+			self::$EmailAddress = $Data[0]['EmailAddress'];
+			self::$IsAdmin = $Data[0]['IsAdmin'];
+		}
+		else
+		{
+			Server::Redirect('login');
 		}
 	}
 
-	public function Logout()
+	public static function Logout()
 	{
 		
-
 		$SessionToken = Database::Filter($_COOKIE["SessionToken"]);
 
 		$Data = Database::Query("DELETE FROM Sessions WHERE SessionToken=$SessionToken")or Server::ErrorMessage(Database::Error());
 		// Execute
 
-		setcookie("SessionToken", "", time() -3600);
+		setcookie("CYCMS_SessionToken", "", time() -3600);
 	}
 
-	public function DeleteSession($SessionID)
+	public static function DeleteSession($SessionID)
 	{
 		if(!is_pos_int($SessionID))
 		{
@@ -438,18 +427,18 @@ Class User
 		}
 	}
 
-	public function Update()
+	public static function Update()
 	{
 
 	}
 
-	public function Delete($UserID)
+	public static function Delete($UserID)
 	{
 		if(!is_pos_int($UserID))
 		{
 			Server::ErrorMessage("User ID must be a positive integer");
 		}
-		else if(!$this->CheckUserExists($UserID))
+		else if(!self::CheckUserExists($UserID))
 		{
 			Server::ErrorMessage("User does not exist.");
 		}

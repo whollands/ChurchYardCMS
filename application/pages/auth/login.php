@@ -4,9 +4,9 @@
 if(isset($_POST["username"]) || isset($_POST["password"]))
 {
 
-  $User = new User();
+  
 
-  if($User->CheckCredentials($_POST["username"], $_POST["password"]))
+  if(User::CheckCredentials($_POST["username"], $_POST["password"]))
   {
     Server::Redirect('admin/dashboard');
   }

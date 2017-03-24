@@ -46,8 +46,8 @@ if(isset($_POST['Submitted']))
   if($Validated == true)
   {
 
-    $User = new User();
-    $User->GetUserID();
+    
+    User::GetUserID();
 
     Server::ErrorMessage();
     

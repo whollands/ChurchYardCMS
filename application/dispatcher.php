@@ -43,7 +43,7 @@ include("application/includes/Functions.php");
 include("application/includes/Objects.php");
 // include all objects, functions
 
-$User = new User();
+
 // redundant, needs removing
 
 function GetPathPart($Part = 0)
@@ -112,7 +112,7 @@ switch(GetPathPart(0))
 
 	case "admin":
 
-		$User->CheckAuthenticated();
+		User::CheckAuthenticated();
 
 		switch(GetPathPart(1))
 		{
@@ -196,8 +196,8 @@ switch(GetPathPart(0))
 					case "delete":
 
 						$UserID = GetPathPart(3);
-						$User = new User();
-						$User->Delete($UserID);
+						
+						User::Delete($UserID);
 						unset($User);
 
 						Server::Redirect("admin/users");
@@ -226,7 +226,7 @@ switch(GetPathPart(0))
 							default: IncludeScript("admin/profile/sessions.php"); break;
 							case "delete":
 							$SessionID = GetPathPart(4);
-							$User->DeleteSession($SessionID);
+							User::DeleteSession($SessionID);
 							Server::Redirect("admin/profile/sessions");
 							break;
 						}
@@ -241,7 +241,7 @@ switch(GetPathPart(0))
 
 	case "logout":
 
-		$User->Logout();
+		User::Logout();
 		Server::Redirect();
 		
 	break;
