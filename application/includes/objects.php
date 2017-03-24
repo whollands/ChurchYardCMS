@@ -35,8 +35,7 @@ class Database {
     private static $Conn;
    
     public static function Connect() 
-    {    
-      
+    {      
         if(!isset(self::$Conn))
         {   
         	$Config = include("config/database.php");
@@ -56,11 +55,8 @@ class Database {
 	    	{
 	    		Server::ErrorMessage($e->getMessage());
 	    	}
-        	
         }
-
         return self::$Conn;
-    	
     }
 
     public static function Disconnect()
@@ -225,18 +221,25 @@ Class User
 
 	private static function GetUserSalt($Username)
 	{
+		$UserSalt = null;
+
 		if(!preg_match("/^[\w.]*$/", $Username))
 		{
 			Server::ErrorMessage("Username can only contain alphanumeric, periods and underscores");
+			return null;
+		}
+		else
+		{
+			$Username = Database::Filter($Username);
+			// Prevent injection
+
+			$Data = Database::Select("SELECT Salt FROM Users WHERE Username=$Username");
+			// Execute
+
+			$UserSalt = $Data[0]['Salt'];
 		}
 
-		$Username = Database::Filter($Username);
-		// Prevent injection
-
-		$Data = Database::Select("SELECT Salt FROM Users WHERE Username=$Username");
-		// Execute
-
-		return $Data[0]['Salt'];
+		return $UserSalt;
 	}
 
 	public static function CheckUserExists($UserID)
@@ -249,8 +252,11 @@ Class User
 		}
 
 		$UserID = Database::Filter($UserID);
+		// prevent injection
+
 		$SQL = "SELECT UserID FROM Users WHERE UserID=$UserID";
 		$Data = Database::Select($SQL);
+		// query database
 
 		if(count($Data) == 1)
 		{
@@ -286,17 +292,13 @@ Class User
 		// Prevent injection on input
 
 		$SQL = "SELECT UserID, Name, EmailAddress, IsAdmin, Username FROM Users WHERE Username=$Username AND Password=$Password";
-		// prepare
-
 		$Data = Database::Select($SQL);
-		// Execute
+		// Prepare and execute statement
 		
 		if(Count($Data) == 1)
 	    // if user is found in database
 		{
 
-
-			$UserID = Database::Filter($Data[0]['UserID']);
 			self::$UserID = $UserID;
 			// We know 1 record was found, so $Data[0] refers to the first record in the array
 			// Prevent injection
@@ -326,13 +328,12 @@ Class User
 		$RandomToken = GetRandomToken();
 		// create a new random session token
 
+		$UserID = Database::Filter($Data[0]['UserID']);
 		$SessionToken = Database::Filter($RandomToken);
 		$IPAddress = Database::Filter($_SERVER['REMOTE_ADDR']);
 		// Prevent injection
 
 		$SQL = "INSERT INTO Sessions (UserID, SessionToken, IP) VALUES ($UserID, $SessionToken, $IPAddress)";
-		// prepare satement
-
 		Database::Query($SQL)or Server::ErrorMessage(Database::Error());
 		// insert session into database
 		// or die with error message
@@ -355,20 +356,7 @@ Class User
 		// prevent injection
 
 		$SQL = "UPDATE Users SET Password=$NewPassword AND Salt=$UserSalt WHERE UserID=$UserID";
-		// prepare query
-
-		
-		// open connection
-		
-		if(!Database::Query($SQL)or Server::ErrorMessage(Database::Error()))
-		// perform query to update database
-		{
-			Server::ErrorMessage("Failed to update new password to database.");
-		}
-		else
-		{
-			Server::ErrorMessage("Success.");
-		}
+		Database::Query($SQL)or Server::ErrorMessage(Database::Error());
 		
 	}
 
@@ -384,6 +372,7 @@ Class User
 			self::$IsLoggedin = true;
 
 			$UserID = Database::Filter($Data[0]['UserID']);
+
 			$SQL = "SELECT UserID, Username, Name, EmailAddress, IsAdmin FROM Users WHERE UserID=$UserID";
 			$Data = Database::Select($SQL)or Server::ErrorMessage(Database::Error());
 
@@ -419,11 +408,10 @@ Class User
 		else
 		{	
 			$UserID = Database::Filter(User::$UserID);
-			
 			$SessionID = Database::Filter($SessionID);
+
 			$SQL = "DELETE FROM Sessions WHERE SessionID=$SessionID AND UserID=$UserID";
 			Database::Query($SQL)or Server::ErrorMessage(Database::Error());
-			
 		}
 	}
 
@@ -448,8 +436,8 @@ Class User
 		}
 		else
 		{
-			
 			$UserID = Database::Filter($UserID);
+
 			$SQL = "DELETE FROM Users WHERE UserID=$UserID";
 			Database::Query($SQL)or Server::ErrorMessage(Database::Error());
 			
