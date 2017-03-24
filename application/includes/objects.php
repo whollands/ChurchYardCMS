@@ -226,7 +226,6 @@ Class User
 		if(!preg_match("/^[\w.]*$/", $Username))
 		{
 			Server::ErrorMessage("Username can only contain alphanumeric, periods and underscores");
-			return null;
 		}
 		else
 		{
@@ -299,7 +298,7 @@ Class User
 	    // if user is found in database
 		{
 
-			self::$UserID = $UserID;
+			self::$UserID = $Data[0]['UserID'];
 			// We know 1 record was found, so $Data[0] refers to the first record in the array
 			// Prevent injection
 
@@ -325,21 +324,29 @@ Class User
 
 	private static function CreateSession($UserID)
 	{
-		$RandomToken = GetRandomToken();
-		// create a new random session token
+		if(!is_pos_int($UserID))
+		{
+			Server::ErrorMessage("User ID must be an integer");
+		}
+		else
+		{
 
-		$UserID = Database::Filter($Data[0]['UserID']);
-		$SessionToken = Database::Filter($RandomToken);
-		$IPAddress = Database::Filter($_SERVER['REMOTE_ADDR']);
-		// Prevent injection
+			$RandomToken = GetRandomToken();
+			// create a new random session token
 
-		$SQL = "INSERT INTO Sessions (UserID, SessionToken, IP) VALUES ($UserID, $SessionToken, $IPAddress)";
-		Database::Query($SQL)or Server::ErrorMessage(Database::Error());
-		// insert session into database
-		// or die with error message
+			$UserID = Database::Filter($UserID);
+			$SessionToken = Database::Filter($RandomToken);
+			$IPAddress = Database::Filter($_SERVER['REMOTE_ADDR']);
+			// Prevent injection
 
-		setcookie("CYCMS_SessionToken", $RandomToken, time() + (3600 * 24 * 30), "/");
-		// save session token to user's computer
+			$SQL = "INSERT INTO Sessions (UserID, SessionToken, IP) VALUES ($UserID, $SessionToken, $IPAddress)";
+			Database::Query($SQL)or Server::ErrorMessage(Database::Error());
+			// insert session into database
+			// or die with error message
+
+			setcookie("CYCMS_SessionToken", $RandomToken, time() + (3600 * 24 * 30), "/");
+			// save session token to user's computer
+		}
 	}
 
 	public static function ChangePassword($UserID, $NewPassword)
@@ -518,6 +525,11 @@ Class Media
 
 	}
 
+	static public function CheckMediaExists($MediaID)
+	{
+		
+	}
+
 	public function Upload()
 	{
 
@@ -647,6 +659,49 @@ Class Record
 
 Class Map
 {
+	public static function DisplayMap()
+	{
+		$SQL = "SELECT * FROM Graves ORDER BY YCoord ASC, XCoord ASC";
+		$Data = Database::Select($SQL);
+		
+		if(count($Data) == 0)
+		{
+			Server::ErrorMessage('No records found.');
+		}
+		else
+		{
+			echo "<table>";
+
+			$CurrentRecordPointer = 0;
+
+			for($Row = 0; $Row <= 10; $Row++)
+			{
+				echo "<tr>";
+
+				for($Col = 0; $Col <= 20; $Col++)
+				{
+					if($Data[$CurrentRecordPointer]['XCoord'] == $Col && $Data[$CurrentRecordPointer]['YCoord'] == $Row)
+					{
+						echo "<td><div class=\"content\">".$Data[$CurrentRecordPointer]['Type'] ."</div></td>";
+						$CurrentRecordPointer++;
+					}
+					else
+					{
+						echo "<td></td>";
+					}
+				}
+
+				echo "</tr>";
+
+			}
+
+			echo "</table>";
+		
+		}
+		
+	}
+
+
 	public static function GetGraveList()
 	{
 		
@@ -767,7 +822,7 @@ Class FamilyTree
 
 	}
 
-	public static function FindOldestRelative($RecordID)
+	public static function FindOldestRelative($RecordID, $Recursive = false)
 	{
 
 		if(!is_pos_int($RecordID))
@@ -777,46 +832,48 @@ Class FamilyTree
 		else
 		{
 
-			// $RecordID = Database::Filter($RecordID);
+			$RecordID = Database::Filter($RecordID);
 
-			// if($Recursive == false)
-			// {
-			// 	$SQL = "SELECT RecordID, FatherID FROM Records WHERE RecordID=$RecordID";
-			// 	$Data = Database::Select($SQL);
-			// 	// Fetch record's mother and father, first time recursive function is called
+			if($Recursive == false)
+			{
+				$SQL = "SELECT RecordID, FatherID FROM Records WHERE RecordID=$RecordID";
+				$Data = Database::Select($SQL);
+				// Fetch record's mother and father, first time recursive function is called
 
-			// 	if(count($Data) == 1)
-			// 	{
-			// 		$RecordID = $Data[0]['FatherID'];
-			// 	}
-			// 	else if(count($Data) == 0)
-			// 	{
-			// 		Server::ErrorMessage("Record not found.");
-			// 	}
-			// 	else
-			// 	{
-			// 		Server::ErrorMessage("Multiple records were found with ID " . $RecordID);
-			// 	}
-			// }
+				if(count($Data) == 1)
+				{
+					$RecordID = $Data[0]['FatherID'];
+					$MotherID = $Data[0]['MotherID'];
+				}
+				else if(count($Data) == 0)
+				{
+					Server::ErrorMessage("Record not found.");
+				}
+				else
+				{
+					Server::ErrorMessage("Multiple records were found with ID " . $RecordID);
+				}
+			}
 
-			// $RecordID = Database::Filter($RecordID);
+			$RecordID = Database::Filter($RecordID);
 
-			
-			// $SQL = "SELECT RecordID, MotherID, FatherID FROM Records WHERE FatherID=$RecordID";
-			// $Data = Database::Select($SQL);
+			die($RecordID);
 
-			// if(count($Data) > 0)
-			// {
-			// 	foreach ($Data as $Record) 
-			// 	{
-			// 		if($Record['MotherID'] != null && $Record['FatherID'] != null)
-			// 		{
-			// 			self::FindOldestRelative($Record[$RecordID], true);
-			// 		}
-			// 	}
-			// }
+			$SQL = "SELECT RecordID, MotherID, FatherID FROM Records WHERE FatherID=$RecordID";
+			$Data = Database::Select($SQL);
 
-			// return $Data[0][$RecordID];
+			if(count($Data) > 0)
+			{
+				foreach ($Data as $Record) 
+				{
+					if($Record['MotherID'] != null && $Record['FatherID'] != null)
+					{
+						self::FindOldestRelative($Record[$RecordID], true);
+					}
+				}
+			}
+
+			return $Data[0][$RecordID];
 		}
 	}
 }

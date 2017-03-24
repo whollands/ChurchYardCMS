@@ -22,12 +22,35 @@ include("templates/mainsite/header.php");
 
 <script type="text/javascript" src="<?php echo GetResourceURL("application/js/map.js"); ?>"></script>
 
+
+<style type="text/css">
+	
+	table {
+  width: 90%;
+  background:url('/application/images/grass.png');
+}
+td {
+  width: 1%;
+  position: relative;
+}
+td:after {
+  content: '';
+  display: block;
+  margin-top: 100%;
+}
+td .content {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: gold;
+}
+</style>
+
 <div id="map">
 	
-
-	<canvas id="GraveYardMap" width="830" height="450" style="border:1px solid #000000;">
-		<div class="alert alert-warning" role="alert"><i class="fa fa-warning"></i> Your browser does not support this web application.</div>
-	</canvas>
+<?php Map::DisplayMap(); ?>
 
 
 </div>
