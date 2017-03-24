@@ -16,14 +16,25 @@ include("templates/mainsite/header.php");
 
 <link rel="stylesheet" type="text/css" href="<?php echo GetResourceURL("application/css/family-tree.css"); ?>">
 
+<p>&nbsp;</p>
+
 <div class="container">
 	<div class="family-tree">
 
 	
 <?php
 
+$Search = GetPathPart(2);
 
- FamilyTree::DisplayTree(2);
+if($Search == null)
+{
+	echo AlertInfo('To view a family tree, search for a record and click the \'View Family Tree\' button.');
+}
+else
+{
+	 FamilyTree::DisplayTree($Search);
+}
+
 
 // echo FamilyTree::FindOldestRelative(11);
 
@@ -32,7 +43,7 @@ include("templates/mainsite/header.php");
 
 	</div>
 </div>
-
+<p>&nbsp;</p>
 <?php
 
 include("templates/mainsite/footer.php");
