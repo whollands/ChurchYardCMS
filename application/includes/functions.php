@@ -131,6 +131,21 @@ function is_email_address($Value)
     return $ValidEmail;
 }
 
+
+function GetPathPart($Part = 0)
+{
+    $Path = GetCurrentPath();
+
+    if($GLOBALS["Config"]->URL->CleanURLs)
+    {
+        return $Path["call_parts"][$Part];
+    }
+    else
+    {
+        return $Path["call_parts"][$Part + 1];
+    }
+}
+
 /* --------------------------------------------
 
     Pre-Configured Bootstrap

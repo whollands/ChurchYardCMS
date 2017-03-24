@@ -43,27 +43,10 @@ include("application/includes/Functions.php");
 include("application/includes/Objects.php");
 // include all objects, functions
 
-
-// redundant, needs removing
-
-function GetPathPart($Part = 0)
-{
-	$Path = GetCurrentPath();
-
-	if($GLOBALS["Config"]->URL->CleanURLs)
-	{
-		return $Path["call_parts"][$Part];
-	}
-	else
-	{
-		return $Path["call_parts"][$Part + 1];
-	}
-}
-
 switch(GetPathPart(0))
 {
 	default: 
-	case "":
+	case null:
 		$Page = new Page();
 		$Page->DisplayContent();
 	break;
@@ -237,12 +220,12 @@ switch(GetPathPart(0))
 	// end of admin section
 	break;
 
-	case "login": IncludeScript("auth/login.php"); break;
+	case "login": 
+		IncludeScript("auth/login.php");
+	break;
 
 	case "logout":
-
 		User::Logout();
 		Server::Redirect();
-		
 	break;
 }
