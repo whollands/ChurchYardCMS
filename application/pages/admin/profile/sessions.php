@@ -43,7 +43,7 @@ include("templates/dashboard/header.php");
                   echo "<td>" . $Data["SessionID"] . "</td>";
                   echo "<td>" . $Data["DateCreated"] . "</td>";
                   echo "<td>";
-                  echo Button("Revoke", GetPageURL("admin/profile/sessions/delete/" . $Data["SessionID"]), "btn btn-default btn-xs");
+                  echo Button("Revoke", GetPageURL("admin/profile/sessions/delete/" . $Data["SessionID"]), "btn btn-danger btn-xs");
                   echo "</td>";
                   echo "</tr>";
               }

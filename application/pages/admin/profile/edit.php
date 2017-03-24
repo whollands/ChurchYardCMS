@@ -69,11 +69,24 @@ else
   $UserID = User::GetUserID();
   $UserID = Database::Filter($UserID);
 
-  $Data = Database::Select("SELECT Name, Username, EmailAddress FROM Users WHERE UserID='0'")or Server::ErrorMessage(Database::Error());
+  $Data = Database::Select("SELECT UserID, Name, Username, EmailAddress, IsAdmin FROM Users WHERE UserID='0'")or Server::ErrorMessage(Database::Error());
 
   $Name = $Data[0]['Name'];
   $Username = $Data[0]['Username'];
   $EmailAddress = $Data[0]['EmailAddress'];
+
+  if($Data[0]['UserID'] == 0)
+  {
+    $AccountType = "Super User";
+  }
+  else if($Data[0]['IsAdmin'] == true)
+  {
+    $AccountType = "Administrator";
+  }
+  else
+  {
+    $AccountType = "Standard User";
+  }
 
 }
 
@@ -113,6 +126,13 @@ include("templates/dashboard/header.php");
             <input id="EmailAddress" name="EmailAddress" type="email" value="<?php echo $EmailAddress; ?>" class="form-control input-md" required="true">
             <span class="help-block" style="color:red;"><?php echo $EmailAddressError; ?></span>
             <span class="help-block">For notifications and password resets</span>  
+          </div>
+
+          <!-- Text input-->
+          <div class="form-group">
+            <label class="control-label" for="AccountType">Account Type</label>  
+            <input id="AccountType" name="AccountType" type="text" value="<?php echo $AccountType; ?>" class="form-control input-md" disabled="true">
+            <span class="help-block">You cannot change your account type</span>  
           </div>
 
           <!-- Password input-->

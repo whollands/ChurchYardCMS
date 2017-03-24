@@ -606,12 +606,32 @@ Class Record
 			{
 				Server::ErrorMessage("Record not found.");
 			}
-			
-			echo "<strong>FirstName: </strong>" . $Data[0]['FirstName'] . "
-		    <br><strong>LastName: </strong>" . $Data[0]['LastName'] . "
-		    <br><strong>Date Of Birth: </strong>" . ConvertDate($Data[0]['DateOfBirth']) . "
+			else
+			{
 
-		  <br><strong>Date Of Death: </strong>" . ConvertDate($Data[0]['DateOfDeath']);
+
+			echo "<h1>" . $Data[0]['FirstName'] . " " . $Data[0]['LastName'] . "</h1>";
+
+				echo "<strong>FirstName: </strong>" . $Data[0]['FirstName'] . "
+			    <br><strong>LastName: </strong>" . $Data[0]['LastName'] . "
+			    <br><strong>Date Of Birth: </strong>" . ConvertDate($Data[0]['DateOfBirth']) . "
+
+			  <br><strong>Date Of Death: </strong>" . ConvertDate($Data[0]['DateOfDeath']) . "
+			  <br><strong>Mother: </strong>" . $Data[0]['MotherID']
+			  ;
+
+			  switch($Data[0]['Gender'])
+			  {
+			  	default: echo "<p><i class=\"fa fa-question\"> Unknown Gender</i></p>"; break;
+			  	case "m": echo "<p><i class=\"fa fa-male\"> Male</i></p>"; break;
+			  	case "f": echo "<p><i class=\"fa fa-female\"> Female</i></p>"; break;
+		  	  
+		  	  }
+
+		  	  echo Button("View Family Tree", GetPageURL("database/tree/" . $Data[0]['RecordID']));
+
+		  	  echo "<p>&nbsp;</p>";
+		  	}
 
 		  
 		}
