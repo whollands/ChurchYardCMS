@@ -26,7 +26,7 @@ include("templates/mainsite/header.php");
 <style type="text/css">
 	
 	table {
-  width: 90%;
+  width: 100%;
   background:url('/application/images/grass.png');
 }
 td {

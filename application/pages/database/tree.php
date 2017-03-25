@@ -32,7 +32,8 @@ if($Search == null)
 }
 else
 {
-	 FamilyTree::DisplayTree($Search);
+	 //FamilyTree::DisplayTree($Search);
+	echo FamilyTree::FindOldestRelative($Search);
 }
 
 

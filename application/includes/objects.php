@@ -773,15 +773,19 @@ Class FamilyTree
 					WHERE MotherID=$RecordID
 					OR FatherID=$RecordID
 				   ";
+			// query database to find all children of record
 
 			$Data = Database::Select($SQL);
-
+			// query database
 
 			if(count($Data) > 0)
+		    // if more than 1 record found
 			{
 				echo "<ul>";
+				// create new sublist
 
 				foreach ($Data as $Record)
+				// for each child
 				{
 					echo "<li>";
 					echo "<a href=\"" . GetPageURL('database/view/record/' . $Record['RecordID']) . "\">";
@@ -814,7 +818,6 @@ Class FamilyTree
 
 					echo "</li>";
 					
-
 				}
 				echo "</ul>";
 			}
@@ -822,7 +825,7 @@ Class FamilyTree
 
 	}
 
-	public static function FindOldestRelative($RecordID, $Recursive = false)
+	public static function FindOldestRelative($RecordID)
 	{
 
 		if(!is_pos_int($RecordID))
@@ -831,49 +834,41 @@ Class FamilyTree
 		}
 		else
 		{
-
 			$RecordID = Database::Filter($RecordID);
+			// prevent injection
 
-			if($Recursive == false)
-			{
-				$SQL = "SELECT RecordID, FatherID FROM Records WHERE RecordID=$RecordID";
-				$Data = Database::Select($SQL);
-				// Fetch record's mother and father, first time recursive function is called
+			$SQL = "SELECT MotherID, FatherID
+					FROM Records
+					WHERE RecordID=$RecordID";
+			// get mother and father of $RecordID
 
-				if(count($Data) == 1)
-				{
-					$RecordID = $Data[0]['FatherID'];
-					$MotherID = $Data[0]['MotherID'];
-				}
-				else if(count($Data) == 0)
-				{
-					Server::ErrorMessage("Record not found.");
-				}
-				else
-				{
-					Server::ErrorMessage("Multiple records were found with ID " . $RecordID);
-				}
-			}
-
-			$RecordID = Database::Filter($RecordID);
-
-			die($RecordID);
-
-			$SQL = "SELECT RecordID, MotherID, FatherID FROM Records WHERE FatherID=$RecordID";
 			$Data = Database::Select($SQL);
+			// query database
 
-			if(count($Data) > 0)
+			if(count($Data) == 1)
+			// if record has been found.
 			{
-				foreach ($Data as $Record) 
+				$FatherID = $Data[0]['FatherID'];
+				// get father ID of record
+
+				if($FatherID != null)
 				{
-					if($Record['MotherID'] != null && $Record['FatherID'] != null)
-					{
-						self::FindOldestRelative($Record[$RecordID], true);
-					}
+					$RecordID = self::FindOldestRelative($FatherID);
+					
 				}
+
+				return $RecordID;
+
+			}
+			else if(count($Data) > 1)
+			{
+				Server::ErrorMessage("Error: Multiple records with primary key were found.");
+			}
+			else
+			{
+				Server::ErrorMessage("Record not found.");
 			}
 
-			return $Data[0][$RecordID];
 		}
 	}
 }
