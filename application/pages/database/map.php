@@ -20,8 +20,6 @@ include("templates/mainsite/header.php");
 	<div class="alert alert-warning" role="alert"><i class="fa fa-warning"></i> JavaScript must be enabled in your browser in order to display the interactive map.</div>
 </noscript>
 
-<script type="text/javascript" src="<?php echo GetResourceURL("application/js/map.js"); ?>"></script>
-
 
 <style type="text/css">
 	
@@ -40,15 +38,18 @@ td:after {
 }
 td .content {
   position: absolute;
+  background-image:url('/application/images/grave.png');
+  background-position: center;
   top: 0;
   bottom: 0;
   left: 0;
   right: 0;
-  background: gold;
 }
 </style>
-
-<div id="map">
+<div class="visible-xs">
+  <div class="alert alert-warning" role="alert"><i class="fa fa-warning"></i> Interactive map is only viewable on desktop and tablet devices.</div>
+</div>
+<div id="map" class="hidden-xs">
 	
 <?php Map::DisplayMap(); ?>
 

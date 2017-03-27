@@ -1,12 +1,32 @@
 <?php if(!defined("ChurchYard_Execute")) die("Access Denied.");
 
+if(GetPathPart(2) != null)
+{
+  switch(GetPathPart(2))
+  {
+    default:
+      Server::Error404();
+    break;
+
+    case "update_sitemap":
+      Jobs::UpdateSitemap();
+    break;
+
+    case "update_robots":
+      Jobs::UpdateSitemap();
+    break;
+
+    case "clear_cache":
+      Jobs::UpdateSitemap();
+    break;
+  }
+}
+
+
 include("templates/dashboard/header.php");
 
 
 ?><h1 class="page-header">Jobs</h1>
-
-        <?php echo AlertInfo("Jobs have not been implemented in V.1.0 Alpha"); ?>
-
 
 <div class="row">
     <div class="col-md-4">
@@ -16,7 +36,7 @@ include("templates/dashboard/header.php");
           </div>
           <div class="panel-body">
               <p>Updates sitemap.xml file. This is used by search engines to index your site.</p>
-              <a class="btn btn-danger" href="#" role="button" disabled>Update Sitemap.xml</a>
+              <a class="btn btn-danger" href="<?php echo GetPageURL('admin/jobs/update_sitemap'); ?>" role="button">Update Sitemap.xml</a>
           </div>
       </div>
     </div>
@@ -27,7 +47,7 @@ include("templates/dashboard/header.php");
           </div>
           <div class="panel-body">
               <p>Updates robots.txt file. This is used to control what search engines can access.</p>
-              <a class="btn btn-danger" href="#" role="button" disabled>Update Robots.txt</a>
+              <a class="btn btn-danger" href="<?php echo GetPageURL('admin/jobs/update_robots'); ?>" role="button">Update Robots.txt</a>
           </div>
       </div>
     </div>
@@ -38,7 +58,7 @@ include("templates/dashboard/header.php");
           </div>
           <div class="panel-body">
               <p>Clearing the cache may refresh outdated content that is not updating properly.</p>
-              <a class="btn btn-danger" href="#" role="button" disabled>Clear Cache</a>
+              <a class="btn btn-danger" href="<?php echo GetPageURL('admin/jobs/clear_cache'); ?>" role="button">Clear Cache</a>
           </div>
       </div>
     </div>      

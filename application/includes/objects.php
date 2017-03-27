@@ -682,7 +682,13 @@ Class Map
 				{
 					if($Data[$CurrentRecordPointer]['XCoord'] == $Col && $Data[$CurrentRecordPointer]['YCoord'] == $Row)
 					{
-						echo "<td><div class=\"content\">".$Data[$CurrentRecordPointer]['Type'] ."</div></td>";
+						switch($Data[$CurrentRecordPointer]['Type'])
+						{
+							default: case "h":
+							echo "<td><div class=\"content\"></div></td>";
+							break;
+						}
+
 						$CurrentRecordPointer++;
 					}
 					else
@@ -853,8 +859,7 @@ Class FamilyTree
 
 				if($FatherID != null)
 				{
-					$RecordID = self::FindOldestRelative($FatherID);
-					
+					$RecordID = self::FindOldestRelative($FatherID);		
 				}
 
 				return $RecordID;
@@ -862,7 +867,7 @@ Class FamilyTree
 			}
 			else if(count($Data) > 1)
 			{
-				Server::ErrorMessage("Error: Multiple records with primary key were found.");
+				Server::ErrorMessage("Error: Multiple records with (PRIMARY KEY: RecordID)");
 			}
 			else
 			{
