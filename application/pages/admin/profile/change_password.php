@@ -1,51 +1,72 @@
 <?php if(!defined("ChurchYard_Execute")) die("Access Denied.");
 
-include("templates/dashboard/header.php");
 
 
-$InfoMessage = "";
+$PasswordErrors = "";
 
 if(isset($_POST['Submitted']))
 {
 
   $NewPassword = $_POST['NewPassword'];
+  $UserID = User::$UserID;
+
+  $Validated = true;
 
   if($NewPassword != $_POST['ConfirmNewPassword'])
   {
-      Server::ErrorMessage("Passwords did not match");
+       $PasswordErrors .= "<li>Passwords did not match</li>";
+       $Validated = false;
   }
 
   if(strlen($NewPassword) < 8)
   {
-      Server::ErrorMessage("Not long enough");
+       $PasswordErrors .= "<li>Not long enough</li>";
+       $Validated = false;
   }
 
   if(!preg_match('/[A-Z]/', $NewPassword))
   {
-    $InfoMessage .= AlertWarning("Password must contain at least one UPPERCASE letter");
+    $PasswordErrors .= "<li>Password must contain at least one UPPERCASE letter</li>";
+    $Validated = false;
   }
 
   if(!preg_match('/[a-z]/', $NewPassword))
   {
-    $InfoMessage .= AlertWarning("Password must contain at least one LOWERCASE letter");
+    $PasswordErrors .= "<li>Password must contain at least one LOWERCASE letter</li>";
+    $Validated = false;
   }
 
   if(!preg_match('/\d/', $NewPassword))
   {
-    $InfoMessage .= AlertWarning("Password must contain at least one number");
+    $PasswordErrors .= "<li>Password must contain at least one number</li>";
+    $Validated = false;
   }
 
   if(!preg_match('/[^a-zA-Z\d]/', $NewPassword))
   {
-    $InfoMessage .= AlertWarning("Password must contain at least one special character");
+    $PasswordErrors .= "<li>Password must contain at least one special character</li>";
+    $Validated = false;
+  }
+
+  if($Validated == true)
+  {
+     User::ChangePassword($UserID, $NewPassword);
+     die('Changed password.');
   }
 
 }
 
+if($PasswordErrors != null)
+{
+  $PasswordErrors = AlertWarning("<ul>There are problems with your password: " . $PasswordErrors . "</ul>");
+}
+
+include("templates/dashboard/header.php");
+
 
 ?><h1 class="page-header">Change Password</h1>
 
-<?php echo $InfoMessage; ?>
+<?php echo $PasswordErrors; ?>
 
 <div class="row">
     <div class="col-md-12">
@@ -67,11 +88,11 @@ if(isset($_POST['Submitted']))
               <input id="ConfirmNewPassword" name="ConfirmNewPassword" type="password" placeholder="" class="form-control input-md" required="">
           </div>
 
-          <!-- Password input-->
+         <!-- 
           <div class="form-group">
             <label class=" control-label" for="CurrentPassword">Current Password</label>
               <input id="CurrentPassword" name="CurrentPassword" type="password" placeholder="" class="form-control input-md" required="">
-          </div>
+          </div> -->
 
           <!-- Button -->
           <div class="form-group">

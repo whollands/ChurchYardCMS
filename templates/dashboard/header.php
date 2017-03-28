@@ -67,7 +67,9 @@
         <ul class="nav nav-sidebar">
         <?php
 
-          $Pages = array(
+          if(User::$IsAdmin)
+          {
+            $Pages = array(
 
                 'dashboard' => "<i class=\"fa fa-dashboard\"></i> Dashboard",
                 '1' => "",
@@ -83,9 +85,31 @@
                 'users' => "<i class=\"fa fa-users\"></i> Users",
                 'jobs' => "<i class=\"fa fa-check-square-o\"></i> Jobs",
                 'settings' => "<i class=\"fa fa-gears\"></i> Settings",
+
+
                 'help' => "<i class=\"fa fa-question-circle\"></i> Help"
 
             );
+          }
+          else
+          {
+             $Pages = array(
+
+                'dashboard' => "<i class=\"fa fa-dashboard\"></i> Dashboard",
+                '1' => "",
+
+                'pages' => "<i class=\"fa fa-pencil\"></i> Editor",
+                'media' => "<i class=\"fa fa-folder\"></i> Media",
+                '2' => "",
+
+                'records' => "<i class=\"fa fa-book\"></i> Records",
+                'graves' => "<i class=\"fa fa-compass\"></i> Graves",
+                '3' => "",
+
+                'help' => "<i class=\"fa fa-question-circle\"></i> Help"
+
+            );
+          }
 
           foreach($Pages as $URL=>$Title)
           {

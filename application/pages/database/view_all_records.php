@@ -28,8 +28,6 @@ include("templates/mainsite/header.php");
 
  <?php
 
-   
-   
    $SearchQuery = $_GET["search_query"];
 
    if($SearchQuery == null)
@@ -83,8 +81,4 @@ include("templates/mainsite/header.php");
 
             }
 
-            ?>
-
-
-<?php
 include("templates/mainsite/footer.php");

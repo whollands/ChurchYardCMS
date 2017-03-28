@@ -1,5 +1,10 @@
 <?php if(!defined("ChurchYard_Execute")) die("Access Denied.");
 
+if(!User::$IsAdmin)
+{
+  Server::ErrorMessage("Access Denied: You do not have permission to access this page.");
+}
+
 $SiteName = $GLOBALS['Config']->SiteName;
 $EnableCleanURLs = $GLOBALS['Config']->URL->CleanURLs;
 $EnableDebug = $GLOBALS['Config']->Dev->EnableDebug;

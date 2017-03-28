@@ -351,27 +351,56 @@ Class User
 
 	public static function ChangePassword($UserID, $NewPassword)
 	{
-		$UserSalt = GetRandomToken();
-		// generate a new random user salt
+		$Result = false;
+		// assume changing password failed, unless otherwise.
 
-		$NewPassword = $GLOBALS["Config"]->MasterSalt . md5($NewPassword) . $UserSalt;
-		// create a hash for the password
+		if(!is_pos_int($UserID))
+		// check user id is a positive integer
+		{
+			Server::ErrorMessage("User ID must be a positive integer");
+		}
+		else
+		{
+			if(!User::CheckUserExists($UserID))
+			// check if user exists
+			{
+				Server::ErrorMessage("User ID $UserID does not exist.");
+			}
+			else
+			{
+				$UserSalt = GetRandomToken();
+				// generate a new random user salt
 
-		$NewPassword = Database::Filter($NewPassword);
-		$UserSalt = Database::Filter($UserSalt);
-		$UserID = Database::Filter($UserID);
-		// prevent injection
+				$MasterSalt = $GLOBALS["Config"]->MasterSalt;
 
-		$SQL = "UPDATE Users SET Password=$NewPassword AND Salt=$UserSalt WHERE UserID=$UserID";
-		Database::Query($SQL)or Server::ErrorMessage(Database::Error());
-		
+				$NewPasswordHash =  md5($MasterSalt . $NewPassword . $UserSalt);
+				// create a hash for the password
+
+				$NewPasswordHash = Database::Filter($NewPasswordHash);
+				$UserSalt = Database::Filter($UserSalt);
+				$UserID = Database::Filter($UserID);
+				// prevent injection
+
+				$SQL = "UPDATE Users 
+						SET Password=$NewPasswordHash, Salt=$UserSalt
+						WHERE UserID=$UserID
+						";
+
+				if(Database::Query($SQL) == true)
+				{
+					$Result = true;
+				}
+			}
+		}
+		return $Result;
 	}
 
 	public static function CheckAuthenticated()
 	{
 		$SessionToken = Database::Filter($_COOKIE["CYCMS_SessionToken"]);
 
-		$Data = Database::Select("SELECT UserID FROM Sessions WHERE SessionToken=$SessionToken");
+		$SQL = "SELECT UserID FROM Sessions WHERE SessionToken=$SessionToken";
+		$Data = Database::Select($SQL);
 		// Execute
 
 		if(count($Data) == 1)
@@ -890,5 +919,26 @@ Class FamilyTree
 			}
 
 		}
+	}
+}
+
+Class Bootstrap
+{
+	static public function DisplayBreadcrumb()
+	{
+		$URL = GetCurrentPath();
+		$Path = $URL['call_parts'];
+
+		echo "<ol class=\"breadcrumb\">";
+
+		echo "<li><a href=\"#\">Main Site</a></li>"; 
+
+		foreach($Path as $Part)
+		{
+			echo "<li><a href=\"#\">" . ucwords($Part) . "</a></li>";
+		}
+
+		echo "</ol>";
+
 	}
 }
