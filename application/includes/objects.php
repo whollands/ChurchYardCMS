@@ -632,20 +632,21 @@ Class Record
 		{
 			Server::ErrorMessage("Record ID must be a positive integer");
 		}
-
-		
-		$RecordID = Database::Filter($RecordID);
-		$SQL = "SELECT RecordID FROM Records WHERE RecordID=$RecordID";
-		$Data = Database::Select($SQL);
-		
-		if(count($Data) == 1)
-		{
-			return true;
-		}
 		else
 		{
-			return false;
-		}
+			$RecordID = Database::Filter($RecordID);
+			$SQL = "SELECT RecordID FROM Records WHERE RecordID=$RecordID";
+			$Data = Database::Select($SQL);
+			
+			if(count($Data) == 1)
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}	
 	}
 
 	public function Create()
@@ -685,7 +686,11 @@ Class Map
 						switch($Data[$CurrentRecordPointer]['Type'])
 						{
 							default: case "h":
-							echo "<td><div class=\"content\"></div></td>";
+							echo "<td>";
+							echo "<a href=\"" . GetPageURL('database/map/' . $Data[$CurrentRecordPointer]['GraveID']) . "\">";
+							echo "<div class=\"content\"></div>";
+							echo "</a>";
+							echo "</td>";
 							break;
 						}
 
@@ -698,30 +703,40 @@ Class Map
 				}
 
 				echo "</tr>";
-
 			}
-
 			echo "</table>";
-		
 		}
-		
 	}
 
-
-	public static function GetGraveList()
+	public static function GetRecordsInGrave($GraveID)
 	{
-		
-		$Data = Database::Select("SELECT GraveID, XCoord, YCoord FROM Graves ORDER BY YCoord ASC, XCoord ASC");
-		
-		$len = count($Data);
-
-		foreach($Data as $i)
+		if(!is_pos_int($GraveID))
+		{
+			Server::ErrorMessage("Record ID must be a positive integer");
+		}
+		else
 		{
 
-			echo $i['XCoord'] . ":" . $i['YCoord'] . ",";
-		}
+			$GraveID = Database::Filter($GraveID);
+			$SQL = "SELECT * FROM Records WHERE GraveID=$GraveID";
+			$Data = Database::Select($SQL);
 
+			if(count($Data) > 0)
+			{
+				echo "<h1>People buried in Grave " . $GraveID . "</h1>";
+
+				foreach ($Data as $Record)
+				{
+					Record::GetRecord($Record['RecordID']);
+				}
+			}
+			else
+			{
+				echo AlertWarning("No one is buried in this grave.");
+			}
+		}
 	}
+
 }
 
 Class FamilyTree

@@ -52,19 +52,6 @@ switch(GetPathPart(0))
 	break;
 	// return main website homepage
 
-	case "ajax_request":
-		switch(GetPathPart(1))
-		{
-			default: Server::Error404(); break;
-			// return 404 error by default
-
-			case "map_get_grave_list": 
-				Map::GetGraveList();
-			break;
-		}
-	break;
-
-
 	case "database":
 		switch(GetPathPart(1))
 		{
@@ -76,11 +63,14 @@ switch(GetPathPart(0))
 			break;
 
 			case "view":
-			    switch(GetPathPart(2))
+			    if(GetPathPart(2) == null)
 				{
-				default: IncludeScript("database/view_all_records.php"); break;
-				case "record": IncludeScript("database/view_record.php"); break;
-			   }
+					IncludeScript("database/view_all_records.php");
+				}
+				else
+				{
+					IncludeScript("database/view_record.php");
+				}
 			break;
 
 			case "map":

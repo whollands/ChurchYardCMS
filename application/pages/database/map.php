@@ -51,7 +51,18 @@ td .content {
 </div>
 <div id="map" class="hidden-xs">
 	
-<?php Map::DisplayMap(); ?>
+<?php 
+
+if(GetPathPart(2) == null)
+{
+  Map::DisplayMap();
+}
+else
+{
+  Map::GetRecordsInGrave(GetPathPart(2));
+}
+
+ ?>
 
 
 </div>

@@ -17,7 +17,7 @@ include("templates/mainsite/header.php");
 
 <?php
 
-  $Record = new Record(); $Record->GetRecord(GetPathPart(3));
+  $Record = new Record(); $Record->GetRecord(GetPathPart(2));
 
   ?>
 
