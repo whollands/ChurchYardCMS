@@ -119,7 +119,9 @@ class Database
 
 Class Server
 {
-	//private $Config = include("config/general.php");
+	//private static $Config = include("config/general.php");
+
+
 
 	public static function GetFullPath()
 	{
@@ -181,12 +183,61 @@ Class Server
 
 Class Jobs
 {
-	function GenerateSitemap()
-	{
+	private static $SitemapFile = "sitemap.xml";
+	private static $RobotsFile = "robots.txt";
+	private static $CacheDirectory = "cache/";
 
+	private function WriteFile($FileName, $Data)
+	{
+		try
+		{
+			$File = @fopen($FileName, 'w');
+			// @ ignores errors and allows custom exeption handler to function
+
+			if($File == false)
+			{
+				throw new Exception('Failed to open/create $FileName');
+			}
+			
+			if(@fwrite($File, $Data) == false)
+			// @ ignores errors and allows custom exeption handler to function
+			{
+				throw new Exception('Failed to write $FileName');
+			}
+		}
+		catch (Exception $e)
+		{
+			Server::ErrorMessage($e->getMessage());
+		}
 	}
 
-	function GenerateRobots()
+	public static function GenerateSitemap()
+	{
+
+		$XML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+				<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">
+				";
+
+		$SQL = "SELECT URL, LastEdited
+				FROM Pages
+				ORDER BY PageOrder";
+
+		$Data = Database::Select($SQL);
+
+		foreach($Data as $Page)
+		{
+			$XML .= "<url>";
+			$XML .= "<loc>" . $Page['URL'] . "</loc>";
+			$XML .= "<lastmod>" . $Page['LastEdited'] . "</lastmod>";
+			$XML .= "</url>";
+		}
+
+		$XML .= "</urlset>";
+
+		self::WriteFile(self::$SitemapFile, $XML);
+	}
+
+	public static function GenerateRobots()
 	// creates a robots.txt file
 	{
 		$Date = date('d-m-Y H:i:s');
@@ -198,28 +249,10 @@ Class Jobs
 		$Data .= "\nDisallow: templates/";
 		$Data .= "\nDisallow: cache/";
 
-		try
-		{
-			if(!$File = @fopen("robots.txt", 'w'))
-			// @ ignores errors and allows custom exeption handler to function
-			{
-				throw new Exception('Failed to open Robots.txt file');
-			}
-			
-			if(!@fwrite($File, $Data))
-			// @ ignores errors and allows custom exeption handler to function
-			{
-				throw new Exception('No Robots.txt file specified');
-			}
-		}
-		catch (Exception $e)
-		{
-			Server::ErrorMessage($e->getMessage());
-		}
-		
+		self::WriteFile(self::$RobotsFile, $Data);
 	}
 
-	function ClearCache()
+	public static function ClearCache()
 	{
 		// foreach (new DirectoryIterator('cache/') as $fileInfo) 
 		// {
@@ -228,11 +261,6 @@ Class Jobs
 		//         unlink($fileInfo->getPathname());
 		//     }
 		// }
-	}
-
-	function IndexSearch()
-	{
-
 	}
 }
 
@@ -301,6 +329,7 @@ Class User
 				FROM Users
 				WHERE Username=$Username
 				";
+
 		$Data = Database::Select($SQL);
 
 		if(count($Data) == 1)
@@ -361,6 +390,11 @@ Class User
 
 			self::CreateSession(self::$UserID);
 			// create session to keep user signed in
+
+			$UserID = Database::Filter($UserID);
+
+			Database::Query("UPDATE Users SET LastLogin=NOW() WHERE UserID=$UserID");
+			// update last logged in time in user table.
 
 			return true;
 			// user is authenticated
@@ -500,6 +534,20 @@ Class User
 			$SQL = "DELETE FROM Sessions WHERE SessionID=$SessionID AND UserID=$UserID";
 			Database::Query($SQL)or Server::ErrorMessage(Database::Error());
 		}
+	}
+
+	public static function CreateUser($Name, $Username, $EmailAddress, $Password, $IsAdmin)
+	{
+		$Name = Database::Filter($Name);
+		$Username = Database::Filter($Username);
+		$EmailAddress = Database::Filter($EmailAddress);
+		$IsAdmin = Database::Filter($IsAdmin);
+
+		$SQL = "INSERT INTO Users (UserID, Name, Username, EmailAddress, Password, Salt, $IsAdmin)
+				VALUES (DEFAULT, $Name, $Username, $EmailAddress, $Password, $RandomToken, $IsAdmin)
+				";
+
+				User::ChangePassword($UserID, $Password);
 	}
 
 	public static function Update()
@@ -926,7 +974,7 @@ Class FamilyTree
 			{
 				echo "<ul>";
 				echo "<li>";
-				echo "<a href=\"" . GetPageURL('database/view/record/' . $Data[0]['RecordID']) . "\">";
+				echo "<a href=\"" . GetPageURL('database/view/' . $Data[0]['RecordID']) . "\">";
 				echo $Data[0]['FirstName'] . "</a>";
 
 				self::DisplayAllChildren($Data[0]['RecordID']);
@@ -974,7 +1022,7 @@ Class FamilyTree
 				// for each child
 				{
 					echo "<li>";
-					echo "<a href=\"" . GetPageURL('database/view/record/' . $Record['RecordID']) . "\">";
+					echo "<a href=\"" . GetPageURL('database/view/' . $Record['RecordID']) . "\">";
 					echo $Record['FirstName'] . "</a>";
 
 					if($Record['SpouseID'] != null)
@@ -990,7 +1038,7 @@ Class FamilyTree
 
 						if(count($Data2) == 1)
 						{
-							echo "<a href=\"" . GetPageURL('database/view/record/' . $Data2[0]['RecordID']) . "\">";
+							echo "<a href=\"" . GetPageURL('database/view/' . $Data2[0]['RecordID']) . "\">";
 					echo $Data2[0]['FirstName'] . "</a>";
 						}
 					}
