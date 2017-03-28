@@ -18,13 +18,20 @@ if(isset($_POST['Submitted']))
   }
   // done validating name
 
+
+  if(User::CheckUsernameExists($Username) == true && User::GetUsername() != $Username)
+  {
+    $UsernameError = "Username is already in use.";
+    $Validated = false;
+  }
+
   if(strlen($Username) < 4 || strlen($Username) > 20)
   {
     $UsernameError = "Username must be 4-20 characters in length.";
     $Validated = false;
   }
 
-  if(!preg_match("/^[\w\.]*$/", $UsernameError))
+  if(!preg_match("/^[\w.]*$/", $Username))
   {
     $UsernameError .= " Username can only contain alphanumeric, underscores and periods.";
     $Validated = false;
@@ -39,25 +46,23 @@ if(isset($_POST['Submitted']))
   // done validating email address
 
 
-
-
-
-
   if($Validated == true)
   {
-
     
-    User::GetUserID();
-
-    Server::ErrorMessage();
+    $UserID = User::GetUserID();
     
     $Name = Database::Filter($Name);
     $Username = Database::Filter($Username);
     $EmailAddress = Database::Filter($EmailAddress);
 
-    $SQL = "UPDATE Users SET Name=$Name, Username=$Username, EmailAddress=$EmailAddress WHERE UserID=$UserID";
+    $SQL = "UPDATE Users 
+            SET Name=$Name, Username=$Username, EmailAddress=$EmailAddress 
+            WHERE UserID=$UserID
+            ";
 
     Database::Query($SQL)or Server::ErrorMessage(Database::Error());
+
+    die('saved');
 
   }
 
@@ -135,12 +140,12 @@ include("templates/dashboard/header.php");
             <span class="help-block">You cannot change your account type</span>  
           </div>
 
-          <!-- Password input-->
-          <div class="form-group">
+         
+         <!--  <div class="form-group">
             <label class="control-label" for="Password">Current Password</label>
               <input id="Password" name="Password" type="password" class="form-control input-md" required="true">
               <span class="help-block">Enter current password to save</span>
-          </div>
+          </div> -->
 
           <!-- Button -->
           <div class="form-group">

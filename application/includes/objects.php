@@ -188,20 +188,45 @@ Class Jobs
 	function GenerateRobots()
 	// creates a robots.txt file
 	{
-		$Data = "Disallow: application/";
+		$Date = date('d-m-Y H:i:s');
+
+		$Data = "# Auto-generated on $Date";
+		$Data .= "\nUser-agent: *";
+		$Data .= "\nDisallow: application/";
 		$Data .= "\nDisallow: config/";
 		$Data .= "\nDisallow: templates/";
+		$Data .= "\nDisallow: cache/";
+
+		try
+		{
+			if(!$File = @fopen("robots.txt", 'w'))
+			// @ ignores errors and allows custom exeption handler to function
+			{
+				throw new Exception('Failed to open Robots.txt file');
+			}
+			
+			if(!@fwrite($File, $Data))
+			// @ ignores errors and allows custom exeption handler to function
+			{
+				throw new Exception('No Robots.txt file specified');
+			}
+		}
+		catch (Exception $e)
+		{
+			Server::ErrorMessage($e->getMessage());
+		}
+		
 	}
 
 	function ClearCache()
 	{
-		foreach (new DirectoryIterator('cache/') as $fileInfo) 
-		{
-		    if(!$fileInfo->isDot())
-		    {
-		        unlink($fileInfo->getPathname());
-		    }
-		}
+		// foreach (new DirectoryIterator('cache/') as $fileInfo) 
+		// {
+		//     if(!$fileInfo->isDot())
+		//     {
+		//         unlink($fileInfo->getPathname());
+		//     }
+		// }
 	}
 
 	function IndexSearch()
@@ -265,9 +290,34 @@ Class User
 		return $Found;
 	}
 
+	public static function CheckUsernameExists($Username)
+	{
+		$Found = false;
+
+		$Username = Database::Filter($Username);
+
+		$SQL = "SELECT Username
+				FROM Users
+				WHERE Username=$Username
+				";
+		$Data = Database::Select($SQL);
+
+		if(count($Data) == 1)
+		{
+			$Found = true;
+		}
+
+		return $Found;
+	}
+
 	public static function GetUserID()
 	{
 		return self::$UserID;
+	}
+
+	public static function GetUsername()
+	{
+		return self::$Username;
 	}
 
 	public static function CheckCredentials($Username, $Password)

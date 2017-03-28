@@ -14,15 +14,15 @@ if(GetPathPart(2) != null)
     break;
 
     case "update_sitemap":
-      Jobs::UpdateSitemap();
+      Jobs::GenerateSitemap();
     break;
 
     case "update_robots":
-      Jobs::UpdateSitemap();
+      Jobs::GenerateRobots();
     break;
 
     case "clear_cache":
-      Jobs::UpdateSitemap();
+      Jobs::ClearCache();
     break;
   }
 }
