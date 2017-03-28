@@ -23,13 +23,13 @@ include("templates/dashboard/header.php");
         </div>
         <div class="panel-body">
 
-        <?php echo AlertInfo("Settings have not been implemented in V.1.0 Alpha"); ?>
+        <?php echo AlertInfo("Settings have not been implemented in V.1.0 Alpha. To change these settings, modify the configuration file directly."); ?>
         
           <div class="col-md-4">
 
               <div class="form-group">
                 <label class="control-label" for="">Site Name</label>
-                <input type="text" class="form-control" name="SiteName" value="<?php echo $SiteName; ?>">
+                <input type="text" class="form-control" name="SiteName" value="<?php echo $SiteName; ?>" disabled>
                 <span class="help-block">Appears in HTML title tag and at top of admin interface.</span>
               </div>
 
@@ -38,13 +38,13 @@ include("templates/dashboard/header.php");
 
                 <div class="checkbox">
                   <label for="checkboxes-0">
-                    <input type="checkbox" name="checkboxes" id="checkboxes-0" value="1"<?php if($EnableCleanURLs == true) { echo " checked"; } ?>>
+                    <input type="checkbox" name="checkboxes" id="checkboxes-0" value="1"<?php if($EnableCleanURLs == true) { echo " checked"; } ?> disabled>
                     Enable Clean URL's
                   </label>
                 </div>
                 <div class="checkbox">
                   <label for="checkboxes-1">
-                    <input type="checkbox" name="checkboxes" id="checkboxes-1" value="2"<?php if($EnableDebug == true) { echo " checked"; } ?>>
+                    <input type="checkbox" name="checkboxes" id="checkboxes-1" value="2"<?php if($EnableDebug == true) { echo " checked"; } ?> disabled>
                     Enable debug
                   </label>
                 </div>
