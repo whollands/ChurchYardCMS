@@ -30,7 +30,8 @@
 
 /* ------------------------------------------------------------------------ */
 
-class Database {
+class Database
+{
 
     private static $Conn;
    
@@ -477,7 +478,7 @@ Class User
 	public static function Logout()
 	{
 		
-		$SessionToken = Database::Filter($_COOKIE["SessionToken"]);
+		$SessionToken = Database::Filter($_COOKIE["CYCMS_SessionToken"]);
 
 		$Data = Database::Query("DELETE FROM Sessions WHERE SessionToken=$SessionToken")or Server::ErrorMessage(Database::Error());
 		// Execute
@@ -609,17 +610,62 @@ Class Media
 		
 	}
 
-	public function Upload()
+	public function UploadMedia()
 	{
 
 	}	
 
-	public function Delete()
+	public function DeleteMedia($MediaID)
 	{
+		if(!is_pos_int($MediaID))
+		{
+			Server::ErrorMessage('MediaID must be a positive integer');
+		}
+		else
+		{
+			$MediaID = Database::Filter($MediaID);
+			// filter is used TWICE below...
 
+			$SQL = "SELECT MediaID, URL
+					FROM Media
+					WHERE MediaID=$MediaID
+					";
+
+			$Data = Database::Select($SQL);
+
+			if(count($Data) != 1)
+			{
+				Server::ErrorMessage('Media File does not exist. (Media ID: $MediaID)');
+			}
+			else
+			{
+				try
+				{
+					if(!@unlink($Data[0]['URL']))
+					{
+						throw new Exception('Could not delete file from file system.');
+					}
+
+					// media ID has already been filtered
+
+					$SQL = "DELETE FROM Media
+							WHERE MediaID=$MediaID
+							";
+
+					if(!@Database::Query($SQL))
+					{
+						throw new Exception('Could not delete media from database.');
+					}
+				}
+				catch (Exception $e)
+				{
+					Server::ErrorMessage($e->getMessage());
+				}
+			}
+		}
 	}
 
-	public function Modify()
+	public function ModifyMedia($MediaID, $MediaName)
 	{
 
 	}
@@ -628,19 +674,48 @@ Class Media
 Class Grave
 {
 
-	public static function CheckGraveExists()
+	public static function CheckGraveExists($GraveID)
 	{
-		
-	}
-	public static function Create()
-	{
+		$Found = false;
 
+		if(!is_pos_int($GraveID))
+		{
+			Server::ErrorMessage("Grave ID must be a positive integer");
+		}
+
+		$GraveID = Database::Filter($GraveID);
+		// prevent injection
+
+		$SQL = "SELECT GraveID FROM Graves WHERE GraveID=$GraveID";
+		$Data = Database::Select($SQL);
+		// query database
+
+		if(count($Data) == 1)
+		{
+			$Found = true;
+		}
+		
+		return $Found;
 	}
-	public static function Modify()
+
+	public static function CreateGrave($GraveID, $XCoord, $YCoord, $Type)
+	{
+		if(!is_pos_int($GraveID))
+		{
+			Server::ErrorMessage('GraveID must be a positive integer');
+		}
+		else
+		{
+			$SQL = "INSERT INTO Graves (GraveID, XCoord, YCoord, Type)
+					VALUES ($GraveID, $XCoord, $YCoord, $Type)
+					";
+		}
+	}
+	public static function UpdateGrave()
 	{
 		
 	}
-	public static function Delete()
+	public static function DeleteGrave()
 	{
 		
 	}
@@ -707,46 +782,57 @@ Class Record
 
 	public function CheckRecordExists($RecordID)
 	{
+		$Found = false;
+
 		if(!is_pos_int($RecordID))
 		{
 			Server::ErrorMessage("Record ID must be a positive integer");
 		}
-		else
+
+		$RecordID = Database::Filter($RecordID);
+		// prevent injection
+
+		$SQL = "SELECT RecordID FROM Records WHERE RecordID=$RecordID";
+		$Data = Database::Select($SQL);
+		// query database
+
+		if(count($Data) == 1)
 		{
-			$RecordID = Database::Filter($RecordID);
-			$SQL = "SELECT RecordID FROM Records WHERE RecordID=$RecordID";
-			$Data = Database::Select($SQL);
-			
-			if(count($Data) == 1)
-			{
-				return true;
-			}
-			else
-			{
-				return false;
-			}
-		}	
+			$Found = true;
+		}
+		
+		return $Found;
 	}
 
-	public function Create()
+	public function CreateRecord()
 	{
 
 	}
 
-	
+	public static function UpdateRecord()
+	{
+		
+	}
 
+	public static function DeleteRecord()
+	{
+
+	}
 }
 
 Class Map
 {
 	public static function DisplayMap()
 	{
-		$SQL = "SELECT * FROM Graves ORDER BY YCoord ASC, XCoord ASC";
+		$SQL = "SELECT * 
+				FROM Graves 
+				ORDER BY YCoord ASC, XCoord ASC
+				";
 		$Data = Database::Select($SQL);
 		
 		if(count($Data) == 0)
 		{
-			Server::ErrorMessage('No records found.');
+			echo AlertWarning('No records found.');
 		}
 		else
 		{

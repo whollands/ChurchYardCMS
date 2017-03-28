@@ -127,6 +127,11 @@ switch(GetPathPart(0))
 					case "": IncludeScript("admin/media/view.php"); break;
 					case "upload": IncludeScript("admin/media/upload.php"); break;
 					case "details": IncludeScript("admin/media/details.php"); break;
+					case "delete":
+						$MediaID = GetPathPart(3);
+						Media::DeleteMedia($MediaID);
+						Server::Redirect('admin/media');
+					break;
 				}
 
 			break;
@@ -171,7 +176,6 @@ switch(GetPathPart(0))
 						$UserID = GetPathPart(3);
 						
 						User::Delete($UserID);
-						unset($User);
 
 						Server::Redirect("admin/users");
 

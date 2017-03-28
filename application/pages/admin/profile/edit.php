@@ -38,7 +38,7 @@ if(isset($_POST['Submitted']))
   }
   // done validating username
 
-  if(!filter_var($EmailAddress, FILTER_VALIDATE_EMAIL))
+  if(!is_email_address($EmailAddress, FILTER_VALIDATE_EMAIL))
   {
     $EmailAddressError = " Invalid email address.";
     $Validated = false;
@@ -60,10 +60,16 @@ if(isset($_POST['Submitted']))
             WHERE UserID=$UserID
             ";
 
-    Database::Query($SQL)or Server::ErrorMessage(Database::Error());
+    $Result = Database::Query($SQL);
 
-    die('saved');
-
+    if($Result)
+    {
+      Server::Redirect('admin/profile/edit');
+    }
+    else
+    {
+      Server::ErrorMessage('Failed to save user profile.');
+    }
   }
 
 }
