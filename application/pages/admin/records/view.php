@@ -8,10 +8,11 @@ include("templates/dashboard/header.php");
 <div class="row">
     <div class="col-md-12">
 
-  <p><a href="<?php echo GetPageURL("admin/records/new"); ?>" class="btn btn-success align-right"><i class="fa fa-plus"></i> Create Record</a></p>
-
-      
-    
+  <p>
+    <a href="<?php echo GetPageURL("admin/records/new"); ?>" class="btn btn-success align-right">
+     <i class="fa fa-plus"></i> Create Record
+    </a>
+  </p>
 
 
 
@@ -55,9 +56,9 @@ include("templates/dashboard/header.php");
                   echo "<td>" . $DateOfDeath . "</td>";
                   echo "<td>" . $DateOfBirth . "</td>";
                   echo "<td>";
-                  echo Button("Edit", "#", "btn btn-primary btn-xs");
+                  echo Button("Edit", GetPageURL('admin/records/edit/' . $Data['RecordID']), "btn btn-primary btn-xs");
                   echo " ";
-                  echo Button("Delete", "#", "btn btn-danger btn-xs");
+                  echo Button("Delete", GetPageURL('admin/records/delete/' . $Data['RecordID']), "btn btn-danger btn-xs");
                   echo "</td>";
                   echo "</tr>";
               }

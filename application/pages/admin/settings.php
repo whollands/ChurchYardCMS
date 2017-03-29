@@ -6,7 +6,12 @@ if(!User::$IsAdmin)
 }
 
 $SiteName = $GLOBALS['Config']->SiteName;
+$SupportEmail = $GLOBALS['Config']->SupportEmail;
+
+$Domain = $GLOBALS['Config']->URL->Domain;
+
 $EnableCleanURLs = $GLOBALS['Config']->URL->CleanURLs;
+$EnableSSL = $GLOBALS['Config']->URL->SSL;
 $EnableDebug = $GLOBALS['Config']->Dev->EnableDebug;
 
 
@@ -34,6 +39,18 @@ include("templates/dashboard/header.php");
               </div>
 
               <div class="form-group">
+                <label class="control-label" for="">Support Email</label>
+                <input type="email" class="form-control" name="SupportEmail" value="<?php echo $SupportEmail; ?>" disabled>
+                <span class="help-block">Shown to users when they need help.</span>
+              </div>
+
+              <div class="form-group">
+                <label class="control-label" for="">Domain</label>
+                <input type="email" class="form-control" name="Domain" value="<?php echo $Domain; ?>" disabled>
+                <span class="help-block">Domain at which your site can be accessed on.</span>
+              </div>
+
+              <div class="form-group">
                 <label class="control-label" for="checkboxes">Options</label>
 
                 <div class="checkbox">
@@ -44,7 +61,13 @@ include("templates/dashboard/header.php");
                 </div>
                 <div class="checkbox">
                   <label for="checkboxes-1">
-                    <input type="checkbox" name="checkboxes" id="checkboxes-1" value="2"<?php if($EnableDebug == true) { echo " checked"; } ?> disabled>
+                    <input type="checkbox" name="checkboxes" id="checkboxes-1" value="2"<?php if($EnableSSL == true) { echo " checked"; } ?> disabled>
+                    Enable SSL
+                  </label>
+                </div>
+                <div class="checkbox">
+                  <label for="checkboxes-1">
+                    <input type="checkbox" name="checkboxes" id="checkboxes-2" value="2"<?php if($EnableDebug == true) { echo " checked"; } ?> disabled>
                     Enable debug
                   </label>
                 </div>
