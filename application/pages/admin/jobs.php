@@ -63,7 +63,7 @@ include("templates/dashboard/header.php");
           </div>
           <div class="panel-body">
               <p>Clearing the cache may refresh outdated content that is not updating properly.</p>
-              <a class="btn btn-danger" href="<?php echo GetPageURL('admin/jobs/clear_cache'); ?>" role="button">Clear Cache</a>
+              <a class="btn btn-danger" href="<?php echo GetPageURL('admin/jobs/clear_cache'); ?>" role="button" disabled>Clear Cache</a>
           </div>
       </div>
     </div>      

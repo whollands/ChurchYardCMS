@@ -3,7 +3,6 @@
 
 include("templates/mainsite/header.php");
 
-
 ?>
 
 <h1>Database</h1>
@@ -40,7 +39,6 @@ else
 // echo FamilyTree::FindOldestRelative(11);
 
 ?>
-
 
 	</div>
 </div>

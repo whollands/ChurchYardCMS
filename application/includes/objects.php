@@ -746,6 +746,31 @@ Class Grave
 		return $Found;
 	}
 
+	public static function CheckCoordsExist($XCoord, $YCoord)
+	{
+		$Found = false;
+
+		if(!is_pos_int($XCoord) || !is_pos_int($YCoord))
+		{
+			Server::ErrorMessage("Co-ordinates must be a positive integer");
+		}
+
+		$XCoord = Database::Filter($XCoord);
+		$YCoord = Database::Filter($YCoord);
+		// prevent injection
+
+		$SQL = "SELECT GraveID FROM Graves WHERE XCoord=$XCoord AND YCoord=$YCoord";
+		$Data = Database::Select($SQL);
+		// query database
+
+		if(count($Data) == 1)
+		{
+			$Found = true;
+		}
+		
+		return $Found;
+	}
+
 	public static function CreateGrave($GraveID, $XCoord, $YCoord, $Type)
 	{
 		if(!is_pos_int($GraveID))
@@ -1085,9 +1110,17 @@ Class FamilyTree
 				$FatherID = $Data[0]['FatherID'];
 				// get father ID of record
 
+				$MotherID = $Data[0]['FatherID'];
+				// get mother ID of record
+
 				if($FatherID != null)
 				{
 					$RecordID = self::FindOldestRelative($FatherID);		
+				}
+
+				if($MotherID != null)
+				{
+					$RecordID = self::FindOldestRelative($MotherID);		
 				}
 
 				return $RecordID;

@@ -3,9 +3,12 @@
 if(isset($_POST["Submitted"]))
 {
 
-  $GraveID = trim($_POST["GraveID"]);
-  $XCoord = trim(strtolower($_POST["XCoord"]));
-  $YCoord = trim(strtolower($_POST["YCoord"]));
+  $Validated = true;
+  // assume input is valid until otherwise
+
+  $GraveID = $_POST["GraveID"];
+  $XCoord = $_POST["XCoord"];
+  $YCoord = $_POST["YCoord"];
   // Get values submitted by form
   
   switch ($_POST['GraveType']) 
@@ -27,9 +30,37 @@ if(isset($_POST["Submitted"]))
       break;
   }
 
+  if(is_pos_int($XCoord) == false || is_pos_int($YCoord) == false)
+  {
+      $LocationError = "Co-ordinates must both be positive whole numbers.";
+      $Validated = false;
+  }
+  else
+  {
+    if(Grave::CheckCoordsExist($XCoord, $YCoord))
+    {
+      $LocationError = "Those Co-ordinates are already in use.";
+      $Validated = false;
+    }
+  }
+
 
   if($Validated == true)
   {
+
+    $GraveID = Database::Filter($GraveID);
+    $GraveType = Database::Filter($GraveType);
+    $XCoord = Database::Filter($XCoord);
+    $YCoord = Database::Filter($YCoord);
+
+    $SQL = "INSERT INTO Graves (GraveID, Type, XCoord, YCoord)
+            VALUES (DEFAULT, $GraveType, $XCoord, $YCoord)
+            ";
+
+    Database::Query($SQL);
+
+
+    Server::Redirect('admin/graves/new');
 
   }
 
@@ -49,43 +80,42 @@ include("templates/dashboard/header.php");
 
         <input type="hidden" name="Submitted" value="true">
 
-        <!-- Number input-->
-        <div class="form-group">
-          <label class="control-label" for="GraveID">Grave ID</label>  
-            <input id="GraveID" name="GraveID" type="number" placeholder="01" class="form-control input-md" required="true" value="<?php echo $GraveID; ?>">
-            <span class="help-block" style="color:red;"><?php echo $GraveIDError; ?></span>
-        </div>
-
-
         <!-- Text input-->
         <div class="form-group">
-          <label class="control-label" for="XCoord">Location Co-Ordinates</label>  
-            <input id="XCoord" name="XCoord" type="text" placeholder="1" class="form-control input-md" required="true" value="<?php echo $XCoord; ?>">
+          <label class="control-label" for="XCoord">Location Co-Ordinates</label> 
+            <div class="row">
+              <div class="col-md-2">
+                <input id="XCoord" name="XCoord" type="text" placeholder="1" class="form-control input-md" required="true" value="<?php echo $XCoord; ?>">
+              </div>
+              <div class="col-md-2">
             <input id="YCoord" name="YCoord" type="text" placeholder="1" class="form-control input-md" required="true" value="<?php echo $YCoord; ?>">
+              </div>
+            </div>
+            
             <span class="help-block" style="color:red;"><?php echo $LocationError; ?></span>
         </div>
 
         <div class="radio">
           <label>
-            <input type="radio" name="GraveType" id="GraveType" value="u">
+            <input type="radio" name="GraveType" id="GraveType" value="u"<?php if($GraveType == 'u') { echo " checked"; } ?>>
             Upright Headstone
           </label>
         </div>
         <div class="radio">
           <label>
-            <input type="radio" name="GraveType" id="GraveType" value="f">
+            <input type="radio" name="GraveType" id="GraveType" value="f"<?php if($GraveType == 'f') { echo " checked"; } ?>>
             Flat Headstone
           </label>
         </div>
         <div class="radio">
           <label>
-            <input type="radio" name="GraveType" id="GraveType" value="c">
+            <input type="radio" name="GraveType" id="GraveType" value="c"<?php if($GraveType == 'c') { echo " checked"; } ?>>
             Curbed Headstone
           </label>
         </div>
         <div class="radio">
           <label>
-            <input type="radio" name="GraveType" id="GraveType" value="m">
+            <input type="radio" name="GraveType" id="GraveType" value="m"<?php if($GraveType == 'm') { echo " checked"; } ?>>
             Monument
           </label>
         </div>

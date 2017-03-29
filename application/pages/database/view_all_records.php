@@ -36,10 +36,9 @@ include("templates/mainsite/header.php");
    }
    else
    {
-    $SQL = "SELECT * FROM Records 
-            WHERE FirstName LIKE '%$SearchQuery%'
-            OR LastName LIKE '%$SearchQuery%'
-            OR FirstName + LastName LIKE '%$SearchQuery%'
+    $SQL = "SELECT * 
+            FROM Records 
+            WHERE CONCAT(FirstName, ' ', LastName) LIKE '%$SearchQuery%'
             ";
    }
 
@@ -53,8 +52,6 @@ include("templates/mainsite/header.php");
     {
 
               ?>
-
-
       
         <table class="table">
             <tr>
