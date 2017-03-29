@@ -121,8 +121,6 @@ Class Server
 {
 	//private static $Config = include("config/general.php");
 
-
-
 	public static function GetFullPath()
 	{
 		
@@ -178,6 +176,18 @@ Class Server
 		echo "Error 404: Page not found.";
 		include("templates/error/footer.php");
 	    exit;
+	}
+
+	public static function OutputMessage($Message)
+	{
+		$_SESSION['Message'] = $Message;
+	}
+
+	public static function DisplayMessage()
+	{
+		$Message = $_SESSION['Message'];
+		unset($_SESSION['Message']);
+		return $Message;
 	}
 }
 
@@ -395,6 +405,8 @@ Class User
 
 			Database::Query("UPDATE Users SET LastLogin=NOW() WHERE UserID=$UserID");
 			// update last logged in time in user table.
+
+			Server::OutputMessage(AlertInfo('Welcome back ' . User::$Name));
 
 			return true;
 			// user is authenticated

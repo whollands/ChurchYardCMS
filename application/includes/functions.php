@@ -181,7 +181,7 @@ function AlertInfo($Message)
 {
     $HTML = "<div class=\"alert alert-info alert-dismissible\" role=\"alert\">";
     $HTML .= "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>";
-    $HTML .= "<i class=\"fa fa-info\"></i>&nbsp;&nbsp;&nbsp;" . $Message . "</div>";
+    $HTML .= "<i class=\"fa fa-info-circle\"></i>&nbsp;&nbsp;&nbsp;" . $Message . "</div>";
     return $HTML;
 }
 

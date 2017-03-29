@@ -29,6 +29,7 @@ if(isset($_POST["Submitted"]))
   }
   else
   {
+    Server::OutputMessage(AlertSuccess('Changes saved.'));
     Server::Redirect("admin/pages/edit/" . $PageID . "?saved");
   }
 
@@ -66,14 +67,7 @@ include("templates/dashboard/header.php");
 ?><h1 class="page-header">Editor</h1>
 
 
-<?php
-
-if($_SERVER["QUERY_STRING"] == "saved")
-{
-  AlertSuccess("Changes saved");
-}
-
-?>
+ <?php echo Server::DisplayMessage(); ?>
 
 <div class="row">
     <div class="col-md-12">

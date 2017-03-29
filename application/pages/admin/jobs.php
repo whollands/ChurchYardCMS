@@ -15,14 +15,20 @@ if(GetPathPart(2) != null)
 
     case "update_sitemap":
       Jobs::GenerateSitemap();
+      Server::OutputMessage(AlertSuccess('Generated sitemap.xml file'));
+      Server::Redirect('admin/jobs');
     break;
 
     case "update_robots":
       Jobs::GenerateRobots();
+      Server::OutputMessage(AlertSuccess('Generated robots.txt file'));
+      Server::Redirect('admin/jobs');
     break;
 
     case "clear_cache":
       Jobs::ClearCache();
+      Server::OutputMessage(AlertSuccess('Cleared cache directory'));
+      Server::Redirect('admin/jobs');
     break;
   }
 }
@@ -32,6 +38,8 @@ include("templates/dashboard/header.php");
 
 
 ?><h1 class="page-header">Jobs</h1>
+
+ <?php echo Server::DisplayMessage(); ?>
 
 <div class="row">
     <div class="col-md-4">

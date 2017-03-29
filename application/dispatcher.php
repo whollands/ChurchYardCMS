@@ -36,6 +36,8 @@ Const Version = '1.0 Alpha';
 date_default_timezone_set('UTC');
 // Set the timezone of the server
 
+session_start();
+
 $GLOBALS["Config"] = include("config/general.php");
 // Assign config file to variable
 
