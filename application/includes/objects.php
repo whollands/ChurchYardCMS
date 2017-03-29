@@ -800,9 +800,26 @@ Class Grave
 	{
 		
 	}
-	public static function DeleteGrave()
+	public static function DeleteGrave($GraveID)
 	{
-		
+		if(!is_pos_int($GraveID))
+		{
+			Server::ErrorMessage("Grave ID must be an integer");
+		}
+		else
+		{
+			if(!Grave::CheckGraveExists($GraveID))
+			{
+				Server::ErrorMessage("Grave does not exist (Grave ID: $GraveID)");
+			}
+			else
+			{
+				$GraveID = Database::Filter($GraveID);
+
+				$SQL = "DELETE FROM Graves WHERE GraveID=$GraveID";
+				Database::Query($SQL)or Server::ErrorMessage(Database::Error());
+			}
+		}
 	}
 
 }

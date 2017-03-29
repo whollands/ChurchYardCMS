@@ -160,6 +160,11 @@ switch(GetPathPart(0))
 					case "": IncludeScript("admin/graves/view.php"); break;
 					case "new": IncludeScript("admin/graves/new.php"); break;
 					case "edit": IncludeScript("admin/graves/edit.php"); break;
+					case "delete": 
+						$GraveID = GetPathPart(3);
+						Grave::DeleteGrave($GraveID);
+						Server::Redirect('admin/graves');
+					break;
 				}
 
 			break;

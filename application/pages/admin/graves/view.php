@@ -47,9 +47,9 @@ include("templates/dashboard/header.php");
                   echo "<td>" . $Data["GraveID"] . "</td>";
                   echo "<td>" . $Data["Type"] . "</td>";
                   echo "<td>";
-                  echo Button("Edit", "#", "btn btn-primary btn-xs");
+                  echo Button("Edit", GetPageURL('admin/graves/edit/' . $Data['GraveID']), "btn btn-primary btn-xs");
                   echo " ";
-                  echo Button("Delete", "#", "btn btn-danger btn-xs");
+                  echo Button("Delete", GetPageURL('admin/graves/delete/' . $Data['GraveID']), "btn btn-danger btn-xs");
                   echo "</td>";
                   echo "</tr>";
               }
